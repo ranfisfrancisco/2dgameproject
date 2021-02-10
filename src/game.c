@@ -8,6 +8,7 @@
 #include "gf2d_sprite.h"
 
 #include "entity.h"
+#include "player.h"
 
 int main(int argc, char* argv[])
 {
@@ -16,6 +17,8 @@ int main(int argc, char* argv[])
     const Uint8* keys;
     Sprite* sprite;
     Entity* mouse;
+    Entity* player;
+    Vector2D spawnPosition;
 
     //Sprite* mouse;
     int mx, my;
@@ -39,9 +42,13 @@ int main(int argc, char* argv[])
 
     /*demo setup*/
     sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
-    mouse = entity_new();
-    mouse->sprite = gf2d_sprite_load_all("images/pointer.png", 32, 32, 16);
-    mouse->health = 100;
+    //mouse = entity_new();
+
+    spawnPosition = vector2d(0,0);
+    player = player_spawn(spawnPosition);
+
+    //mouse->sprite = gf2d_sprite_load_all("images/pointer.png", 32, 32, 16);
+    //mouse->health = 100;
 
 
     /*main game loop*/
@@ -49,22 +56,16 @@ int main(int argc, char* argv[])
     {
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
-
-        if (keys[SDL_SCANCODE_LEFT]) {
-            mouse->health -= 20;
-            printf("Right key pressed mouse health: %d\n", mouse->health);
-        } else if (keys[SDL_SCANCODE_RIGHT]) {
-            mouse->health += 20;
-            printf("Left key pressed mouse health: %d\n", mouse->health);
-        } else if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
+        if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
+        player_input(player, keys);
 
         /*update things here*/
         SDL_GetMouseState(&mx, &my);
 
-        mouse->position.x = mx;
+        /*mouse->position.x = mx;
         mouse->position.y = my;
         mouse->frame += 0.1;
-        if (mouse->frame >= 16.0) mouse->frame = 0;
+        if (mouse->frame >= 16.0) mouse->frame = 0;*/
         
         entity_manager_update_entities();
 
@@ -78,7 +79,7 @@ int main(int argc, char* argv[])
 
 //        slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
-    entity_free(mouse);
+    entity_manager_free();
     slog("---==== END ====---");
     return 0;
 }

@@ -5,8 +5,7 @@
 #include "gfc_vector.h"
 #include "gf2d_sprite.h"
 
-enum entity_type {notype, player, enemy};
-enum entity_state {nostate, seeking, attack1, attack2};
+enum entity_type {notype, playertype, enemytype};
 
 typedef struct Entity_s{
 	Bool _inuse;
@@ -14,14 +13,18 @@ typedef struct Entity_s{
 	Sprite *sprite;
 	float frame;
 	float frameRate;
+	int frameCount;
+	Vector3D rotation;
 	void (*update)(struct Entity_s* self);
 	void (*think)(struct Entity_s* self);
 	void (*draw)(struct Entity_s* self);
 	void (*free)(struct Entity_s* self);
 	void* data;
 	enum entity_type type;
-	enum entity_state state;
+	int state;
+	int statePos;
 	int health;
+	int maxHealth;
 } Entity;
 
 void entity_manager_init(Uint32 max_entities);
