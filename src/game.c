@@ -1,7 +1,5 @@
 #include <SDL.h>
 
-#include <math.h>
-
 #include "simple_logger.h"
 
 #include "gf2d_graphics.h"
@@ -18,7 +16,6 @@ int main(int argc, char* argv[])
     Sprite* sprite;
     Entity* mouse;
     Entity* player;
-    Vector2D spawnPosition;
 
     //Sprite* mouse;
     int mx, my;
@@ -44,8 +41,7 @@ int main(int argc, char* argv[])
     sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
     //mouse = entity_new();
 
-    spawnPosition = vector2d(0,0);
-    player = player_spawn(spawnPosition);
+    player = player_spawn(vector2d(600, 360));
 
     //mouse->sprite = gf2d_sprite_load_all("images/pointer.png", 32, 32, 16);
     //mouse->health = 100;
@@ -54,6 +50,7 @@ int main(int argc, char* argv[])
     /*main game loop*/
     while (!done)
     {
+        printf("state: %d %f\n", player->state, player->rotation.z);
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition

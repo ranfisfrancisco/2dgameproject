@@ -25,37 +25,54 @@ Entity* player_spawn(Vector2D position) {
 }
 
 void player_update(Entity* self) {
-
+	self->frame++;
+	if (self->frame > 16)
+		self->frame = 0;
 }
 
 void player_input(Entity* self, const Uint8* keys) {
-	switch (self->state) {
+	switch (self->state) 
+	{
 	case playerneutral:
+		if (keys[SDL_SCANCODE_LEFT]) {
+			self->position.x -= 2;
+			if (self->position.x < 0)
+				self->position.x = 0;
+
+		}
+		else if (keys[SDL_SCANCODE_RIGHT]) {
+			self->position.x += 2;
+			if (self->position.x > 1200)
+				self->position.x = 1200;
+		}
+		if (keys[SDL_SCANCODE_UP]) {
+			self->position.y -= 2;
+			if (self->position.y < 0)
+				self->position.y = 0;
+		}
+		else if (keys[SDL_SCANCODE_DOWN]) {
+			self->position.y += 2;
+			if (self->position.y > 1200)
+				self->position.y = 1200;
+		}
+		if (keys[SDL_SCANCODE_S]) {
+			self->state = playerspinning;
+			self->statePos = 0;
+		}
 		break;
+
 	case playerspinning:
+		self->statePos++;
+		if (self->statePos > 360) {
+			self->state = playerneutral;
+			self->statePos = 0;
+			self->rotation = vector3d(0,0,0);
+		}
+		else {
+			self->rotation = vector3d(64, 64, self->statePos);
+		}
 		break;
 	default:
 		break;
-	}
-
-
-
-	if (keys[SDL_SCANCODE_LEFT]) {
-		self->position.x -= 1;
-		if (self->position.x < 0)
-			self->position.x = 0;
-
-	}
-	else if (keys[SDL_SCANCODE_RIGHT]) {
-		self->position.x += 1;
-		if (self->position.x > 1200)
-			self->position.x = 1200;
-	}
-	else if (keys[SDL_SCANCODE_UP]) {
-		self->state = playerspinning;
-	}
-
-	if (self->state == playerspinning) {
-		
 	}
 }
