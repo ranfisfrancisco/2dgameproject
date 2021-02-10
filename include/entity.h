@@ -15,6 +15,7 @@ typedef struct{
 	float frame;
 	enum entity_type type;
 	enum entity_state state;
+	int health;
 } Entity;
 
 void entity_manager_init(Uint32 max_entities);

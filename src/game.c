@@ -15,11 +15,10 @@ int main(int argc, char* argv[])
     int done = 0;
     const Uint8* keys;
     Sprite* sprite;
-    Entity* ent;
+    Entity* mouse;
 
+    //Sprite* mouse;
     int mx, my;
-    float mf = 0;
-    Sprite* mouse;
     Vector4D mouseColor = { 255,100,255,200 };
 
     /*program initializtion*/
@@ -40,54 +39,47 @@ int main(int argc, char* argv[])
 
     /*demo setup*/
     sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
-    mouse = gf2d_sprite_load_all("images/pointer.png", 32, 32, 16);
-   
+    mouse = entity_new();
+    mouse->sprite = gf2d_sprite_load_all("images/pointer.png", 32, 32, 16);
+    mouse->health = 100;
 
-    ent = entity_new();
-    //ent->sprite = gf2d_sprite_load_all("images/ed210_top.png", 128, 128, 16);
-    ent->sprite = gf2d_sprite_load_all("images/ryu_sheet.png", 70, 100, 19);
 
     /*main game loop*/
     while (!done)
     {
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
+
+        if (keys[SDL_SCANCODE_LEFT]) {
+            mouse->health -= 20;
+            printf("Right key pressed mouse health: %d\n", mouse->health);
+        } else if (keys[SDL_SCANCODE_RIGHT]) {
+            mouse->health += 60;
+            printf("Left key pressed mouse health: %d\n", mouse->health);
+        }
+
         /*update things here*/
         SDL_GetMouseState(&mx, &my);
-        mf += 0.1;
-        if (mf >= 16.0)mf = 0;
 
-        ent->frame += 0.1;
-        if (ent->frame >= 16)ent->frame = 0;
-
-        ent->position.x++;
-        if (ent->position.x > 1200)
-            ent->position.x = 0;
-
+        mouse->position.x = mx;
+        mouse->position.y = my;
+        mouse->frame += 0.1;
+        if (mouse->frame >= 16.0) mouse->frame = 0;
 
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first
         gf2d_sprite_draw_image(sprite, vector2d(0, 0));
 
-        entity_draw(ent);
+        if (mouse->health > 0)
+            entity_draw(mouse);
 
-        //UI elements last
-        gf2d_sprite_draw(
-            mouse,
-            vector2d(mx, my),
-            NULL,
-            NULL,
-            NULL,
-            NULL,
-            &mouseColor,
-            (int)mf);
         gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
 
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
 //        slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
-    entity_free(ent);
+    entity_free(mouse);
     slog("---==== END ====---");
     return 0;
 }
