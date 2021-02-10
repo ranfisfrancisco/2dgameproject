@@ -42,8 +42,8 @@ Entity *entity_new(){
 	for (int i=0; i < entity_manager.max_entities; i++){
 		if (entity_manager.entity_list[i]._inuse) 
 			continue;
-		entity_manager.entity_list[i]._inuse = 1;
 		memset(&entity_manager.entity_list[i], 0, sizeof(Entity));
+		entity_manager.entity_list[i]._inuse = 1;
 		return &entity_manager.entity_list[i];
 	}
 	slog("No free entities available");
@@ -60,6 +60,46 @@ void entity_free(Entity* ent) {
 	ent->_inuse = 0;
 }
 
+void entity_update(Entity* self) {
+	if (!self) return;
+	//do any generic update code
+
+	if (self->update != NULL)
+		self->update(self);
+}
+
+void entity_manager_update_entities() {
+	int i;
+
+	if (entity_manager.entity_list == NULL) {
+		slog("entity system does not exist");
+		return NULL;
+	}
+
+	for (i = 0; i < entity_manager.max_entities; i++) {
+		if (entity_manager.entity_list[i]._inuse == 0) 
+			continue;
+
+		entity_update(&entity_manager.entity_list[i]);
+	}
+}
+
+void entity_manager_draw_entities() {
+	int i;
+
+	if (entity_manager.entity_list == NULL) {
+		slog("entity system does not exist");
+		return NULL;
+	}
+
+	for (i = 0; i < entity_manager.max_entities; i++) {
+		if (entity_manager.entity_list[i]._inuse == 0)
+			continue;
+
+		entity_draw(&entity_manager.entity_list[i]);
+	}
+}
+
 void entity_draw(Entity* ent) {
 	if (!ent) {
 		slog("Cannot draw NULL entity");
@@ -68,13 +108,17 @@ void entity_draw(Entity* ent) {
 	if (ent->sprite == NULL) {
 		return;
 	}
-	gf2d_sprite_draw(
-		ent->sprite,
-		ent->position,
-		NULL,
-		NULL,
-		NULL,
-		NULL,
-		NULL,
-		ent->frame);
+	if (ent->draw)
+		ent->draw(ent);
+	else {
+		gf2d_sprite_draw(
+			ent->sprite,
+			ent->position,
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			ent->frame);
+	}
 }

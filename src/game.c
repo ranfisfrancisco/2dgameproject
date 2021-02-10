@@ -54,9 +54,9 @@ int main(int argc, char* argv[])
             mouse->health -= 20;
             printf("Right key pressed mouse health: %d\n", mouse->health);
         } else if (keys[SDL_SCANCODE_RIGHT]) {
-            mouse->health += 60;
+            mouse->health += 20;
             printf("Left key pressed mouse health: %d\n", mouse->health);
-        }
+        } else if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
 
         /*update things here*/
         SDL_GetMouseState(&mx, &my);
@@ -65,18 +65,17 @@ int main(int argc, char* argv[])
         mouse->position.y = my;
         mouse->frame += 0.1;
         if (mouse->frame >= 16.0) mouse->frame = 0;
+        
+        entity_manager_update_entities();
 
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first
         gf2d_sprite_draw_image(sprite, vector2d(0, 0));
-
-        if (mouse->health > 0)
-            entity_draw(mouse);
+        entity_manager_draw_entities();
 
         gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
 
-        if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
 //        slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
     entity_free(mouse);
