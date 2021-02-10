@@ -21,6 +21,7 @@ Entity* player_spawn(Vector2D position) {
 	ent->type = PLAYER_TYPE;
 	ent->rotation = vector3d(0,0,0);
 	ent->update = player_update;
+	ent->speed = 2;
 	return ent;
 }
 
@@ -30,31 +31,35 @@ void player_update(Entity* self) {
 		self->frame = 0;
 }
 
+void player_movement(Entity* self, const Uint8* keys) {
+	if (keys[SDL_SCANCODE_LEFT]) {
+		self->position.x -= self->speed;
+		if (self->position.x < 0)
+			self->position.x = 0;
+
+	}
+	else if (keys[SDL_SCANCODE_RIGHT]) {
+		self->position.x += self->speed;
+		if (self->position.x > 1200)
+			self->position.x = 1200;
+	}
+	if (keys[SDL_SCANCODE_UP]) {
+		self->position.y -= self->speed;
+		if (self->position.y < 0)
+			self->position.y = 0;
+	}
+	else if (keys[SDL_SCANCODE_DOWN]) {
+		self->position.y += self->speed;
+		if (self->position.y > 1200)
+			self->position.y = 1200;
+	}
+}
+
 void player_input(Entity* self, const Uint8* keys) {
 	switch (self->state) 
 	{
 	case PLAYER_NEUTRAL:
-		if (keys[SDL_SCANCODE_LEFT]) {
-			self->position.x -= 2;
-			if (self->position.x < 0)
-				self->position.x = 0;
-
-		}
-		else if (keys[SDL_SCANCODE_RIGHT]) {
-			self->position.x += 2;
-			if (self->position.x > 1200)
-				self->position.x = 1200;
-		}
-		if (keys[SDL_SCANCODE_UP]) {
-			self->position.y -= 2;
-			if (self->position.y < 0)
-				self->position.y = 0;
-		}
-		else if (keys[SDL_SCANCODE_DOWN]) {
-			self->position.y += 2;
-			if (self->position.y > 1200)
-				self->position.y = 1200;
-		}
+		player_movement(self, keys);
 		if (keys[SDL_SCANCODE_S]) {
 			self->state = PLAYER_SPINNING;
 			self->statePos = 0;
@@ -62,6 +67,7 @@ void player_input(Entity* self, const Uint8* keys) {
 		break;
 
 	case PLAYER_SPINNING:
+		player_movement(self, keys);
 		self->statePos++;
 		if (self->statePos > 360) {
 			self->state = PLAYER_NEUTRAL;

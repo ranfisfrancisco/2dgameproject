@@ -25,6 +25,7 @@ typedef struct Entity_s{
 	int statePos;
 	int health;
 	int maxHealth;
+	int speed;
 } Entity;
 
 void entity_manager_init(Uint32 max_entities);
