@@ -5,7 +5,7 @@
 #include "gfc_vector.h"
 #include "gf2d_sprite.h"
 
-enum entity_type {notype, playertype, enemytype};
+enum entity_type {NO_TYPE, PLAYER_TYPE, ENEMY_TYPE};
 
 typedef struct Entity_s{
 	Bool _inuse;

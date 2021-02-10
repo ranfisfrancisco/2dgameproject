@@ -43,10 +43,6 @@ int main(int argc, char* argv[])
 
     player = player_spawn(vector2d(600, 360));
 
-    //mouse->sprite = gf2d_sprite_load_all("images/pointer.png", 32, 32, 16);
-    //mouse->health = 100;
-
-
     /*main game loop*/
     while (!done)
     {
@@ -58,11 +54,6 @@ int main(int argc, char* argv[])
 
         /*update things here*/
         SDL_GetMouseState(&mx, &my);
-
-        /*mouse->position.x = mx;
-        mouse->position.y = my;
-        mouse->frame += 0.1;
-        if (mouse->frame >= 16.0) mouse->frame = 0;*/
         
         entity_manager_update_entities();
 

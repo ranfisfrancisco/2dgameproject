@@ -1,7 +1,7 @@
 #include "simple_logger.h"
 #include "player.h"
 
-enum player_state {playerneutral, playerspinning};
+enum player_state {PLAYER_NEUTRAL, PLAYER_SPINNING};
 
 void player_update(Entity* self);
 
@@ -18,7 +18,7 @@ Entity* player_spawn(Vector2D position) {
 	ent->frameCount = 16;
 	ent->maxHealth = 100;
 	ent->health = ent->maxHealth;
-	ent->type = playertype;
+	ent->type = PLAYER_TYPE;
 	ent->rotation = vector3d(0,0,0);
 	ent->update = player_update;
 	return ent;
@@ -33,7 +33,7 @@ void player_update(Entity* self) {
 void player_input(Entity* self, const Uint8* keys) {
 	switch (self->state) 
 	{
-	case playerneutral:
+	case PLAYER_NEUTRAL:
 		if (keys[SDL_SCANCODE_LEFT]) {
 			self->position.x -= 2;
 			if (self->position.x < 0)
@@ -56,15 +56,15 @@ void player_input(Entity* self, const Uint8* keys) {
 				self->position.y = 1200;
 		}
 		if (keys[SDL_SCANCODE_S]) {
-			self->state = playerspinning;
+			self->state = PLAYER_SPINNING;
 			self->statePos = 0;
 		}
 		break;
 
-	case playerspinning:
+	case PLAYER_SPINNING:
 		self->statePos++;
 		if (self->statePos > 360) {
-			self->state = playerneutral;
+			self->state = PLAYER_NEUTRAL;
 			self->statePos = 0;
 			self->rotation = vector3d(0,0,0);
 		}
