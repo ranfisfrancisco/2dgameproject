@@ -67,11 +67,14 @@ void player_input(Entity* self, const Uint8* keys) {
 	enum player_directional_input raw_input = NO_INPUT;
 	enum player_move move = 0;
 	int up, down, left, right;
+	int attack;
 
 	up = keys[SDL_SCANCODE_W];
 	right = keys[SDL_SCANCODE_D];
 	down = keys[SDL_SCANCODE_S];
 	left = keys[SDL_SCANCODE_A];
+	attack = keys[SDL_SCANCODE_J];
+
 
 	//check for too many inputs
 	if (up + right + down + left > 3) {
@@ -109,11 +112,12 @@ void player_input(Entity* self, const Uint8* keys) {
 	{
 	case PLAYER_NEUTRAL:
 		if (move == BACK_FORWARD_MOVE) {
+			
+		}
+		else if (move == QCF_MOVE && attack) {
+			printf("!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!\n");
 			self->state = PLAYER_SPINNING;
 			self->statePos = 0;
-		}
-		else if (move == QCF_MOVE) {
-			printf("!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!\n");
 		}
 		else {
 			player_movement(self, keys);
