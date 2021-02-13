@@ -1,5 +1,6 @@
 #include "simple_logger.h"
 #include "player.h"
+#include "input.h"
 
 enum player_state {PLAYER_NEUTRAL, PLAYER_SPINNING};
 
@@ -32,23 +33,30 @@ void player_update(Entity* self) {
 }
 
 void player_movement(Entity* self, const Uint8* keys) {
-	if (keys[SDL_SCANCODE_LEFT]) {
+	int up, down, left, right;
+
+	up = keys[SDL_SCANCODE_W];
+	right = keys[SDL_SCANCODE_D];
+	down = keys[SDL_SCANCODE_S];
+	left = keys[SDL_SCANCODE_A];
+
+	if (left) {
 		self->position.x -= self->speed;
 		if (self->position.x < 0)
 			self->position.x = 0;
 
 	}
-	else if (keys[SDL_SCANCODE_RIGHT]) {
+	else if (right) {
 		self->position.x += self->speed;
 		if (self->position.x > 1200)
 			self->position.x = 1200;
 	}
-	if (keys[SDL_SCANCODE_UP]) {
+	if (up) {
 		self->position.y -= self->speed;
 		if (self->position.y < 0)
 			self->position.y = 0;
 	}
-	else if (keys[SDL_SCANCODE_DOWN]) {
+	else if (down) {
 		self->position.y += self->speed;
 		if (self->position.y > 1200)
 			self->position.y = 1200;
@@ -56,13 +64,56 @@ void player_movement(Entity* self, const Uint8* keys) {
 }
 
 void player_input(Entity* self, const Uint8* keys) {
+	enum player_directional_input raw_input = NO_INPUT;
+	enum player_move move = 0;
+	int up, down, left, right;
+
+	up = keys[SDL_SCANCODE_W];
+	right = keys[SDL_SCANCODE_D];
+	down = keys[SDL_SCANCODE_S];
+	left = keys[SDL_SCANCODE_A];
+
+	//check for too many inputs
+	if (up + right + down + left > 3) {
+		raw_input = NO_INPUT;
+	}
+	else if (up && right){
+		raw_input = UP_FORWARD_INPUT;
+	}
+	else if (right && down) {
+		raw_input = DOWN_FORWARD_INPUT;
+	}
+	else if (down && left) {
+		raw_input = DOWN_BACK_INPUT;
+	}
+	else if (left && up) {
+		raw_input = UP_BACK_INPUT;
+	}
+	else if (up) {
+		raw_input = UP_INPUT;
+	}
+	else if (right) {
+		raw_input = FORWARD_INPUT;
+	}
+	else if (down) {
+		raw_input = DOWN_INPUT;
+	}
+	else if (left) {
+		raw_input = BACK_INPUT;
+	}
+
+	move = feed_input(raw_input);
+	printf("%d\n", raw_input);
+
 	switch (self->state) 
 	{
 	case PLAYER_NEUTRAL:
-		player_movement(self, keys);
-		if (keys[SDL_SCANCODE_S]) {
+		if (down && move == BACK_FORWARD_MOVE) {
 			self->state = PLAYER_SPINNING;
 			self->statePos = 0;
+		}
+		else {
+			player_movement(self, keys);
 		}
 		break;
 
