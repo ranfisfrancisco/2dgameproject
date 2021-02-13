@@ -51,6 +51,20 @@ enum player_move feed_input(enum player_directional_input input) {
 		input_index = 0;
 
 	//check for back forward input
+
+	if (get_buffer_value(1) == FORWARD_INPUT) {
+		int flag = 0;
+
+		for (int i = 1; i < 11; i++) {
+			if (flag == 0 && get_buffer_value(i) == DOWN_FORWARD_INPUT) {
+				flag = 1;
+			}
+			else if (flag == 1 && get_buffer_value(i) == DOWN_INPUT) {
+				return QCF_MOVE;
+			}
+		}
+	}
+
 	if (get_buffer_value(1) == FORWARD_INPUT) {
 		for (int i = 1; i < 11; i++) {
 			if (get_buffer_value(i) == BACK_INPUT) {

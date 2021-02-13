@@ -112,6 +112,9 @@ void player_input(Entity* self, const Uint8* keys) {
 			self->state = PLAYER_SPINNING;
 			self->statePos = 0;
 		}
+		else if (move == QCF_MOVE) {
+			printf("!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!\n");
+		}
 		else {
 			player_movement(self, keys);
 		}
@@ -120,6 +123,7 @@ void player_input(Entity* self, const Uint8* keys) {
 	case PLAYER_SPINNING:
 		player_movement(self, keys);
 		self->statePos++;
+
 		if (self->statePos > 360) {
 			self->state = PLAYER_NEUTRAL;
 			self->statePos = 0;

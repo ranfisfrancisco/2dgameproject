@@ -5,7 +5,7 @@
 #include "gfc_vector.h"
 #include "gf2d_sprite.h"
 
-enum player_move {NO_MOVE, BACK_FORWARD_MOVE};
+enum player_move {NO_MOVE, BACK_FORWARD_MOVE, QCF_MOVE};
 enum player_directional_input { NO_INPUT, DOWN_BACK_INPUT, DOWN_INPUT, DOWN_FORWARD_INPUT, BACK_INPUT, NEUTRAL_INPUT, FORWARD_INPUT, UP_BACK_INPUT, UP_INPUT, UP_FORWARD_INPUT };
 
 void input_buffer_init();
