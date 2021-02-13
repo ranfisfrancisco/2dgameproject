@@ -7,6 +7,7 @@
 
 #include "entity.h"
 #include "player.h"
+#include "input.h"
 
 int main(int argc, char* argv[])
 {
@@ -35,6 +36,7 @@ int main(int argc, char* argv[])
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
     entity_manager_init(100);
+    input_buffer_init();
     SDL_ShowCursor(SDL_DISABLE);
 
     /*demo setup*/
@@ -68,6 +70,7 @@ int main(int argc, char* argv[])
 //        slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
     entity_manager_free();
+    input_buffer_free();
     slog("---==== END ====---");
     return 0;
 }

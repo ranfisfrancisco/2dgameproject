@@ -103,12 +103,12 @@ void player_input(Entity* self, const Uint8* keys) {
 	}
 
 	move = feed_input(raw_input);
-	printf("%d\n", raw_input);
+	printf("%d %d\n", raw_input, move);
 
 	switch (self->state) 
 	{
 	case PLAYER_NEUTRAL:
-		if (down && move == BACK_FORWARD_MOVE) {
+		if (move == BACK_FORWARD_MOVE) {
 			self->state = PLAYER_SPINNING;
 			self->statePos = 0;
 		}

@@ -51,8 +51,12 @@ enum player_move feed_input(enum player_directional_input input) {
 		input_index = 0;
 
 	//check for back forward input
-	if (input_buffer[input_index - 1] == FORWARD_INPUT) {
-
+	if (get_buffer_value(1) == FORWARD_INPUT) {
+		for (int i = 1; i < 11; i++) {
+			if (get_buffer_value(i) == BACK_INPUT) {
+				return BACK_FORWARD_MOVE;
+			}
+		}
 	}
 
 	return NO_MOVE;
