@@ -14,7 +14,7 @@ Entity* player_spawn(Vector2D position) {
 		slog("failed to create entity for player");
 		return NULL;
 	}
-	ent->sprite = gf2d_sprite_load_all("images/ed210_top.png", 128, 128, 16);
+	ent->sprite = gf2d_sprite_load_all("images/cat_fighter_sprite1.png", 50, 50, 10);
 	vector2d_copy(ent->position, position);
 	ent->frameRate = 0.1;
 	ent->frameCount = 16;
@@ -25,6 +25,7 @@ Entity* player_spawn(Vector2D position) {
 	ent->update = player_update;
 	ent->speed = 2;
 	ent->flip = vector2d(FACE_RIGHT, 0);
+	ent->scale = vector2d(1.5, 1.5);
 	return ent;
 }
 
@@ -73,6 +74,12 @@ void player_update_side(Entity* self, const Uint8* keys) {
 		self->side = FACE_RIGHT;
 		self->flip.x = FACE_RIGHT;
 	}
+}
+
+void player_change_state(Entity* self, enum player_state state) {
+	self->frame = -1;
+	self->statePos = 0;
+	self->state = state;
 }
 
 void player_input(Entity* self, const Uint8* keys) {
@@ -126,21 +133,17 @@ void player_input(Entity* self, const Uint8* keys) {
 	{
 	case PLAYER_IDLE:
 		startFrame = 0;
-		endFrame = 16;
+		endFrame = 3;
 		self->frame += 0.1;
+
 		if (self->frame > endFrame || self->frame < startFrame)
 			self->frame = startFrame;
 
-		if (move == BACK_FORWARD_MOVE) {
-			
-		}
-		else if (move == QCF_MOVE && attack) {
-			self->state = PLAYER_SPINNING;
-			self->statePos = 0;
+		if (move == QCF_MOVE && attack) {
+			player_change_state(self, PLAYER_SPINNING);
 		}
 		else if (right || left || up || down) {
-			self->state = PLAYER_WALK;
-			self->statePos = 0;
+			player_change_state(self, PLAYER_WALK);
 			player_update_side(self, keys);
 			player_movement(self, keys);
 		}
@@ -150,8 +153,8 @@ void player_input(Entity* self, const Uint8* keys) {
 		break;
 
 	case PLAYER_WALK:
-		startFrame = 17;
-		endFrame = 32;
+		startFrame = 0;
+		endFrame = 9;
 
 		self->frame += 0.1;
 		if (self->frame > endFrame || self->frame < startFrame)
@@ -160,36 +163,28 @@ void player_input(Entity* self, const Uint8* keys) {
 		player_movement(self, keys);
 		player_update_side(self, keys);
 
-		if (!right && !left) {
-			self->state = PLAYER_IDLE;
-			self->statePos = 0;
+		if (move == QCF_MOVE && attack) {
+			player_change_state(self, PLAYER_SPINNING);
+		}
+		else if (!right && !left && !up && !down) {
+			player_change_state(self, PLAYER_IDLE);
 		}
 
 		break;
 
 	case PLAYER_SPINNING:
-		startFrame = 33;
-		endFrame = 48;
+		startFrame = 11;
+		endFrame = 16;
 		player_movement(self, keys);
-		self->statePos += 1;
-
-		if (self->statePos > 180) {
-			startFrame = 17;
-			endFrame = 17;
-		}
 
 		self->frame += 0.1;
 		if (self->frame > endFrame || self->frame < startFrame)
 			self->frame = startFrame;
 
-		if (self->statePos > 360) {
-			self->state = PLAYER_IDLE;
-			self->statePos = 0;
-			self->rotation = vector3d(0,0,0);
+		if (self->frame >= endFrame) {
+			player_change_state(self, PLAYER_IDLE);
 		}
-		else {
-			self->rotation = vector3d(64, 64, self->statePos);
-		}
+	
 		break;
 	default:
 		break;

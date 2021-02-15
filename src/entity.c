@@ -114,7 +114,7 @@ void entity_draw(Entity* ent) {
 		gf2d_sprite_draw(
 			ent->sprite,
 			ent->position,
-			NULL,
+			&ent->scale,
 			NULL,
 			&ent->rotation,
 			&ent->flip,

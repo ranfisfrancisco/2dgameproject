@@ -11,6 +11,7 @@ typedef struct Entity_s{
 	Bool _inuse;
 	Vector2D position;
 	Sprite *sprite;
+	Vector2D scale;
 	float frame;
 	float frameRate;
 	int frameCount;
