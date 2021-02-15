@@ -2,7 +2,7 @@
 #include "player.h"
 #include "input.h"
 
-enum player_state {PLAYER_IDLE, PLAYER_WALK, PLAYER_SPINNING};
+enum player_state {PLAYER_IDLE, PLAYER_WALK, PLAYER_ATTACK};
 enum facing_side {FACE_RIGHT, FACE_LEFT};
 
 void player_update(Entity* self);
@@ -25,7 +25,7 @@ Entity* player_spawn(Vector2D position) {
 	ent->update = player_update;
 	ent->speed = 2;
 	ent->flip = vector2d(FACE_RIGHT, 0);
-	ent->scale = vector2d(1.5, 1.5);
+	ent->scale = vector2d(2, 2);
 	return ent;
 }
 
@@ -77,7 +77,7 @@ void player_update_side(Entity* self, const Uint8* keys) {
 }
 
 void player_change_state(Entity* self, enum player_state state) {
-	self->frame = -1;
+	self->frame = 0;
 	self->statePos = 0;
 	self->state = state;
 }
@@ -126,21 +126,20 @@ void player_input(Entity* self, const Uint8* keys) {
 	}
 
 	move = feed_input(raw_input);
-	printf("%d %d\n", raw_input, move);
-
+	
 	//PROBLEM based on statepos, decide what frame to show
 	switch (self->state) 
 	{
 	case PLAYER_IDLE:
-		startFrame = 0;
+		startFrame = 1;
 		endFrame = 3;
-		self->frame += 0.1;
+		self->frame += 0.05;
 
 		if (self->frame > endFrame || self->frame < startFrame)
 			self->frame = startFrame;
 
 		if (move == QCF_MOVE && attack) {
-			player_change_state(self, PLAYER_SPINNING);
+			player_change_state(self, PLAYER_ATTACK);
 		}
 		else if (right || left || up || down) {
 			player_change_state(self, PLAYER_WALK);
@@ -153,10 +152,10 @@ void player_input(Entity* self, const Uint8* keys) {
 		break;
 
 	case PLAYER_WALK:
-		startFrame = 0;
-		endFrame = 9;
+		startFrame = 1;
+		endFrame = 8;
 
-		self->frame += 0.1;
+		self->frame += 0.05;
 		if (self->frame > endFrame || self->frame < startFrame)
 			self->frame = startFrame;
 
@@ -164,7 +163,7 @@ void player_input(Entity* self, const Uint8* keys) {
 		player_update_side(self, keys);
 
 		if (move == QCF_MOVE && attack) {
-			player_change_state(self, PLAYER_SPINNING);
+			player_change_state(self, PLAYER_ATTACK);
 		}
 		else if (!right && !left && !up && !down) {
 			player_change_state(self, PLAYER_IDLE);
@@ -172,19 +171,19 @@ void player_input(Entity* self, const Uint8* keys) {
 
 		break;
 
-	case PLAYER_SPINNING:
+	case PLAYER_ATTACK:
 		startFrame = 11;
 		endFrame = 16;
-		player_movement(self, keys);
+		//player_movement(self, keys);
 
-		self->frame += 0.1;
-		if (self->frame > endFrame || self->frame < startFrame)
+		if (self->frame < startFrame)
 			self->frame = startFrame;
 
-		if (self->frame >= endFrame) {
+		self->frame += 0.1;
+
+		if (self->frame > endFrame) 
 			player_change_state(self, PLAYER_IDLE);
-		}
-	
+		
 		break;
 	default:
 		break;
