@@ -21,6 +21,7 @@ typedef struct Entity_s{
 	void (*free)(struct Entity_s* self);
 	void* data;
 	enum entity_type type;
+	int side;
 	int state;
 	int statePos;
 	int health;

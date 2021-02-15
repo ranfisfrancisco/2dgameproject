@@ -2,7 +2,7 @@
 #include "player.h"
 #include "input.h"
 
-enum player_state {PLAYER_NEUTRAL, PLAYER_SPINNING};
+enum player_state {PLAYER_IDLE, PLAYER_SPINNING};
 
 void player_update(Entity* self);
 
@@ -27,9 +27,14 @@ Entity* player_spawn(Vector2D position) {
 }
 
 void player_update(Entity* self) {
+	const Uint8* keys;
+	keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
+
 	self->frame++;
 	if (self->frame > 16)
 		self->frame = 0;
+
+	player_input(self, keys);
 }
 
 void player_movement(Entity* self, const Uint8* keys) {
@@ -110,12 +115,11 @@ void player_input(Entity* self, const Uint8* keys) {
 
 	switch (self->state) 
 	{
-	case PLAYER_NEUTRAL:
+	case PLAYER_IDLE:
 		if (move == BACK_FORWARD_MOVE) {
 			
 		}
 		else if (move == QCF_MOVE && attack) {
-			printf("!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!\n");
 			self->state = PLAYER_SPINNING;
 			self->statePos = 0;
 		}
@@ -126,10 +130,10 @@ void player_input(Entity* self, const Uint8* keys) {
 
 	case PLAYER_SPINNING:
 		player_movement(self, keys);
-		self->statePos++;
+		self->statePos+=3;
 
 		if (self->statePos > 360) {
-			self->state = PLAYER_NEUTRAL;
+			self->state = PLAYER_IDLE;
 			self->statePos = 0;
 			self->rotation = vector3d(0,0,0);
 		}

@@ -52,7 +52,6 @@ int main(int argc, char* argv[])
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
-        player_input(player, keys);
 
         /*update things here*/
         SDL_GetMouseState(&mx, &my);

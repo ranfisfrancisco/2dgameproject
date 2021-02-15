@@ -1,21 +1,34 @@
 #include "simple_logger.h"
 #include "input.h"
 
-static int* input_buffer = { 0 };
+typedef struct {
+	int* input_buffer;
+	int input_len;
+	int input_index;
+	int move_buffer_hold_window;
+	enum player_move* move_buffer;
+} InputManager;
+
+static InputManager input_manager = { 0 };
+
+/*static int* input_buffer = { 0 };
 static int input_index = 0;
 const static int buffer_len = 60;
-static enum player_move* move_buffer = { 0 };
+static enum player_move* move_buffer = { 0 };*/
 
 //init frame buffer
 void input_buffer_init() {
-	input_buffer = gfc_allocate_array(sizeof(int), buffer_len);
-	if (input_buffer == NULL) {
+	input_manager.input_len = 60;
+	input_manager.move_buffer_hold_window = 6;
+
+	input_manager.input_buffer = gfc_allocate_array(sizeof(int), input_manager.input_len);
+	if (input_manager.input_buffer == NULL) {
 		slog("Failed to allocate input buffer");
 		return;
 	}
 
-	move_buffer = gfc_allocate_array(sizeof(int), NUM_OF_PLAYER_MOVES);
-	if (move_buffer == NULL) {
+	input_manager.move_buffer = gfc_allocate_array(sizeof(int), NUM_OF_PLAYER_MOVES);
+	if (input_manager.move_buffer == NULL) {
 		slog("Failed to allocate move buffer");
 		return;
 	}
@@ -24,16 +37,16 @@ void input_buffer_init() {
 
 //free frame buffer
 void input_buffer_free() {
-	if (input_buffer != NULL) {
-		free(input_buffer);
+	if (input_manager.input_buffer != NULL) {
+		free(input_manager.input_buffer);
 	}
-	memset(&input_buffer, 0, sizeof(input_buffer));
+	memset(&input_manager.input_buffer, 0, sizeof(input_manager.input_buffer));
 	slog("input buffer closed");
 
-	if (move_buffer != NULL) {
-		free(move_buffer);
+	if (input_manager.move_buffer != NULL) {
+		free(input_manager.move_buffer);
 	}
-	memset(&move_buffer, 0, sizeof(move_buffer));
+	memset(&input_manager.move_buffer, 0, sizeof(input_manager.move_buffer));
 	slog("move buffer closed");
 }
 
@@ -41,33 +54,33 @@ void input_buffer_free() {
 enum player_directional_input get_buffer_value(int offset) {
 	int index;
 
-	if (offset >= buffer_len || offset < 0) {
+	if (offset >= input_manager.input_len || offset < 0) {
 		return NO_INPUT;
 	}
 
-	index = input_index - offset;
+	index = input_manager.input_index - offset;
 	if (index < 0) {
-		index += buffer_len;
+		index += input_manager.input_len;
 	}
-	else if (index >= buffer_len) {
-		index -= buffer_len;
+	else if (index >= input_manager.input_len) {
+		index -= input_manager.input_len;
 	}
 
-	return input_buffer[index];
+	return input_manager.input_buffer[index];
 }
 
 //reduces all move buffer by 1 down to 0
 void reduce_move_buffer() {
 	for (int i = 0; i < NUM_OF_PLAYER_MOVES; i++) {
-		if (move_buffer[i] > 0)
-			move_buffer[i]--;
+		if (input_manager.move_buffer[i] > 0)
+			input_manager.move_buffer[i]--;
 	}
 }
 
 //set all move buffer values to 0
 void clear_move_buffer() {
 	for (int i = 0; i < NUM_OF_PLAYER_MOVES; i++) {
-		move_buffer[i] = 0;
+		input_manager.move_buffer[i] = 0;
 	}
 }
 
@@ -76,8 +89,8 @@ enum player_move get_next_move_buffer_value() {
 	int max_index = 0;
 
 	for (int i = 0; i < NUM_OF_PLAYER_MOVES; i++) {
-		if (move_buffer[i] > max) {
-			max = move_buffer[i];
+		if (input_manager.move_buffer[i] > max) {
+			max = input_manager.move_buffer[i];
 			max_index = i;
 		}
 	}
@@ -87,10 +100,10 @@ enum player_move get_next_move_buffer_value() {
 
 // takes player directional input and returns a move if one was performed
 enum player_move feed_input(enum player_directional_input input) {
-	input_buffer[input_index] = input;
-	input_index++;
-	if (input_index >= buffer_len)
-		input_index = 0;
+	input_manager.input_buffer[input_manager.input_index] = input;
+	input_manager.input_index++;
+	if (input_manager.input_index >= input_manager.input_len)
+		input_manager.input_index = 0;
 
 	reduce_move_buffer();
 
@@ -102,7 +115,7 @@ enum player_move feed_input(enum player_directional_input input) {
 				flag = 1;
 			}
 			else if (flag == 1 && get_buffer_value(i) == DOWN_INPUT) {
-				move_buffer[QCF_MOVE] = 5;
+				input_manager.move_buffer[QCF_MOVE] = input_manager.move_buffer_hold_window;
 				return QCF_MOVE;
 			}
 		}
@@ -111,7 +124,7 @@ enum player_move feed_input(enum player_directional_input input) {
 	if (get_buffer_value(1) == FORWARD_INPUT) {
 		for (int i = 1; i < 11; i++) {
 			if (get_buffer_value(i) == BACK_INPUT) {
-				move_buffer[QCF_MOVE] = 7;
+				input_manager.move_buffer[QCF_MOVE] = 7;
 				return BACK_FORWARD_MOVE;
 			}
 		}
