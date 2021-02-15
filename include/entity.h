@@ -22,6 +22,7 @@ typedef struct Entity_s{
 	void* data;
 	enum entity_type type;
 	int side;
+	Vector2D flip;
 	int state;
 	int statePos;
 	int health;

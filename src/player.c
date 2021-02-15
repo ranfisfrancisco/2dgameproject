@@ -3,6 +3,7 @@
 #include "input.h"
 
 enum player_state {PLAYER_IDLE, PLAYER_WALK, PLAYER_SPINNING};
+enum facing_side {FACE_RIGHT, FACE_LEFT};
 
 void player_update(Entity* self);
 
@@ -23,6 +24,7 @@ Entity* player_spawn(Vector2D position) {
 	ent->rotation = vector3d(0,0,0);
 	ent->update = player_update;
 	ent->speed = 2;
+	ent->flip = vector2d(FACE_RIGHT, 0);
 	return ent;
 }
 
@@ -57,6 +59,22 @@ void player_movement(Entity* self, const Uint8* keys) {
 	}
 }
 
+void player_update_side(Entity* self, const Uint8* keys) {
+	int left, right;
+
+	left = keys[SDL_SCANCODE_A];
+	right = keys[SDL_SCANCODE_D];
+
+	if (left && !right) {
+		self->side = FACE_LEFT;
+		self->flip.x = FACE_LEFT;
+	}
+	else if (right && !left) {
+		self->side = FACE_RIGHT;
+		self->flip.x = FACE_RIGHT;
+	}
+}
+
 void player_input(Entity* self, const Uint8* keys) {
 	enum player_directional_input raw_input = NO_INPUT;
 	enum player_move move = 0;
@@ -71,7 +89,7 @@ void player_input(Entity* self, const Uint8* keys) {
 	attack = keys[SDL_SCANCODE_J];
 
 
-	//check for too many inputs
+	//check for inputs
 	if (up + right + down + left > 3) {
 		raw_input = NO_INPUT;
 	}
@@ -120,9 +138,33 @@ void player_input(Entity* self, const Uint8* keys) {
 			self->state = PLAYER_SPINNING;
 			self->statePos = 0;
 		}
-		else {
+		else if (right || left || up || down) {
+			self->state = PLAYER_WALK;
+			self->statePos = 0;
+			player_update_side(self, keys);
 			player_movement(self, keys);
 		}
+		else {
+			
+		}
+		break;
+
+	case PLAYER_WALK:
+		startFrame = 17;
+		endFrame = 32;
+
+		self->frame += 0.1;
+		if (self->frame > endFrame || self->frame < startFrame)
+			self->frame = startFrame;
+
+		player_movement(self, keys);
+		player_update_side(self, keys);
+
+		if (!right && !left) {
+			self->state = PLAYER_IDLE;
+			self->statePos = 0;
+		}
+
 		break;
 
 	case PLAYER_SPINNING:
