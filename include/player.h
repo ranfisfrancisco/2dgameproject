@@ -6,6 +6,4 @@
 
 Entity* player_spawn(Vector2D position);
 
-void player_input(Entity* self, const Uint8* keys);
-
 #endif

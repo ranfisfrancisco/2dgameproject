@@ -2,7 +2,7 @@
 #include "player.h"
 #include "input.h"
 
-enum player_state {PLAYER_IDLE, PLAYER_SPINNING};
+enum player_state {PLAYER_IDLE, PLAYER_WALK, PLAYER_SPINNING};
 
 void player_update(Entity* self);
 
@@ -24,17 +24,6 @@ Entity* player_spawn(Vector2D position) {
 	ent->update = player_update;
 	ent->speed = 2;
 	return ent;
-}
-
-void player_update(Entity* self) {
-	const Uint8* keys;
-	keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
-
-	self->frame++;
-	if (self->frame > 16)
-		self->frame = 0;
-
-	player_input(self, keys);
 }
 
 void player_movement(Entity* self, const Uint8* keys) {
@@ -73,6 +62,7 @@ void player_input(Entity* self, const Uint8* keys) {
 	enum player_move move = 0;
 	int up, down, left, right;
 	int attack;
+	int startFrame, endFrame;
 
 	up = keys[SDL_SCANCODE_W];
 	right = keys[SDL_SCANCODE_D];
@@ -113,9 +103,16 @@ void player_input(Entity* self, const Uint8* keys) {
 	move = feed_input(raw_input);
 	printf("%d %d\n", raw_input, move);
 
+	//PROBLEM based on statepos, decide what frame to show
 	switch (self->state) 
 	{
 	case PLAYER_IDLE:
+		startFrame = 0;
+		endFrame = 16;
+		self->frame += 0.1;
+		if (self->frame > endFrame || self->frame < startFrame)
+			self->frame = startFrame;
+
 		if (move == BACK_FORWARD_MOVE) {
 			
 		}
@@ -129,8 +126,19 @@ void player_input(Entity* self, const Uint8* keys) {
 		break;
 
 	case PLAYER_SPINNING:
+		startFrame = 33;
+		endFrame = 48;
 		player_movement(self, keys);
-		self->statePos+=3;
+		self->statePos += 1;
+
+		if (self->statePos > 180) {
+			startFrame = 17;
+			endFrame = 17;
+		}
+
+		self->frame += 0.1;
+		if (self->frame > endFrame || self->frame < startFrame)
+			self->frame = startFrame;
 
 		if (self->statePos > 360) {
 			self->state = PLAYER_IDLE;
@@ -144,4 +152,10 @@ void player_input(Entity* self, const Uint8* keys) {
 	default:
 		break;
 	}
+}
+
+void player_update(Entity* self) {
+	const Uint8* keys;
+	keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
+	player_input(self, keys);
 }
