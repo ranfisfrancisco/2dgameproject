@@ -7,29 +7,41 @@ enum facing_side {FACE_LEFT, FACE_RIGHT};
 
 void player_update(Entity* self);
 
-Entity* player_spawn(Vector2D position) {
-	Entity* ent;
-	ent = entity_new();
-	if (!ent) {
+static PlayerEntity player = { 0 };
+
+void player_spawn(Vector2D position) {
+	if (player.entity != NULL)
+		entity_free(player.entity);
+
+	player.entity = entity_new();
+	if (!player.entity) {
 		slog("failed to create entity for player");
 		return NULL;
 	}
-	ent->sprite = gf2d_sprite_load_all("images/kyo_2.png", 128, 144, 13);
-	vector2d_copy(ent->position, position);
-	ent->frameRate = 0.1;
-	ent->frameCount = 16;
-	ent->maxHealth = 100;
-	ent->health = ent->maxHealth;
-	ent->type = PLAYER_TYPE;
-	ent->rotation = vector3d(0,0,0);
-	ent->update = player_update;
-	ent->speed = 2;
-	ent->flip = vector2d(FACE_RIGHT, 0);
-	ent->scale = vector2d(2, 2);
-	return ent;
+	player.entity->sprite = gf2d_sprite_load_all("images/kyo_2.png", 128, 144, 13);
+	vector2d_copy(player.entity->position, position);
+	player.entity->frameRate = 0.1;
+	player.entity->frameCount = 16;
+	player.entity->maxHealth = 100;
+	player.entity->health = player.entity->maxHealth;
+	player.entity->type = PLAYER_TYPE;
+	player.entity->rotation = vector3d(0,0,0);
+	player.entity->update = player_update;
+	player.entity->speed = 2;
+	player.entity->flip = vector2d(FACE_RIGHT, 0);
+	player.entity->scale = vector2d(2, 2);
 }
 
-void player_movement(Entity* self, const Uint8* keys) {
+void player_free() {
+	//if player struct has any pointers free them
+
+	if (player.entity->_inuse)
+		entity_free(player.entity);
+
+	memset(&player, 0, sizeof(PlayerEntity));
+}
+
+void player_movement(const Uint8* keys) {
 	int up, down, left, right;
 
 	up = keys[SDL_SCANCODE_W];
@@ -38,51 +50,51 @@ void player_movement(Entity* self, const Uint8* keys) {
 	left = keys[SDL_SCANCODE_A];
 
 	if (left) {
-		self->position.x -= self->speed;
-		if (self->position.x < 0)
-			self->position.x = 0;
+		player.entity->position.x -= player.entity->speed;
+		if (player.entity->position.x < 0)
+			player.entity->position.x = 0;
 
 	}
 	else if (right) {
-		self->position.x += self->speed;
-		if (self->position.x > 1200)
-			self->position.x = 1200;
+		player.entity->position.x += player.entity->speed;
+		if (player.entity->position.x > 1200)
+			player.entity->position.x = 1200;
 	}
 	if (up) {
-		self->position.y -= self->speed;
-		if (self->position.y < 0)
-			self->position.y = 0;
+		player.entity->position.y -= player.entity->speed;
+		if (player.entity->position.y < 0)
+			player.entity->position.y = 0;
 	}
 	else if (down) {
-		self->position.y += self->speed;
-		if (self->position.y > 1200)
-			self->position.y = 1200;
+		player.entity->position.y += player.entity->speed;
+		if (player.entity->position.y > 1200)
+			player.entity->position.y = 1200;
 	}
 }
 
-void player_update_side(Entity* self, const Uint8* keys) {
+void player_update_side(const Uint8* keys) {
 	int left, right;
 
 	left = keys[SDL_SCANCODE_A];
 	right = keys[SDL_SCANCODE_D];
 
 	if (left && !right) {
-		self->side = FACE_LEFT;
-		self->flip.x = FACE_LEFT;
+		player.entity->side = FACE_LEFT;
+		player.entity->flip.x = FACE_LEFT;
 	}
 	else if (right && !left) {
-		self->side = FACE_RIGHT;
-		self->flip.x = FACE_RIGHT;
+		player.entity->side = FACE_RIGHT;
+		player.entity->flip.x = FACE_RIGHT;
 	}
 }
 
-void player_change_state(Entity* self, enum player_state state) {
-	self->frame = 0;
-	self->statePos = 0;
-	self->state = state;
+void player_change_state(enum player_state state) {
+	player.entity->frame = 0;
+	player.entity->statePos = 0;
+	player.entity->state = state;
 }
 
-void player_input(Entity* self, const Uint8* keys) {
+void player_input(const Uint8* keys) {
 	enum player_directional_input raw_input = NO_INPUT;
 	enum player_move move = 0;
 	int up, down, left, right;
@@ -128,29 +140,32 @@ void player_input(Entity* self, const Uint8* keys) {
 
 	move = feed_input(raw_input);
 	
-	switch (self->state) 
+	switch (player.entity->state)
 	{
 	case PLAYER_IDLE:
 		startFrame = 0;
 		endFrame = 9;
-		self->frame += 0.05;
+		player.entity->frame += 0.05;
 
-		if (self->frame > endFrame || self->frame < startFrame)
-			self->frame = startFrame;
+		if (player.entity->frame > endFrame || player.entity->frame < startFrame)
+			player.entity->frame = startFrame;
 
 		if (move == QC_MOVE && punch) {
-			player_change_state(self, PLAYER_QCFP);
+			player_change_state(PLAYER_QCFP);
+		}
+		else if (punch && kick) {
+			player_change_state(PLAYER_PK);
 		}
 		else if (punch) {
-			player_change_state(self, PLAYER_PUNCH);
+			player_change_state(PLAYER_PUNCH);
 		}
 		else if (kick) {
-			player_change_state(self, PLAYER_KICK);
+			player_change_state(PLAYER_KICK);
 		}
 		else if (right || left || up || down) {
-			player_change_state(self, PLAYER_WALK);
-			player_update_side(self, keys);
-			player_movement(self, keys);
+			player_change_state(PLAYER_WALK);
+			player_update_side(keys);
+			player_movement(keys);
 		}
 		else {
 			
@@ -161,33 +176,33 @@ void player_input(Entity* self, const Uint8* keys) {
 		startFrame = 10;
 		endFrame = 11;
 
-		self->frame += 0.20;
-		if (self->frame > endFrame || self->frame < startFrame)
-			self->frame = startFrame;
+		player.entity->frame += 0.20;
+		if (player.entity->frame > endFrame || player.entity->frame < startFrame)
+			player.entity->frame = startFrame;
 
-		player_movement(self, keys);
-		player_update_side(self, keys);
+		player_movement(keys);
+		player_update_side(keys);
 
 		if (move == QC_MOVE && punch) {
-			player_change_state(self, PLAYER_QCFP);
+			player_change_state(PLAYER_QCFP);
 		} 
 		else if (move == QC_MOVE && kick) {
-			player_change_state(self, PLAYER_QCFK);
+			player_change_state(PLAYER_QCFK);
 		} 
 		else if (move == BACK_FORWARD_MOVE && punch) {
-			player_change_state(self, PLAYER_BFP);
+			player_change_state(PLAYER_BFP);
 		}
 		else if (move == BACK_FORWARD_MOVE && kick) {
-			player_change_state(self, PLAYER_BFK);
+			player_change_state(PLAYER_BFK);
 		}
 		else if (punch) {
-			player_change_state(self, PLAYER_PUNCH);
+			player_change_state(PLAYER_PUNCH);
 		}
 		else if (kick) {
-			player_change_state(self, PLAYER_KICK);
+			player_change_state(PLAYER_KICK);
 		}
 		else if (!right && !left && !up && !down) {
-			player_change_state(self, PLAYER_IDLE);
+			player_change_state(PLAYER_IDLE);
 		} 
 		
 		break;
@@ -196,15 +211,15 @@ void player_input(Entity* self, const Uint8* keys) {
 	case PLAYER_PUNCH:
 		startFrame = 23;
 		endFrame = 23;
-		self->statePos++;
+		player.entity->statePos++;
 
-		if (self->frame < startFrame)
-			self->frame = startFrame;
+		if (player.entity->frame < startFrame)
+			player.entity->frame = startFrame;
 
-		if (self->statePos > 12) 
-			player_change_state(self, PLAYER_IDLE);
-		else if (self->statePos < 8 && kick) {
-			player_change_state(self, PLAYER_PK);
+		if (player.entity->statePos > 12)
+			player_change_state(PLAYER_IDLE);
+		else if (player.entity->statePos < 8 && kick) {
+			player_change_state(PLAYER_PK);
 		}
 		
 		break;
@@ -212,22 +227,22 @@ void player_input(Entity* self, const Uint8* keys) {
 	case PLAYER_KICK:
 		startFrame = 18;
 		endFrame = 22;
-		self->statePos++;
+		player.entity->statePos++;
 		
-		if (self->frame < startFrame)
-			self->frame = startFrame;
+		if (player.entity->frame < startFrame)
+			player.entity->frame = startFrame;
 
-		else if (self->frame == endFrame) {
+		else if (player.entity->frame == endFrame) {
 			
 		}
 		else {
-			self->frame++;
+			player.entity->frame++;
 		}
 
-		if (self->statePos > 15)
-			player_change_state(self, PLAYER_IDLE);
-		else if (self->statePos < 8 && punch) {
-			player_change_state(self, PLAYER_PK);
+		if (player.entity->statePos > 15)
+			player_change_state(PLAYER_IDLE);
+		else if (player.entity->statePos < 8 && punch) {
+			player_change_state(PLAYER_PK);
 		}
 
 		break;
@@ -236,19 +251,19 @@ void player_input(Entity* self, const Uint8* keys) {
 		startFrame = 14;
 		endFrame = 16;
 
-		self->statePos++;
+		player.entity->statePos++;
 
-		if (self->frame < startFrame)
-			self->frame = startFrame;
-		else if (self->frame == endFrame) {
+		if (player.entity->frame < startFrame)
+			player.entity->frame = startFrame;
+		else if (player.entity->frame == endFrame) {
 
 		}
 		else {
-			self->frame++;
+			player.entity->frame++;
 		}
 
-		if (self->statePos > 45)
-			player_change_state(self, PLAYER_IDLE);
+		if (player.entity->statePos > 45)
+			player_change_state(PLAYER_IDLE);
 
 		break;
 
@@ -256,19 +271,19 @@ void player_input(Entity* self, const Uint8* keys) {
 		startFrame = 30;
 		endFrame = 39;
 
-		self->statePos++;
+		player.entity->statePos++;
 
-		if (self->frame < startFrame)
-			self->frame = startFrame;
-		else if (self->frame == endFrame) {
+		if (player.entity->frame < startFrame)
+			player.entity->frame = startFrame;
+		else if (player.entity->frame == endFrame) {
 
 		}
 		else {
-			self->frame+=0.25;
+			player.entity->frame+=0.25;
 		}
 
-		if (self->statePos > 45)
-			player_change_state(self, PLAYER_IDLE);
+		if (player.entity->statePos > 45)
+			player_change_state(PLAYER_IDLE);
 
 		break;
 
@@ -276,19 +291,19 @@ void player_input(Entity* self, const Uint8* keys) {
 		startFrame = 41;
 		endFrame = 47;
 
-		self->statePos++;
+		player.entity->statePos++;
 
-		if (self->frame < startFrame)
-			self->frame = startFrame;
-		else if (self->frame == endFrame) {
+		if (player.entity->frame < startFrame)
+			player.entity->frame = startFrame;
+		else if (player.entity->frame == endFrame) {
 
 		}
 		else {
-			self->frame+= 0.5;
+			player.entity->frame+= 0.5;
 		}
 
-		if (self->statePos > 45)
-			player_change_state(self, PLAYER_IDLE);
+		if (player.entity->statePos > 45)
+			player_change_state(PLAYER_IDLE);
 
 		break;
 
@@ -296,19 +311,19 @@ void player_input(Entity* self, const Uint8* keys) {
 		startFrame = 24;
 		endFrame = 29;
 
-		self->statePos++;
+		player.entity->statePos++;
 
-		if (self->frame < startFrame)
-			self->frame = startFrame;
-		else if (self->frame == endFrame) {
+		if (player.entity->frame < startFrame)
+			player.entity->frame = startFrame;
+		else if (player.entity->frame == endFrame) {
 
 		}
 		else {
-			self->frame += 0.5;
+			player.entity->frame += 0.5;
 		}
 
-		if (self->statePos > 45)
-			player_change_state(self, PLAYER_IDLE);
+		if (player.entity->statePos > 45)
+			player_change_state(PLAYER_IDLE);
 
 		break;
 
@@ -316,28 +331,28 @@ void player_input(Entity* self, const Uint8* keys) {
 		startFrame = 48;
 		endFrame = 63;
 
-		self->statePos++;
+		player.entity->statePos++;
 
-		if (self->frame < startFrame)
-			self->frame = startFrame;
-		else if (self->frame == endFrame) {
+		if (player.entity->frame < startFrame)
+			player.entity->frame = startFrame;
+		else if (player.entity->frame == endFrame) {
 
 		}
 		else {
-			self->frame += 0.25;
+			player.entity->frame += 0.25;
 		}
 
-		if (self->statePos > 60)
-			player_change_state(self, PLAYER_IDLE);
+		if (player.entity->statePos > 60)
+			player_change_state(PLAYER_IDLE);
 		break;
 
 	default:
-		player_change_state(self, PLAYER_IDLE);
+		player_change_state(PLAYER_IDLE);
 	}
 }
 
-void player_update(Entity* self) {
+void player_update() {
 	const Uint8* keys;
 	keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
-	player_input(self, keys);
+	player_input(keys);
 }

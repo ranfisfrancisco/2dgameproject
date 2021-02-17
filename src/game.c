@@ -16,7 +16,6 @@ int main(int argc, char* argv[])
     const Uint8* keys;
     Sprite* sprite;
     Entity* mouse;
-    Entity* player;
 
     //Sprite* mouse;
     int mx, my;
@@ -43,7 +42,7 @@ int main(int argc, char* argv[])
     sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
     //mouse = entity_new();
 
-    player = player_spawn(vector2d(600, 360));
+    player_spawn(vector2d(600, 360));
 
     /*main game loop*/
     while (!done)

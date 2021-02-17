@@ -4,6 +4,13 @@
 #include "entity.h"
 #include "gfc_vector.h"
 
-Entity* player_spawn(Vector2D position);
+typedef struct {
+	Entity* entity;
+
+}PlayerEntity;
+
+void player_spawn(Vector2D position);
+
+void player_free();
 
 #endif
