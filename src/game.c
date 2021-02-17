@@ -7,6 +7,7 @@
 
 #include "entity.h"
 #include "player.h"
+#include "enemy.h"
 #include "input.h"
 
 int main(int argc, char* argv[])
@@ -43,6 +44,7 @@ int main(int argc, char* argv[])
     //mouse = entity_new();
 
     player_spawn(vector2d(600, 360));
+    enemy_spawn(vector2d(600, 200));
 
     /*main game loop*/
     while (!done)

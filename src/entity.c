@@ -55,9 +55,15 @@ void entity_free(Entity* ent) {
 		slog("cannot free a NULL entity");
 		return;
 	}
-	gf2d_sprite_free(ent->sprite);
-	ent->sprite = NULL;
-	ent->_inuse = 0;
+	
+	if (ent->free) {
+		ent->free(ent);
+	}
+	else {
+		gf2d_sprite_free(ent->sprite);
+		ent->sprite = NULL;
+		ent->_inuse = 0;
+	}
 }
 
 void entity_update(Entity* self) {

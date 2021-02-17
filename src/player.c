@@ -2,10 +2,10 @@
 #include "player.h"
 #include "input.h"
 
-enum player_state {PLAYER_IDLE, PLAYER_WALK, PLAYER_PUNCH, PLAYER_KICK, PLAYER_QCFP, PLAYER_QCFK, PLAYER_BFP, PLAYER_BFK, PLAYER_PK};
-enum facing_side {FACE_LEFT, FACE_RIGHT};
+enum player_state {PLAYER_IDLE, PLAYER_HURT, PLAYER_WALK, PLAYER_PUNCH, PLAYER_KICK, PLAYER_QCFP, PLAYER_QCFK, PLAYER_BFP, PLAYER_BFK, PLAYER_PK};
 
 void player_update(Entity* self);
+void player_hurt(Entity* self);
 
 static PlayerEntity player = { 0 };
 
@@ -207,6 +207,10 @@ void player_input(const Uint8* keys) {
 		
 		break;
 
+		//TODO
+	case PLAYER_HURT:
+		player_change_state(PLAYER_IDLE);
+		break;
 
 	case PLAYER_PUNCH:
 		startFrame = 23;
@@ -355,4 +359,8 @@ void player_update() {
 	const Uint8* keys;
 	keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
 	player_input(keys);
+}
+
+void player_hurt() {
+	player_change_state(PLAYER_HURT);
 }

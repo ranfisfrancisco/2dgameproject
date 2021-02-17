@@ -6,6 +6,7 @@
 #include "gf2d_sprite.h"
 
 enum entity_type {NO_TYPE, PLAYER_TYPE, ENEMY_TYPE};
+enum facing_side { FACE_LEFT, FACE_RIGHT };
 
 typedef struct Entity_s{
 	Bool _inuse;
@@ -20,6 +21,7 @@ typedef struct Entity_s{
 	void (*think)(struct Entity_s* self);
 	void (*draw)(struct Entity_s* self);
 	void (*free)(struct Entity_s* self);
+	void (*hurt)(struct Entity_s* self);
 	void* data;
 	enum entity_type type;
 	int side;

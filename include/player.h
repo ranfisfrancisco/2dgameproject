@@ -11,6 +11,4 @@ typedef struct {
 
 void player_spawn(Vector2D position);
 
-void player_free();
-
 #endif
