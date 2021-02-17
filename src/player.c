@@ -3,7 +3,7 @@
 #include "input.h"
 
 enum player_state {PLAYER_IDLE, PLAYER_WALK, PLAYER_ATTACK};
-enum facing_side {FACE_RIGHT, FACE_LEFT};
+enum facing_side {FACE_LEFT, FACE_RIGHT};
 
 void player_update(Entity* self);
 
@@ -14,7 +14,7 @@ Entity* player_spawn(Vector2D position) {
 		slog("failed to create entity for player");
 		return NULL;
 	}
-	ent->sprite = gf2d_sprite_load_all("images/cat_fighter_sprite1.png", 50, 50, 10);
+	ent->sprite = gf2d_sprite_load_all("images/kyo_1.png", 112, 128, 12);
 	vector2d_copy(ent->position, position);
 	ent->frameRate = 0.1;
 	ent->frameCount = 16;
@@ -132,13 +132,13 @@ void player_input(Entity* self, const Uint8* keys) {
 	{
 	case PLAYER_IDLE:
 		startFrame = 1;
-		endFrame = 3;
+		endFrame = 10;
 		self->frame += 0.05;
 
 		if (self->frame > endFrame || self->frame < startFrame)
 			self->frame = startFrame;
 
-		if (move == QCF_MOVE && attack) {
+		if (attack) {
 			player_change_state(self, PLAYER_ATTACK);
 		}
 		else if (right || left || up || down) {
@@ -152,10 +152,10 @@ void player_input(Entity* self, const Uint8* keys) {
 		break;
 
 	case PLAYER_WALK:
-		startFrame = 1;
-		endFrame = 8;
+		startFrame = 11;
+		endFrame = 12;
 
-		self->frame += 0.05;
+		self->frame += 0.3;
 		if (self->frame > endFrame || self->frame < startFrame)
 			self->frame = startFrame;
 
@@ -172,16 +172,15 @@ void player_input(Entity* self, const Uint8* keys) {
 		break;
 
 	case PLAYER_ATTACK:
-		startFrame = 11;
-		endFrame = 16;
+		startFrame = 23;
+		endFrame = 23;
+		self->statePos++;
 		//player_movement(self, keys);
 
 		if (self->frame < startFrame)
 			self->frame = startFrame;
 
-		self->frame += 0.1;
-
-		if (self->frame > endFrame) 
+		if (self->statePos > 12) 
 			player_change_state(self, PLAYER_IDLE);
 		
 		break;
