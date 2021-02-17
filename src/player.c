@@ -82,6 +82,7 @@ void player_change_state(Entity* self, enum player_state state) {
 	self->state = state;
 }
 
+//TODO: QCB detection
 void player_input(Entity* self, const Uint8* keys) {
 	enum player_directional_input raw_input = NO_INPUT;
 	enum player_move move = 0;
