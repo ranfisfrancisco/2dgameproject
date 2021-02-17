@@ -2,7 +2,7 @@
 #include "player.h"
 #include "input.h"
 
-enum player_state {PLAYER_IDLE, PLAYER_WALK, PLAYER_PUNCH, PLAYER_KICK, PLAYER_QCFP};
+enum player_state {PLAYER_IDLE, PLAYER_WALK, PLAYER_PUNCH, PLAYER_KICK, PLAYER_QCFP, PLAYER_QCFK};
 enum facing_side {FACE_LEFT, FACE_RIGHT};
 
 void player_update(Entity* self);
@@ -170,8 +170,8 @@ void player_input(Entity* self, const Uint8* keys) {
 
 		if (move == QC_MOVE && punch) {
 			player_change_state(self, PLAYER_QCFP);
-		} else if (move == QC_MOVE && punch) {
-			player_change_state(self, PLAYER_QCFP);
+		} else if (move == QC_MOVE && kick) {
+			player_change_state(self, PLAYER_QCFK);
 		}
 		else if (punch) {
 			player_change_state(self, PLAYER_PUNCH);
@@ -234,7 +234,27 @@ void player_input(Entity* self, const Uint8* keys) {
 			self->frame++;
 		}
 
-		if (self->statePos > 60)
+		if (self->statePos > 45)
+			player_change_state(self, PLAYER_IDLE);
+
+		break;
+
+	case PLAYER_QCFK:
+		startFrame = 30;
+		endFrame = 39;
+
+		self->statePos++;
+
+		if (self->frame < startFrame)
+			self->frame = startFrame;
+		else if (self->frame == endFrame) {
+
+		}
+		else {
+			self->frame+=0.25;
+		}
+
+		if (self->statePos > 45)
 			player_change_state(self, PLAYER_IDLE);
 
 		break;
