@@ -82,7 +82,6 @@ void player_change_state(Entity* self, enum player_state state) {
 	self->state = state;
 }
 
-//TODO: QCB detection
 void player_input(Entity* self, const Uint8* keys) {
 	enum player_directional_input raw_input = NO_INPUT;
 	enum player_move move = 0;
@@ -139,7 +138,7 @@ void player_input(Entity* self, const Uint8* keys) {
 		if (self->frame > endFrame || self->frame < startFrame)
 			self->frame = startFrame;
 
-		if (move == QCF_MOVE && punch) {
+		if (move == QC_MOVE && punch) {
 			player_change_state(self, PLAYER_QCFP);
 		}
 		else if (punch) {
@@ -169,9 +168,9 @@ void player_input(Entity* self, const Uint8* keys) {
 		player_movement(self, keys);
 		player_update_side(self, keys);
 
-		if (move == QCF_MOVE && punch) {
+		if (move == QC_MOVE && punch) {
 			player_change_state(self, PLAYER_QCFP);
-		} else if (move == QCF_MOVE && punch) {
+		} else if (move == QC_MOVE && punch) {
 			player_change_state(self, PLAYER_QCFP);
 		}
 		else if (punch) {

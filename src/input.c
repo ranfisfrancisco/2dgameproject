@@ -115,8 +115,22 @@ enum player_move feed_input(enum player_directional_input input) {
 				flag = 1;
 			}
 			else if (flag == 1 && get_buffer_value(i) == DOWN_INPUT) {
-				input_manager.move_buffer[QCF_MOVE] = input_manager.move_buffer_hold_window;
-				return QCF_MOVE;
+				input_manager.move_buffer[QC_MOVE] = input_manager.move_buffer_hold_window;
+				return QC_MOVE;
+			}
+		}
+	}
+
+	if (get_buffer_value(1) == BACK_INPUT) {
+		int flag = 0;
+
+		for (int i = 1; i < 11; i++) {
+			if (flag == 0 && get_buffer_value(i) == DOWN_BACK_INPUT) {
+				flag = 1;
+			}
+			else if (flag == 1 && get_buffer_value(i) == DOWN_INPUT) {
+				input_manager.move_buffer[QC_MOVE] = input_manager.move_buffer_hold_window;
+				return QC_MOVE;
 			}
 		}
 	}
@@ -124,7 +138,16 @@ enum player_move feed_input(enum player_directional_input input) {
 	if (get_buffer_value(1) == FORWARD_INPUT) {
 		for (int i = 1; i < 11; i++) {
 			if (get_buffer_value(i) == BACK_INPUT) {
-				input_manager.move_buffer[QCF_MOVE] = 7;
+				input_manager.move_buffer[BACK_FORWARD_MOVE] = 7;
+				return BACK_FORWARD_MOVE;
+			}
+		}
+	}
+
+	if (get_buffer_value(1) == BACK_INPUT) {
+		for (int i = 1; i < 11; i++) {
+			if (get_buffer_value(i) == FORWARD_INPUT) {
+				input_manager.move_buffer[BACK_FORWARD_MOVE] = 7;
 				return BACK_FORWARD_MOVE;
 			}
 		}
