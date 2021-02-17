@@ -107,6 +107,7 @@ enum player_move feed_input(enum player_directional_input input) {
 
 	reduce_move_buffer();
 
+	//detect quarter circle
 	if (get_buffer_value(1) == FORWARD_INPUT) {
 		int flag = 0;
 
@@ -135,6 +136,7 @@ enum player_move feed_input(enum player_directional_input input) {
 		}
 	}
 
+	//detect back forward
 	if (get_buffer_value(1) == FORWARD_INPUT) {
 		for (int i = 1; i < 11; i++) {
 			if (get_buffer_value(i) == BACK_INPUT) {

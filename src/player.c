@@ -14,7 +14,7 @@ Entity* player_spawn(Vector2D position) {
 		slog("failed to create entity for player");
 		return NULL;
 	}
-	ent->sprite = gf2d_sprite_load_all("images/kyo_1.png", 112, 128, 12);
+	ent->sprite = gf2d_sprite_load_all("images/kyo_2.png", 128, 144, 13);
 	vector2d_copy(ent->position, position);
 	ent->frameRate = 0.1;
 	ent->frameCount = 16;
@@ -131,8 +131,8 @@ void player_input(Entity* self, const Uint8* keys) {
 	switch (self->state) 
 	{
 	case PLAYER_IDLE:
-		startFrame = 1;
-		endFrame = 10;
+		startFrame = 0;
+		endFrame = 9;
 		self->frame += 0.05;
 
 		if (self->frame > endFrame || self->frame < startFrame)
@@ -158,8 +158,8 @@ void player_input(Entity* self, const Uint8* keys) {
 		break;
 
 	case PLAYER_WALK:
-		startFrame = 11;
-		endFrame = 12;
+		startFrame = 10;
+		endFrame = 11;
 
 		self->frame += 0.20;
 		if (self->frame > endFrame || self->frame < startFrame)
