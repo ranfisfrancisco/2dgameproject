@@ -2,7 +2,7 @@
 #include "player.h"
 #include "input.h"
 
-enum player_state {PLAYER_IDLE, PLAYER_WALK, PLAYER_PUNCH, PLAYER_KICK, PLAYER_QCFP, PLAYER_QCFK, PLAYER_BFP, PLAYER_BFK};
+enum player_state {PLAYER_IDLE, PLAYER_WALK, PLAYER_PUNCH, PLAYER_KICK, PLAYER_QCFP, PLAYER_QCFK, PLAYER_BFP, PLAYER_BFK, PLAYER_PK};
 enum facing_side {FACE_LEFT, FACE_RIGHT};
 
 void player_update(Entity* self);
@@ -203,6 +203,9 @@ void player_input(Entity* self, const Uint8* keys) {
 
 		if (self->statePos > 12) 
 			player_change_state(self, PLAYER_IDLE);
+		else if (self->statePos < 8 && kick) {
+			player_change_state(self, PLAYER_PK);
+		}
 		
 		break;
 
@@ -223,6 +226,9 @@ void player_input(Entity* self, const Uint8* keys) {
 
 		if (self->statePos > 15)
 			player_change_state(self, PLAYER_IDLE);
+		else if (self->statePos < 8 && punch) {
+			player_change_state(self, PLAYER_PK);
+		}
 
 		break;
 
@@ -306,8 +312,27 @@ void player_input(Entity* self, const Uint8* keys) {
 
 		break;
 
+	case PLAYER_PK:
+		startFrame = 48;
+		endFrame = 63;
+
+		self->statePos++;
+
+		if (self->frame < startFrame)
+			self->frame = startFrame;
+		else if (self->frame == endFrame) {
+
+		}
+		else {
+			self->frame += 0.25;
+		}
+
+		if (self->statePos > 60)
+			player_change_state(self, PLAYER_IDLE);
+		break;
+
 	default:
-		player_change_state(self, PLAYER_WALK);
+		player_change_state(self, PLAYER_IDLE);
 	}
 }
 
