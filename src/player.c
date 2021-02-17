@@ -2,7 +2,7 @@
 #include "player.h"
 #include "input.h"
 
-enum player_state {PLAYER_IDLE, PLAYER_WALK, PLAYER_ATTACK};
+enum player_state {PLAYER_IDLE, PLAYER_WALK, PLAYER_PUNCH, PLAYER_KICK};
 enum facing_side {FACE_LEFT, FACE_RIGHT};
 
 void player_update(Entity* self);
@@ -86,14 +86,15 @@ void player_input(Entity* self, const Uint8* keys) {
 	enum player_directional_input raw_input = NO_INPUT;
 	enum player_move move = 0;
 	int up, down, left, right;
-	int attack;
+	int punch, kick;
 	int startFrame, endFrame;
 
 	up = keys[SDL_SCANCODE_W];
 	right = keys[SDL_SCANCODE_D];
 	down = keys[SDL_SCANCODE_S];
 	left = keys[SDL_SCANCODE_A];
-	attack = keys[SDL_SCANCODE_J];
+	punch = keys[SDL_SCANCODE_J];
+	kick = keys[SDL_SCANCODE_K];
 
 
 	//check for inputs
@@ -127,7 +128,6 @@ void player_input(Entity* self, const Uint8* keys) {
 
 	move = feed_input(raw_input);
 	
-	//PROBLEM based on statepos, decide what frame to show
 	switch (self->state) 
 	{
 	case PLAYER_IDLE:
@@ -138,8 +138,11 @@ void player_input(Entity* self, const Uint8* keys) {
 		if (self->frame > endFrame || self->frame < startFrame)
 			self->frame = startFrame;
 
-		if (attack) {
-			player_change_state(self, PLAYER_ATTACK);
+		if (punch) {
+			player_change_state(self, PLAYER_PUNCH);
+		}
+		else if (kick) {
+			player_change_state(self, PLAYER_KICK);
 		}
 		else if (right || left || up || down) {
 			player_change_state(self, PLAYER_WALK);
@@ -155,27 +158,32 @@ void player_input(Entity* self, const Uint8* keys) {
 		startFrame = 11;
 		endFrame = 12;
 
-		self->frame += 0.3;
+		self->frame += 0.20;
 		if (self->frame > endFrame || self->frame < startFrame)
 			self->frame = startFrame;
 
 		player_movement(self, keys);
 		player_update_side(self, keys);
 
-		if (move == QCF_MOVE && attack) {
-			player_change_state(self, PLAYER_ATTACK);
+		if (move == QCF_MOVE && punch) {
+			player_change_state(self, PLAYER_PUNCH);
 		}
 		else if (!right && !left && !up && !down) {
 			player_change_state(self, PLAYER_IDLE);
+		} else if (punch) {
+			player_change_state(self, PLAYER_PUNCH);
 		}
-
+		else if (kick) {
+			player_change_state(self, PLAYER_KICK);
+		}
+		
 		break;
 
-	case PLAYER_ATTACK:
+
+	case PLAYER_PUNCH:
 		startFrame = 23;
 		endFrame = 23;
 		self->statePos++;
-		//player_movement(self, keys);
 
 		if (self->frame < startFrame)
 			self->frame = startFrame;
@@ -183,6 +191,26 @@ void player_input(Entity* self, const Uint8* keys) {
 		if (self->statePos > 12) 
 			player_change_state(self, PLAYER_IDLE);
 		
+		break;
+
+	case PLAYER_KICK:
+		startFrame = 18;
+		endFrame = 22;
+		self->statePos++;
+		
+		if (self->frame < startFrame)
+			self->frame = startFrame;
+
+		else if (self->frame == 22) {
+			
+		}
+		else {
+			self->frame++;
+		}
+
+		if (self->statePos > 15)
+			player_change_state(self, PLAYER_IDLE);
+
 		break;
 	default:
 		break;
