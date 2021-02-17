@@ -2,7 +2,7 @@
 #include "player.h"
 #include "input.h"
 
-enum player_state {PLAYER_IDLE, PLAYER_WALK, PLAYER_PUNCH, PLAYER_KICK};
+enum player_state {PLAYER_IDLE, PLAYER_WALK, PLAYER_PUNCH, PLAYER_KICK, PLAYER_QCFP};
 enum facing_side {FACE_LEFT, FACE_RIGHT};
 
 void player_update(Entity* self);
@@ -138,7 +138,10 @@ void player_input(Entity* self, const Uint8* keys) {
 		if (self->frame > endFrame || self->frame < startFrame)
 			self->frame = startFrame;
 
-		if (punch) {
+		if (move == QCF_MOVE && punch) {
+			player_change_state(self, PLAYER_QCFP);
+		}
+		else if (punch) {
 			player_change_state(self, PLAYER_PUNCH);
 		}
 		else if (kick) {
@@ -166,16 +169,19 @@ void player_input(Entity* self, const Uint8* keys) {
 		player_update_side(self, keys);
 
 		if (move == QCF_MOVE && punch) {
-			player_change_state(self, PLAYER_PUNCH);
+			player_change_state(self, PLAYER_QCFP);
+		} else if (move == QCF_MOVE && punch) {
+			player_change_state(self, PLAYER_QCFP);
 		}
-		else if (!right && !left && !up && !down) {
-			player_change_state(self, PLAYER_IDLE);
-		} else if (punch) {
+		else if (punch) {
 			player_change_state(self, PLAYER_PUNCH);
 		}
 		else if (kick) {
 			player_change_state(self, PLAYER_KICK);
 		}
+		else if (!right && !left && !up && !down) {
+			player_change_state(self, PLAYER_IDLE);
+		} 
 		
 		break;
 
@@ -201,7 +207,7 @@ void player_input(Entity* self, const Uint8* keys) {
 		if (self->frame < startFrame)
 			self->frame = startFrame;
 
-		else if (self->frame == 22) {
+		else if (self->frame == endFrame) {
 			
 		}
 		else {
@@ -212,8 +218,28 @@ void player_input(Entity* self, const Uint8* keys) {
 			player_change_state(self, PLAYER_IDLE);
 
 		break;
-	default:
+
+	case PLAYER_QCFP:
+		startFrame = 14;
+		endFrame = 16;
+
+		self->statePos++;
+
+		if (self->frame < startFrame)
+			self->frame = startFrame;
+		else if (self->frame == endFrame) {
+
+		}
+		else {
+			self->frame++;
+		}
+
+		if (self->statePos > 60)
+			player_change_state(self, PLAYER_IDLE);
+
 		break;
+	default:
+		player_change_state(self, PLAYER_WALK);
 	}
 }
 
