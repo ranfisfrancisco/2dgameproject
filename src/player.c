@@ -2,7 +2,7 @@
 #include "player.h"
 #include "input.h"
 
-enum player_state {PLAYER_IDLE, PLAYER_WALK, PLAYER_PUNCH, PLAYER_KICK, PLAYER_QCFP, PLAYER_QCFK};
+enum player_state {PLAYER_IDLE, PLAYER_WALK, PLAYER_PUNCH, PLAYER_KICK, PLAYER_QCFP, PLAYER_QCFK, PLAYER_BFP, PLAYER_BFK};
 enum facing_side {FACE_LEFT, FACE_RIGHT};
 
 void player_update(Entity* self);
@@ -170,8 +170,15 @@ void player_input(Entity* self, const Uint8* keys) {
 
 		if (move == QC_MOVE && punch) {
 			player_change_state(self, PLAYER_QCFP);
-		} else if (move == QC_MOVE && kick) {
+		} 
+		else if (move == QC_MOVE && kick) {
 			player_change_state(self, PLAYER_QCFK);
+		} 
+		else if (move == BACK_FORWARD_MOVE && punch) {
+			player_change_state(self, PLAYER_BFP);
+		}
+		else if (move == BACK_FORWARD_MOVE && kick) {
+			player_change_state(self, PLAYER_BFK);
 		}
 		else if (punch) {
 			player_change_state(self, PLAYER_PUNCH);
@@ -258,6 +265,47 @@ void player_input(Entity* self, const Uint8* keys) {
 			player_change_state(self, PLAYER_IDLE);
 
 		break;
+
+	case PLAYER_BFP:
+		startFrame = 41;
+		endFrame = 47;
+
+		self->statePos++;
+
+		if (self->frame < startFrame)
+			self->frame = startFrame;
+		else if (self->frame == endFrame) {
+
+		}
+		else {
+			self->frame+= 0.5;
+		}
+
+		if (self->statePos > 45)
+			player_change_state(self, PLAYER_IDLE);
+
+		break;
+
+	case PLAYER_BFK:
+		startFrame = 24;
+		endFrame = 29;
+
+		self->statePos++;
+
+		if (self->frame < startFrame)
+			self->frame = startFrame;
+		else if (self->frame == endFrame) {
+
+		}
+		else {
+			self->frame += 0.5;
+		}
+
+		if (self->statePos > 45)
+			player_change_state(self, PLAYER_IDLE);
+
+		break;
+
 	default:
 		player_change_state(self, PLAYER_WALK);
 	}
