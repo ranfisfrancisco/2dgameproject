@@ -1,6 +1,7 @@
 #include "simple_logger.h"
 #include "enemy.h"
 #include "player.h"
+#include <stdlib.h>
 
 void enemy_think();
 void enemy_hurt();
@@ -13,7 +14,7 @@ Entity *enemy_spawn(Vector2D position) {
 		slog("failed to create entity for player");
 		return NULL;
 	}
-	ent->sprite = gf2d_sprite_load_all("images/cat.png", 64, 64, 10);
+	ent->sprite = gf2d_sprite_load_all("images/cat.png", 50, 50, 10);
 	vector2d_copy(ent->position, position);
 	ent->frameRate = 0.1;
 	ent->frameCount = 16;
@@ -31,7 +32,10 @@ Entity *enemy_spawn(Vector2D position) {
 	return ent;
 }
 
-void enemy_move_to_player(struct Entity_s* self) {
+
+
+//Moves enemy closer to player and returns current distance from enemy to player
+Vector2D enemy_move_to_player(struct Entity_s* self) {
 	Vector2D playerPosition;
 	float xchange, ychange;
 
@@ -52,15 +56,28 @@ void enemy_move_to_player(struct Entity_s* self) {
 	else if (playerPosition.y - self->position.y < 0) {
 		self->position.y -= ychange;
 	}
+
+	return vector2d(abs(playerPosition.x - self->position.x), (playerPosition.y - self->position.y));
+}
+
+void enemy_change_state(struct Entity_s* self, enum enemy_state state) {
+	self->frame = 0;
+	self->statePos = 0;
+	self->state = state;
 }
 
 //TODO: Add randomness to movement
 void enemy_think(struct Entity_s* self) {
 	int startFrame, endFrame;
+	Vector2D distToPlayer;
 
 	switch (self->state) {
 	case ENEMY_IDLE:
-		enemy_move_to_player(self);
+		distToPlayer = enemy_move_to_player(self);
+
+		if (distToPlayer.x < 10 && distToPlayer.y < 10)
+			enemy_change_state(self, ENEMY_ATTACK);
+
 		break;
 	case ENEMY_HURT:
 		startFrame = 13;
@@ -81,6 +98,24 @@ void enemy_think(struct Entity_s* self) {
 			enemy_change_state(self, ENEMY_IDLE);
 		}
 			
+	case ENEMY_ATTACK:
+		startFrame = 10;
+		endFrame = 19;
+
+		self->statePos += 1;
+
+		if (self->frame < startFrame)
+			self->frame = startFrame;
+		else if (self->frame >= endFrame) {
+
+		}
+		else {
+			self->frame++;
+		}
+
+		if (self->statePos > 20) {
+			enemy_change_state(self, ENEMY_IDLE);
+		}
 
 	default:
 		break;
@@ -88,11 +123,6 @@ void enemy_think(struct Entity_s* self) {
 	
 }
 
-void enemy_change_state(struct Entity_s* self, enum enemy_state state) {
-	self->frame = 0;
-	self->statePos = 0;
-	self->state = state;
-}
 
 void enemy_hurt(struct Entity_s* self) {
 	self->state = ENEMY_HURT;
