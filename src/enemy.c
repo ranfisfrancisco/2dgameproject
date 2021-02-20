@@ -31,8 +31,7 @@ Entity *enemy_spawn(Vector2D position) {
 	return ent;
 }
 
-//TODO: Add randomness to movement
-void enemy_think(struct Entity_s* self) {
+void enemy_move_to_player(struct Entity_s* self) {
 	Vector2D playerPosition;
 	float xchange, ychange;
 
@@ -40,8 +39,6 @@ void enemy_think(struct Entity_s* self) {
 	xchange = 1;
 	ychange = 1;
 
-	printf("%f %f \n", playerPosition.x - self->position.x, playerPosition.y - self->position.y);
-	
 	if (playerPosition.x - self->position.x > 0) {
 		self->position.x += xchange;
 	}
@@ -55,9 +52,48 @@ void enemy_think(struct Entity_s* self) {
 	else if (playerPosition.y - self->position.y < 0) {
 		self->position.y -= ychange;
 	}
-
 }
 
-void enemy_hurt() {
+//TODO: Add randomness to movement
+void enemy_think(struct Entity_s* self) {
+	int startFrame, endFrame;
 
+	switch (self->state) {
+	case ENEMY_IDLE:
+		enemy_move_to_player(self);
+		break;
+	case ENEMY_HURT:
+		startFrame = 13;
+		endFrame = 13;
+		
+		self->statePos += 1;
+
+		if (self->frame < startFrame)
+			self->frame = startFrame;
+		else if (self->frame >= endFrame) {
+
+		}
+		else {
+			self->frame++;
+		}
+
+		if (self->statePos > 20) {
+			enemy_change_state(self, ENEMY_IDLE);
+		}
+			
+
+	default:
+		break;
+	}
+	
+}
+
+void enemy_change_state(struct Entity_s* self, enum enemy_state state) {
+	self->frame = 0;
+	self->statePos = 0;
+	self->state = state;
+}
+
+void enemy_hurt(struct Entity_s* self) {
+	self->state = ENEMY_HURT;
 }

@@ -213,7 +213,7 @@ void player_input(const Uint8* keys) {
 
 		//TODO
 	case PLAYER_HURT:
-		player_change_state(PLAYER_IDLE);
+		player_change_state(PLAYER_HURT);
 		break;
 
 	case PLAYER_PUNCH:
