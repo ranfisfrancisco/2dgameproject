@@ -40,6 +40,8 @@ void entity_manager_free();
 //calls update function on all entities.
 void entity_manager_update_entities();
 
+void entity_manager_think_entities();
+
 void entity_manager_draw_entities();
 
 Entity *entity_new();

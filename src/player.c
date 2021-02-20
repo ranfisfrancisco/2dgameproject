@@ -32,6 +32,10 @@ void player_spawn(Vector2D position) {
 	player.entity->scale = vector2d(2, 2);
 }
 
+Vector2D player_get_position() {
+	return player.entity->position;
+}
+
 void player_free() {
 	//if player struct has any pointers free them
 

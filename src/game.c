@@ -57,6 +57,7 @@ int main(int argc, char* argv[])
         SDL_GetMouseState(&mx, &my);
         
         entity_manager_update_entities();
+        entity_manager_think_entities();
 
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame

@@ -74,6 +74,13 @@ void entity_update(Entity* self) {
 		self->update(self);
 }
 
+void entity_think(Entity* self) {
+	if (!self) return;
+
+	if (self->think != NULL)
+		self->think(self);
+}
+
 void entity_manager_update_entities() {
 	int i;
 
@@ -87,6 +94,22 @@ void entity_manager_update_entities() {
 			continue;
 
 		entity_update(&entity_manager.entity_list[i]);
+	}
+}
+
+void entity_manager_think_entities() {
+	int i;
+
+	if (entity_manager.entity_list == NULL) {
+		slog("entity system does not exist");
+		return NULL;
+	}
+
+	for (i = 0; i < entity_manager.max_entities; i++) {
+		if (entity_manager.entity_list[i]._inuse == 0)
+			continue;
+
+		entity_think(&entity_manager.entity_list[i]);
 	}
 }
 
