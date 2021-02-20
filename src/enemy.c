@@ -32,10 +32,21 @@ Entity *enemy_spawn(Vector2D position) {
 	return ent;
 }
 
+void enemy_update_side(Entity* self) {
+	Vector2D playerPosition;
 
+	playerPosition = player_get_position();
+
+	if (playerPosition.x - self->position.x > 0) {
+		self->flip.x = FACE_LEFT;
+	}
+	else if (playerPosition.x - self->position.x < 0) {
+		self->flip.x = FACE_RIGHT;
+	}
+}
 
 //Moves enemy closer to player and returns current distance from enemy to player
-Vector2D enemy_move_to_player(struct Entity_s* self) {
+Vector2D enemy_move_to_player(Entity* self) {
 	Vector2D playerPosition;
 	float xchange, ychange;
 
@@ -57,17 +68,19 @@ Vector2D enemy_move_to_player(struct Entity_s* self) {
 		self->position.y -= ychange;
 	}
 
+	enemy_update_side(self);
+
 	return vector2d(abs(playerPosition.x - self->position.x), (playerPosition.y - self->position.y));
 }
 
-void enemy_change_state(struct Entity_s* self, enum enemy_state state) {
+void enemy_change_state(Entity* self, enum enemy_state state) {
 	self->frame = 0;
 	self->statePos = 0;
 	self->state = state;
 }
 
 //TODO: Add randomness to movement
-void enemy_think(struct Entity_s* self) {
+void enemy_think(Entity* self) {
 	int startFrame, endFrame;
 	Vector2D distToPlayer;
 
@@ -113,7 +126,7 @@ void enemy_think(struct Entity_s* self) {
 			self->frame++;
 		}
 
-		if (self->statePos > 20) {
+		if (self->statePos > 15) {
 			enemy_change_state(self, ENEMY_IDLE);
 		}
 
@@ -124,6 +137,6 @@ void enemy_think(struct Entity_s* self) {
 }
 
 
-void enemy_hurt(struct Entity_s* self) {
+void enemy_hurt(Entity* self) {
 	self->state = ENEMY_HURT;
 }

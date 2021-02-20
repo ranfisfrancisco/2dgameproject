@@ -6,6 +6,9 @@
 #include "gf2d_sprite.h"
 
 enum entity_type {NO_TYPE, PLAYER_TYPE, ENEMY_TYPE};
+/*NOTE: FaceLeft and FaceRight are currently not always accurate names; 
+this is because the player sprite is naturally flipped so whne used in other contexts, 
+left an right may be reversed. Treat the names as arbitrary */
 enum facing_side { FACE_LEFT, FACE_RIGHT };
 
 typedef struct Entity_s{
