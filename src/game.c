@@ -4,6 +4,7 @@
 
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
+#include "gf2d_draw.h"
 
 #include "entity.h"
 #include "player.h"
@@ -58,6 +59,7 @@ int main(int argc, char* argv[])
         
         entity_manager_update_entities();
         entity_manager_think_entities();
+        
 
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame

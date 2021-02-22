@@ -38,10 +38,10 @@ void enemy_update_side(Entity* self) {
 	playerPosition = player_get_position();
 
 	if (playerPosition.x - self->position.x > 0) {
-		self->flip.x = FACE_LEFT;
+		self->flip.x = FACE_RIGHT;
 	}
 	else if (playerPosition.x - self->position.x < 0) {
-		self->flip.x = FACE_RIGHT;
+		self->flip.x = FACE_LEFT;
 	}
 }
 
@@ -70,7 +70,7 @@ Vector2D enemy_move_to_player(Entity* self) {
 
 	enemy_update_side(self);
 
-	return vector2d(abs(playerPosition.x - self->position.x), (playerPosition.y - self->position.y));
+	return vector2d(abs(playerPosition.x - self->position.x), abs(playerPosition.y - self->position.y));
 }
 
 void enemy_change_state(Entity* self, enum enemy_state state) {
@@ -88,7 +88,7 @@ void enemy_think(Entity* self) {
 	case ENEMY_IDLE:
 		distToPlayer = enemy_move_to_player(self);
 
-		if (distToPlayer.x < 10 && distToPlayer.y < 10)
+		if (distToPlayer.x < 10 && distToPlayer.y < 3)
 			enemy_change_state(self, ENEMY_ATTACK);
 
 		break;

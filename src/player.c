@@ -84,11 +84,11 @@ void player_update_side(const Uint8* keys) {
 
 	if (left && !right) {
 		player.entity->side = FACE_LEFT;
-		player.entity->flip.x = FACE_LEFT;
+		player.entity->flip.x = FACE_RIGHT;
 	}
 	else if (right && !left) {
 		player.entity->side = FACE_RIGHT;
-		player.entity->flip.x = FACE_RIGHT;
+		player.entity->flip.x = FACE_LEFT;
 	}
 }
 
@@ -213,7 +213,7 @@ void player_input(const Uint8* keys) {
 
 		//TODO
 	case PLAYER_HURT:
-		player_change_state(PLAYER_HURT);
+		player_change_state(PLAYER_IDLE);
 		break;
 
 	case PLAYER_PUNCH:

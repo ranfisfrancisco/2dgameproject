@@ -125,6 +125,8 @@ void entity_manager_draw_entities() {
 		if (entity_manager.entity_list[i]._inuse == 0)
 			continue;
 
+		gf2d_draw_circle(entity_manager.entity_list[i].position, 10, vector4d(255, 255, 255, 255));
+
 		entity_draw(&entity_manager.entity_list[i]);
 	}
 }
