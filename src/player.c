@@ -19,6 +19,7 @@ void player_spawn(Vector2D position) {
 		return NULL;
 	}
 	player.entity->sprite = gf2d_sprite_load_all("images/kyo_2.png", 128, 144, 13);
+	gfc_rect_set(player.entity->hurtbox, player.entity->position.x, player.entity->position.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
 	vector2d_copy(player.entity->position, position);
 	player.entity->frameRate = 0.1;
 	player.entity->frameCount = 16;
@@ -104,6 +105,7 @@ void player_input(const Uint8* keys) {
 	int up, down, left, right;
 	int punch, kick;
 	int startFrame, endFrame;
+	SDL_Rect hitbox;
 
 	up = keys[SDL_SCANCODE_W];
 	right = keys[SDL_SCANCODE_D];
@@ -221,6 +223,15 @@ void player_input(const Uint8* keys) {
 		endFrame = 23;
 		player.entity->statePos++;
 
+		gfc_rect_set(hitbox, player.entity->position.x + player.entity->sprite->frame_w, player.entity->position.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
+		if (player.entity->side == FACE_LEFT) {
+			hitbox.x -= 2 * player.entity->sprite->frame_w;
+		}
+
+		if (entity_manager_check_collison(hitbox)) {
+			;
+		}
+
 		if (player.entity->frame < startFrame)
 			player.entity->frame = startFrame;
 
@@ -229,6 +240,8 @@ void player_input(const Uint8* keys) {
 		else if (player.entity->statePos < 8 && kick) {
 			player_change_state(PLAYER_PK);
 		}
+
+		
 		
 		break;
 
@@ -363,6 +376,8 @@ void player_update() {
 	const Uint8* keys;
 	keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
 	player_input(keys);
+
+	gfc_rect_set(player.entity->hurtbox, player.entity->position.x, player.entity->position.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
 }
 
 void player_hurt() {

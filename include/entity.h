@@ -16,6 +16,7 @@ typedef struct Entity_s{
 	Vector2D position;
 	Sprite *sprite;
 	Vector2D scale;
+	SDL_Rect hurtbox;
 	float frame;
 	float frameRate;
 	int frameCount;
@@ -46,6 +47,8 @@ void entity_manager_update_entities();
 void entity_manager_think_entities();
 
 void entity_manager_draw_entities();
+
+int entity_manager_check_collison(SDL_Rect rect);
 
 Entity *entity_new();
 

@@ -3,6 +3,7 @@
 
 #include "entity.h"
 #include "gfc_vector.h"
+#include "gfc_types.h"
 
 typedef struct {
 	Entity* entity;

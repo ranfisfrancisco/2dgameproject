@@ -3,6 +3,7 @@
 
 #include "entity.h"
 #include "gfc_vector.h"
+#include "gfc_types.h"
 
 enum enemy_state { ENEMY_IDLE, ENEMY_HURT, ENEMY_WALK, ENEMY_ATTACK };
 

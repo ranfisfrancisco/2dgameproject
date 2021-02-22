@@ -81,6 +81,39 @@ void entity_think(Entity* self) {
 		self->think(self);
 }
 
+void entity_draw(Entity* ent) {
+	if (!ent) {
+		slog("Cannot draw NULL entity");
+		return;
+	}
+	if (ent->sprite == NULL) {
+		return;
+	}
+	if (ent->draw)
+		ent->draw(ent);
+	else {
+		gf2d_sprite_draw(
+			ent->sprite,
+			ent->position,
+			&ent->scale,
+			NULL,
+			&ent->rotation,
+			&ent->flip,
+			NULL,
+			ent->frame);
+	}
+}
+
+void entity_hurt(Entity* ent) {
+	if (!ent) {
+		slog("Cannot draw NULL entity");
+		return;
+	}
+	if (ent->hurt != NULL) {
+		ent->hurt(ent);
+	}
+}
+
 void entity_manager_update_entities() {
 	int i;
 
@@ -131,25 +164,24 @@ void entity_manager_draw_entities() {
 	}
 }
 
-void entity_draw(Entity* ent) {
-	if (!ent) {
-		slog("Cannot draw NULL entity");
-		return;
+int entity_manager_check_collison(SDL_Rect rect) {
+	int count = 0;
+
+	if (entity_manager.entity_list == NULL) {
+		slog("entity system does not exist");
+		return NULL;
 	}
-	if (ent->sprite == NULL) {
-		return;
+
+	for (int i = 0; i < entity_manager.max_entities; i++) {
+		if (entity_manager.entity_list[i]._inuse == 0)
+			continue;
+
+		if (SDL_HasIntersection(&rect, &entity_manager.entity_list[i].hurtbox)) {
+			entity_hurt(&entity_manager.entity_list[i]);
+			count++;
+		}
 	}
-	if (ent->draw)
-		ent->draw(ent);
-	else {
-		gf2d_sprite_draw(
-			ent->sprite,
-			ent->position,
-			&ent->scale,
-			NULL,
-			&ent->rotation,
-			&ent->flip,
-			NULL,
-			ent->frame);
-	}
+
+	return count;
 }
+

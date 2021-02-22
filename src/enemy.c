@@ -5,6 +5,7 @@
 
 void enemy_think();
 void enemy_hurt();
+void enemy_update(Entity* self);
 
 Entity *enemy_spawn(Vector2D position) {
 	Entity* ent;
@@ -16,13 +17,14 @@ Entity *enemy_spawn(Vector2D position) {
 	}
 	ent->sprite = gf2d_sprite_load_all("images/cat.png", 50, 50, 10);
 	vector2d_copy(ent->position, position);
+	gfc_rect_set(ent->hurtbox, ent->position.x, ent->position.y, ent->sprite->frame_w, ent->sprite->frame_h);
 	ent->frameRate = 0.1;
 	ent->frameCount = 16;
 	ent->maxHealth = 100;
 	ent->health = ent->maxHealth;
 	ent->type = ENEMY_TYPE;
 	ent->rotation = vector3d(0, 0, 0);
-	//ent->update = player_update;
+	ent->update = enemy_update;
 	ent->think = enemy_think;
 	ent->hurt = enemy_hurt;
 	ent->speed = 2;
@@ -92,6 +94,7 @@ void enemy_think(Entity* self) {
 			enemy_change_state(self, ENEMY_ATTACK);
 
 		break;
+
 	case ENEMY_HURT:
 		startFrame = 13;
 		endFrame = 13;
@@ -107,9 +110,10 @@ void enemy_think(Entity* self) {
 			self->frame++;
 		}
 
-		if (self->statePos > 20) {
+		if (self->statePos > 30) {
 			enemy_change_state(self, ENEMY_IDLE);
 		}
+		break;
 			
 	case ENEMY_ATTACK:
 		startFrame = 10;
@@ -129,6 +133,7 @@ void enemy_think(Entity* self) {
 		if (self->statePos > 15) {
 			enemy_change_state(self, ENEMY_IDLE);
 		}
+		break;
 
 	default:
 		break;
@@ -136,7 +141,11 @@ void enemy_think(Entity* self) {
 	
 }
 
+void enemy_update(Entity* self) {
+	gfc_rect_set(self->hurtbox, self->position.x, self->position.y, self->sprite->frame_w, self->sprite->frame_h);
+}
+
 
 void enemy_hurt(Entity* self) {
-	self->state = ENEMY_HURT;
+	enemy_change_state(self, ENEMY_HURT);
 }
