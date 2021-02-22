@@ -104,13 +104,13 @@ void entity_draw(Entity* ent) {
 	}
 }
 
-void entity_hurt(Entity* ent) {
+void entity_hurt(Entity* ent, int damage) {
 	if (!ent) {
 		slog("Cannot draw NULL entity");
 		return;
 	}
 	if (ent->hurt != NULL) {
-		ent->hurt(ent);
+		ent->hurt(ent, damage);
 	}
 }
 
@@ -164,7 +164,7 @@ void entity_manager_draw_entities() {
 	}
 }
 
-int entity_manager_check_collison(SDL_Rect rect) {
+int entity_manager_check_collison(SDL_Rect rect, int damage) {
 	int count = 0;
 
 	if (entity_manager.entity_list == NULL) {
@@ -177,7 +177,7 @@ int entity_manager_check_collison(SDL_Rect rect) {
 			continue;
 
 		if (SDL_HasIntersection(&rect, &entity_manager.entity_list[i].hurtbox)) {
-			entity_hurt(&entity_manager.entity_list[i]);
+			entity_hurt(&entity_manager.entity_list[i], damage);
 			count++;
 		}
 	}

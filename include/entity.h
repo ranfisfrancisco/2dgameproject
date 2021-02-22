@@ -25,7 +25,7 @@ typedef struct Entity_s{
 	void (*think)(struct Entity_s* self);
 	void (*draw)(struct Entity_s* self);
 	void (*free)(struct Entity_s* self);
-	void (*hurt)(struct Entity_s* self);
+	void (*hurt)(struct Entity_s* self, int damage);
 	void* data;
 	enum entity_type type;
 	int side;
@@ -48,7 +48,7 @@ void entity_manager_think_entities();
 
 void entity_manager_draw_entities();
 
-int entity_manager_check_collison(SDL_Rect rect);
+int entity_manager_check_collison(SDL_Rect rect, int damage);
 
 Entity *entity_new();
 

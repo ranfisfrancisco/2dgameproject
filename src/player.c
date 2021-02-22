@@ -8,6 +8,7 @@ void player_update(Entity* self);
 void player_hurt(Entity* self);
 
 static PlayerEntity player = { 0 };
+static int attack_hit = 0;
 
 void player_spawn(Vector2D position) {
 	if (player.entity != NULL)
@@ -28,6 +29,7 @@ void player_spawn(Vector2D position) {
 	player.entity->type = PLAYER_TYPE;
 	player.entity->rotation = vector3d(0,0,0);
 	player.entity->update = player_update;
+	player.entity->hurt = player_hurt;
 	player.entity->speed = 2;
 	player.entity->flip = vector2d(FACE_RIGHT, 0);
 	player.entity->scale = vector2d(2, 2);
@@ -96,6 +98,7 @@ void player_update_side(const Uint8* keys) {
 void player_change_state(enum player_state state) {
 	player.entity->frame = 0;
 	player.entity->statePos = 0;
+	attack_hit = 0;
 	player.entity->state = state;
 }
 
@@ -224,13 +227,16 @@ void player_input(const Uint8* keys) {
 		player.entity->statePos++;
 
 		gfc_rect_set(hitbox, player.entity->position.x + player.entity->sprite->frame_w, player.entity->position.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
-		if (player.entity->side == FACE_LEFT) {
-			hitbox.x -= 2 * player.entity->sprite->frame_w;
-		}
 
-		if (entity_manager_check_collison(hitbox)) {
-			;
+		if (!attack_hit) {
+			if (player.entity->side == FACE_LEFT) {
+				hitbox.x -= 2 * player.entity->sprite->frame_w;
+			}
+
+			if (entity_manager_check_collison(hitbox, 20))
+				attack_hit = 1;
 		}
+	
 
 		if (player.entity->frame < startFrame)
 			player.entity->frame = startFrame;
@@ -380,6 +386,7 @@ void player_update() {
 	gfc_rect_set(player.entity->hurtbox, player.entity->position.x, player.entity->position.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
 }
 
-void player_hurt() {
+void player_hurt(Entity* self, int damage) {
 	player_change_state(PLAYER_HURT);
+	player.entity->health -= damage;
 }

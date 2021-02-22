@@ -141,11 +141,22 @@ void enemy_think(Entity* self) {
 	
 }
 
+void enemy_die(Entity* self) {
+	entity_free(self);
+	return;
+}
+
 void enemy_update(Entity* self) {
+	if (self->health <= 0) {
+		enemy_die(self);
+		return;
+	}
+
 	gfc_rect_set(self->hurtbox, self->position.x, self->position.y, self->sprite->frame_w, self->sprite->frame_h);
 }
 
 
-void enemy_hurt(Entity* self) {
+void enemy_hurt(Entity* self, int damage) {
 	enemy_change_state(self, ENEMY_HURT);
+	self->health -= damage;
 }
