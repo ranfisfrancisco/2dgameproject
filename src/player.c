@@ -62,7 +62,7 @@ void player_movement(const Uint8* keys) {
 		if (player.entity->position.x < 0)
 			player.entity->position.x = 0;
 
-		camera_move(vector2d(-player.entity->speed * 0.5, 0));
+		camera_move(vector2d(-player.entity->speed, 0));
 
 	}
 	else if (right) {
@@ -70,21 +70,21 @@ void player_movement(const Uint8* keys) {
 		if (player.entity->position.x > 1200 - 2*player.entity->sprite->frame_w)
 			player.entity->position.x = 1200 - 2*player.entity->sprite->frame_w;
 
-		camera_move(vector2d(player.entity->speed * 0.5, 0));
+		camera_move(vector2d(player.entity->speed, 0));
 	}
 	if (up) {
 		player.entity->position.y -= player.entity->speed;
-		if (player.entity->position.y < 0)
-			player.entity->position.y = 0;
+		if (player.entity->position.y < 0 + player.entity->sprite->frame_h)
+			player.entity->position.y = 0 + player.entity->sprite->frame_h;
 
-		camera_move(vector2d(0, -player.entity->speed * 0.5));
+		camera_move(vector2d(0, -player.entity->speed));
 	}
 	else if (down) {
 		player.entity->position.y += player.entity->speed;
-		if (player.entity->position.y > 1200)
-			player.entity->position.y = 1200;
+		if (player.entity->position.y > 1200 - 5*player.entity->sprite->frame_h)
+			player.entity->position.y = 1200 - 5*player.entity->sprite->frame_h;
 
-		camera_move(vector2d(0, player.entity->speed * 0.5));
+		camera_move(vector2d(0, player.entity->speed));
 	}
 }
 
