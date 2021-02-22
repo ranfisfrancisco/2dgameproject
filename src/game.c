@@ -10,14 +10,18 @@
 #include "player.h"
 #include "enemy.h"
 #include "input.h"
+#include "camera.h"
+#include "level.h"
+
 
 int main(int argc, char* argv[])
 {
     /*variable declarations*/
     int done = 0;
     const Uint8* keys;
-    Sprite* sprite;
-    Entity* mouse;
+    //Sprite* sprite;
+    //Entity* mouse;
+    Level* level;
 
     //Sprite* mouse;
     int mx, my;
@@ -35,15 +39,18 @@ int main(int argc, char* argv[])
         vector4d(0, 0, 0, 255),
         0);
     gf2d_graphics_set_frame_delay(16);
+    camera_set_dimensions(vector2d(1200, 720));
+    camera_set_position(vector2d(0, 0));
     gf2d_sprite_init(1024);
     entity_manager_init(100);
     input_buffer_init();
     SDL_ShowCursor(SDL_DISABLE);
 
     /*demo setup*/
-    sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
+    //sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
     //mouse = entity_new();
 
+    level = level_load("levels/exampleLevel.json");
     player_spawn(vector2d(600, 360));
     enemy_spawn(vector2d(600, 200));
 
@@ -59,12 +66,13 @@ int main(int argc, char* argv[])
         
         entity_manager_update_entities();
         entity_manager_think_entities();
-        
+        level_update(level);
 
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first
-        gf2d_sprite_draw_image(sprite, vector2d(0, 0));
+        level_draw(level);
+        // gf2d_sprite_draw_image(sprite, vector2d(0, 0));
         entity_manager_draw_entities();
 
         gf2d_grahics_next_frame();// render current draw frame and skip to the next frame

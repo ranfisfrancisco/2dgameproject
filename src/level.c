@@ -1,87 +1,235 @@
 #include <stdlib.h>
 
-#include "level.h"
-
 #include "simple_json.h"
 #include "simple_logger.h"
 
-Level* level_new() {
-	Level* level;
-	level = (Level*)malloc(sizeof(Level));
-	if (!level) {
-		slog("failed to allocate memory for the game level");
-		return NULL;
-	}
-	memset(level, 0, sizeof(Level));
-	return level;
+#include "camera.h"
+#include "level.h"
+
+
+Level* level_new()
+{
+    Level* level;
+    level = (Level*)malloc(sizeof(Level));
+    if (!level)
+    {
+        slog("failed to allocate memory for the game level");
+        return NULL;
+    }
+    memset(level, 0, sizeof(Level));
+    return level;
 }
 
-Level *level_load(const char* filename) {
-	Level* level;
-	SJson* json, *levelJS;
+Level* level_load(const char* filename)
+{
+    const char* string;
+    Level* level;
+    SJson* json, * levelJS, * levelMap, * row, * array;
+    int rows, columns;
+    int count, tileindex;
+    int i, j;
+    int tempInt;
 
-	if (!filename) {
-		slog("filename is NULL, cannot load the level");
-		return NULL;
-	}
+    if (!filename)
+    {
+        slog("filename is NULL, cannot load the level");
+        return NULL;
+    }
+    json = sj_load(filename);
+    if (!json)return NULL;
 
-	json = sj_load(filename);
-	if (!json) return NULL;
+    level = level_new();
+    if (!level)
+    {
+        sj_free(json);
+        return NULL;
+    }
 
-	level = level_new();
-	if (!level) {
-		sj_free(json);
-		return NULL;
-	}
-	
-	levelJS = sj_object_get_value(json, "level");
-	if (!levelJS) {
-		slog("level json missing levle object");
-		level_free(level);
-		sj_free(json);
-		return NULL;
-	}
+    levelJS = sj_object_get_value(json, "level");
+    if (!levelJS)
+    {
+        slog("level json missing level object");
+        level_free(level);
+        sj_free(json);
+        return NULL;
+    }
 
-	//string = sj_get_string_value(sj_object_get_value(json));
+    array = sj_object_get_value(levelJS, "bgImage");
+    count = sj_array_get_count(array);
+    level->bgImageCount = count;
+    if (count)
+    {
+        level->bgImage = (Sprite**)gfc_allocate_array(sizeof(Sprite*), count);
+        for (i = 0; i < count; i++)
+        {
+            string = sj_get_string_value(sj_array_get_nth(array, i));
+            if (string)
+            {
+                level->bgImage[i] = gf2d_sprite_load_image((char*)string);
+            }
+        }
+    }
+    string = sj_get_string_value(sj_object_get_value(levelJS, "tileSet"));
+    if (string)
+    {
+        slog("loading tile set %s", string);
+        sj_get_integer_value(sj_object_get_value(levelJS, "tileWidth"), &level->tileWidth);
+        sj_get_integer_value(sj_object_get_value(levelJS, "tileHeight"), &level->tileHeight);
+        sj_get_integer_value(sj_object_get_value(levelJS, "tileFPL"), &level->tileFPL);
+        level->tileSet = gf2d_sprite_load_all(
+            (char*)string,
+            level->tileWidth,
+            level->tileHeight,
+            level->tileFPL);
+    }
+    levelMap = sj_object_get_value(levelJS, "tileMap");
+    if (!levelMap)
+    {
+        slog("missing tileMap data");
+        level_free(level);
+        sj_free(json);
+        return NULL;
+    }
+    rows = sj_array_get_count(levelMap);
+    row = sj_array_get_nth(levelMap, 0);
+    columns = sj_array_get_count(row);
+    count = rows * columns;
+    level->levelWidth = columns;
+    level->levelHeight = rows;
+    level->tileMap = (TileTypes*)gfc_allocate_array(sizeof(TileTypes), count);
+    if (!level->tileMap)
+    {
+        level_free(level);
+        sj_free(json);
+        return NULL;
+    }
+    level->tileCount = count;
 
-	sj_free(json);
-	return level;
+    tileindex = 0;
+    slog("tilemap data:");
+    for (j = 0; j < rows; j++)
+    {
+        row = sj_array_get_nth(levelMap, j);
+        if (!row)continue;// skip it, its bad
+        if (columns != sj_array_get_count(row))
+        {
+            slog("row %i, column count mismatch", j);
+            continue;
+        }
+        for (i = 0; i < columns; i++)
+        {
+            sj_get_integer_value(sj_array_get_nth(row, i), &tempInt);
+            level->tileMap[tileindex] = tempInt;
+            printf("%i,", level->tileMap[tileindex++]);
+        }
+        printf("\n");
+    }
+    level->levelSize.x = level->levelWidth * level->tileWidth;
+    level->levelSize.y = level->levelHeight * level->tileHeight;
+    slog("map width: %f, with %i tiles wide, each %i pixels wide", level->levelSize.x, level->levelWidth, level->tileWidth);
+    slog("map height: %f, with %i tiles high, each %i pixels tall", level->levelSize.y, level->levelHeight, level->tileHeight);
+
+    sj_free(json);
+    return level;
 }
 
-void level_free(Level* level) {
-	if (!level) return;
 
-	if (level->tileMap != NULL) {
-		free(level->tileSet);
-		level->tileMap = NULL;
-	}
-	gf2d_sprite_free(level->bgimage);
-	gf2d_sprite_free(level->tileSet);
-
-	free(level);
+void level_update(Level* level)
+{
+    SDL_Rect camera;
+    if (!level)return;
+    camera = camera_get_rect();
+    //snap camera to the level bounds
+    if ((camera.x + camera.w) > (int)level->levelSize.x)
+    {
+        camera.x = level->levelSize.x - camera.w;
+    }
+    if ((camera.y + camera.h) > (int)level->levelSize.y)
+    {
+        camera.y = level->levelSize.y - camera.h;
+    }
+    if (camera.x < 0)camera.x = 0;
+    if (camera.y < 0)camera.y = 0;
+    camera_set_position(vector2d(camera.x, camera.y));
 }
 
-void level_draw(Level* level) {
-	int i;
-	if (!level) {
-		slog("cannot draw level, NULL pointer provided");
-		return;
-	}
+void level_free(Level* level)
+{
+    int i;
+    if (!level)return;// nothing to do
 
-	//draw background first
-	gf2d_sprite_draw_image(level->bgimage, vector2d(0, 0));
-	//then draw the tiles
+    if (level->tileMap != NULL)
+    {
+        free(level->tileSet);
+        level->tileMap = NULL;
+    }
+    if (level->bgImageCount)
+    {
+        for (i = 0; i < level->bgImageCount; i++)
+        {
+            gf2d_sprite_free(level->bgImage[i]);
+        }
+        free(level->bgImage);
+    }
+    gf2d_sprite_free(level->tileSet);
 
-	for (i = 0; i < level->levelWidth * i / level->levelHeight; i++) {
-		if (level->tileMap[i] == 0)continue;
-		gf2d_sprite_draw(
-			level->tileSet,
-			vector2d(i % level->levelWidth, i/level->levelHeight),
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			level->tileMap[i] - 1);
-	}
+    free(level);
 }
+
+void level_draw(Level* level)
+{
+    Vector2D offset, drawPosition;
+    SDL_Rect rect;
+    int i;
+    if (!level)
+    {
+        slog("cannot draw level, NULL pointer provided");
+        return;
+    }
+    // draw the background first
+    if (level->bgImageCount)
+    {
+        for (i = 0; i < level->bgImageCount; i++)
+        {
+            gf2d_sprite_draw_image(level->bgImage[i], vector2d(0, 0));
+        }
+
+    }
+    //then draw the tiles
+
+    if (!level->tileMap)
+    {
+        slog("not tiles loaded for the level, cannot draw it");
+        return;
+    }
+    offset = camera_get_offset();
+    for (i = 0; i < level->tileCount; i++)
+    {
+        if (level->tileMap[i] == 0)continue;
+        drawPosition.x = ((i % level->levelWidth) * level->tileSet->frame_w);
+        drawPosition.y = ((i / level->levelWidth) * level->tileSet->frame_h);
+
+        gfc_rect_set(rect, drawPosition.x, drawPosition.y, level->tileSet->frame_w, level->tileSet->frame_h);
+
+        if (!camera_rect_on_screen(rect))
+        {
+            //tile is off camera, skip
+            continue;
+        }
+        drawPosition.x += offset.x;
+        drawPosition.y += offset.y;
+        gf2d_sprite_draw(
+            level->tileSet,
+            drawPosition,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            level->tileMap[i] - 1);
+    }
+}
+
+
+
+/*file footer*/

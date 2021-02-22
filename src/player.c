@@ -1,6 +1,7 @@
 #include "simple_logger.h"
 #include "player.h"
 #include "input.h"
+#include "camera.h"
 
 enum player_state {PLAYER_IDLE, PLAYER_HURT, PLAYER_WALK, PLAYER_PUNCH, PLAYER_KICK, PLAYER_QCFP, PLAYER_QCFK, PLAYER_BFP, PLAYER_BFK, PLAYER_PK};
 
@@ -30,7 +31,7 @@ void player_spawn(Vector2D position) {
 	player.entity->rotation = vector3d(0,0,0);
 	player.entity->update = player_update;
 	player.entity->hurt = player_hurt;
-	player.entity->speed = 2;
+	player.entity->speed = 3;
 	player.entity->flip = vector2d(FACE_RIGHT, 0);
 	player.entity->scale = vector2d(2, 2);
 }
@@ -61,21 +62,29 @@ void player_movement(const Uint8* keys) {
 		if (player.entity->position.x < 0)
 			player.entity->position.x = 0;
 
+		camera_move(vector2d(-player.entity->speed * 0.5, 0));
+
 	}
 	else if (right) {
 		player.entity->position.x += player.entity->speed;
-		if (player.entity->position.x > 1200)
-			player.entity->position.x = 1200;
+		if (player.entity->position.x > 1200 - 2*player.entity->sprite->frame_w)
+			player.entity->position.x = 1200 - 2*player.entity->sprite->frame_w;
+
+		camera_move(vector2d(player.entity->speed * 0.5, 0));
 	}
 	if (up) {
 		player.entity->position.y -= player.entity->speed;
 		if (player.entity->position.y < 0)
 			player.entity->position.y = 0;
+
+		camera_move(vector2d(0, -player.entity->speed * 0.5));
 	}
 	else if (down) {
 		player.entity->position.y += player.entity->speed;
 		if (player.entity->position.y > 1200)
 			player.entity->position.y = 1200;
+
+		camera_move(vector2d(0, player.entity->speed * 0.5));
 	}
 }
 
