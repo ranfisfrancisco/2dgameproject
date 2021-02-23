@@ -16,4 +16,6 @@ Vector2D player_get_position();
 
 int player_collison_check(SDL_Rect rect);
 
+void player_change_health(int amount);
+
 #endif

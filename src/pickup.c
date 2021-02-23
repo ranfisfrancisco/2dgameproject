@@ -35,6 +35,7 @@ void pickup_update(Entity* self) {
 	gfc_rect_set(self->hurtbox, self->drawPosition.x, self->drawPosition.y, self->sprite->frame_w * self->scale.x, self->sprite->frame_h * self->scale.y);
 
 	if (player_collison_check(self->hurtbox)) {
-
+		player_change_health(30);
+		entity_free(self);
 	}
 }

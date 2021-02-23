@@ -53,6 +53,10 @@ int player_collison_check(SDL_Rect rect) {
 	return 0;
 }
 
+void player_change_health(int amount) {
+	player.entity->health += amount;
+}
+
 void player_free() {
 	//if player struct has any pointers free them
 
@@ -87,8 +91,8 @@ void player_movement(const Uint8* keys) {
 	}
 	if (up) {
 		player.entity->drawPosition.y -= player.entity->speed;
-		if (player.entity->drawPosition.y < 0 + player.entity->sprite->frame_h)
-			player.entity->drawPosition.y = 0 + player.entity->sprite->frame_h;
+		if (player.entity->drawPosition.y < 0 + player.entity->sprite->frame_h/2)
+			player.entity->drawPosition.y = 0 + player.entity->sprite->frame_h/2;
 
 		camera_move(vector2d(0, -player.entity->speed));
 	}

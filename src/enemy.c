@@ -73,7 +73,10 @@ Entity* enemy_spawn(Vector2D position, enum entity_type type) {
 	else if (type == ENEMY_TYPE_5)
 		ent->scale = vector2d(4, 4);
 
-	gfc_rect_set(ent->hurtbox, ent->drawPosition.x, ent->drawPosition.y, ent->sprite->frame_w * ent->scale.x, ent->sprite->frame_h * ent->scale.y);
+	if (type == ENEMY_TYPE_3)
+		gfc_rect_set(ent->hurtbox, ent->drawPosition.x, ent->drawPosition.y, ent->sprite->frame_w * 2, ent->sprite->frame_h * 2);
+	else
+		gfc_rect_set(ent->hurtbox, ent->drawPosition.x, ent->drawPosition.y, ent->sprite->frame_w * ent->scale.x, ent->sprite->frame_h * ent->scale.y);
 
 	return ent;
 }
