@@ -1,5 +1,6 @@
 #include "simple_logger.h"
 #include "pickup.h"
+#include "player.h"
 
 void pickup_update(Entity* self);
 
@@ -32,4 +33,8 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 
 void pickup_update(Entity* self) {
 	gfc_rect_set(self->hurtbox, self->drawPosition.x, self->drawPosition.y, self->sprite->frame_w * self->scale.x, self->sprite->frame_h * self->scale.y);
+
+	if (player_collison_check(self->hurtbox)) {
+
+	}
 }

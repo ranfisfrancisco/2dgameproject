@@ -52,11 +52,11 @@ int main(int argc, char* argv[])
 
     level = level_load("levels/exampleLevel.json");
     player_spawn(vector2d(600, 360));
-    /*enemy_spawn(vector2d(600, 200), ENEMY_TYPE_1);
+    enemy_spawn(vector2d(600, 200), ENEMY_TYPE_1);
     enemy_spawn(vector2d(600, 200), ENEMY_TYPE_2);
     enemy_spawn(vector2d(600, 200), ENEMY_TYPE_3);
     enemy_spawn(vector2d(600, 200), ENEMY_TYPE_4);
-    enemy_spawn(vector2d(600, 200), ENEMY_TYPE_5);*/
+    enemy_spawn(vector2d(600, 200), ENEMY_TYPE_5);
     pickup_spawn(vector2d(600, 360), PICKUP_TYPE_1);
 
     /*main game loop*/

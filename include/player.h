@@ -14,4 +14,6 @@ void player_spawn(Vector2D position);
 
 Vector2D player_get_position();
 
+int player_collison_check(SDL_Rect rect);
+
 #endif

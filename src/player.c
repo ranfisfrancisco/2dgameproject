@@ -47,6 +47,12 @@ Vector2D player_get_position() {
 	return realPosition;
 }
 
+int player_collison_check(SDL_Rect rect) {
+	if (SDL_HasIntersection(&rect, &player.entity->hurtbox))
+		return 1;
+	return 0;
+}
+
 void player_free() {
 	//if player struct has any pointers free them
 

@@ -172,8 +172,10 @@ void enemy_think(Entity* self) {
 				hitbox.x -= 2 * self->sprite->frame_w;
 			}
 
-			if (entity_manager_check_collison(hitbox, 4))
+			if (player_collison_check(hitbox)) {
 				self->attackHit = 1;
+				player_hurt(NULL, 2);
+			}
 		}
 
 		if (self->frame < startFrame)
