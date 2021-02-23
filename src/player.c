@@ -26,6 +26,7 @@ void player_spawn(Vector2D position) {
 	player.entity->health = player.entity->maxHealth;
 	player.entity->type = PLAYER_TYPE;
 	player.entity->rotation = vector3d(0,0,0);
+	player.entity->colorShift = vector4d(255, 255, 255, 255);
 	player.entity->update = player_update;
 	player.entity->hurt = player_hurt;
 	player.entity->speed = 3;
@@ -114,6 +115,7 @@ void player_change_state(enum player_state state) {
 	player.entity->frame = 0;
 	player.entity->statePos = 0;
 	player.entity->attackHit = 0;
+	player.entity->colorShift = vector4d(255, 255, 255, 255);
 	player.entity->state = state;
 }
 

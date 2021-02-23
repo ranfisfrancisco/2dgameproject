@@ -108,7 +108,7 @@ void entity_draw(Entity* ent) {
 			NULL,
 			&ent->rotation,
 			&ent->flip,
-			NULL,
+			&ent->colorShift,
 			ent->frame);
 	}
 }

@@ -25,6 +25,7 @@ Entity* enemy_spawn(Vector2D position, enum enemy_type type) {
 	}
 	vector2d_copy(ent->drawPosition, position);
 	gfc_rect_set(ent->hurtbox, ent->drawPosition.x, ent->drawPosition.y, ent->sprite->frame_w, ent->sprite->frame_h);
+
 	if (type == ENEMY_TYPE_1)
 		ent->maxHealth = 100;
 	else if (type == ENEMY_TYPE_2)
@@ -35,12 +36,14 @@ Entity* enemy_spawn(Vector2D position, enum enemy_type type) {
 		ent->maxHealth = 100;
 	else if (type == ENEMY_TYPE_5)
 		ent->maxHealth = 100;
+
 	ent->health = ent->maxHealth;
 	ent->type = type;
 	ent->rotation = vector3d(0, 0, 0);
 	ent->update = enemy_update;
 	ent->think = enemy_think;
 	ent->hurt = enemy_hurt;
+
 	if (type == ENEMY_TYPE_1)
 		ent->speed = 2;
 	else if (type == ENEMY_TYPE_2)
@@ -53,6 +56,12 @@ Entity* enemy_spawn(Vector2D position, enum enemy_type type) {
 		ent->speed = 2;
 	ent->flip = vector2d(FACE_RIGHT, 0);
 
+	ent->colorShift = vector4d(255, 255, 255, 255);
+	if (type == ENEMY_TYPE_4)
+		ent->colorShift = vector4d(255, 255, 255, 100);
+	else if (type == ENEMY_TYPE_5)
+		ent->colorShift = vector4d(255, 100, 255, 255);
+
 	if (type == ENEMY_TYPE_1)
 		ent->scale = vector2d(4, 4);
 	else if (type == ENEMY_TYPE_2)
@@ -60,9 +69,9 @@ Entity* enemy_spawn(Vector2D position, enum enemy_type type) {
 	else if (type == ENEMY_TYPE_3)
 		ent->scale = vector2d(1, 1);
 	else if (type == ENEMY_TYPE_4)
-		ent->scale = vector2d(1, 1);
+		ent->scale = vector2d(4, 4);
 	else if (type == ENEMY_TYPE_5)
-		ent->scale = vector2d(1, 1);
+		ent->scale = vector2d(4, 4);
 
 	return ent;
 }

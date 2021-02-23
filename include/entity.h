@@ -21,6 +21,7 @@ typedef struct Entity_s{
 	int attackHit;
 	float frame;
 	Vector3D rotation;
+	Vector4D colorShift;
 	void (*update)(struct Entity_s* self);
 	void (*think)(struct Entity_s* self);
 	void (*draw)(struct Entity_s* self);
