@@ -29,7 +29,7 @@ void player_spawn(Vector2D position) {
 	player.entity->colorShift = vector4d(255, 255, 255, 255);
 	player.entity->update = player_update;
 	player.entity->hurt = player_hurt;
-	player.entity->speed = 3;
+	player.entity->speed = 4;
 	player.entity->flip = vector2d(FACE_RIGHT, 0);
 	player.entity->scale = vector2d(2, 2);
 	player.entity->attackHit = 0;
