@@ -15,7 +15,7 @@ Entity* enemy_spawn(Vector2D position, enum enemy_type type) {
 		slog("failed to create entity for player");
 		return NULL;
 	}
-	if (type == ENEMY_TYPE_1 || type == ENEMY_TYPE_2 || type == ENEMY_TYPE_3) {
+	if (type == ENEMY_TYPE_1 || type == ENEMY_TYPE_2 || type == ENEMY_TYPE_3 || type == ENEMY_TYPE_4 || type == ENEMY_TYPE_5) {
 		ent->sprite = gf2d_sprite_load_all("images/cat.png", 50, 50, 10);
 	}
 	else {
@@ -31,6 +31,10 @@ Entity* enemy_spawn(Vector2D position, enum enemy_type type) {
 		ent->maxHealth = 150;
 	else if (type == ENEMY_TYPE_3)
 		ent->maxHealth = 50;
+	else if (type == ENEMY_TYPE_4)
+		ent->maxHealth = 100;
+	else if (type == ENEMY_TYPE_5)
+		ent->maxHealth = 100;
 	ent->health = ent->maxHealth;
 	ent->type = type;
 	ent->rotation = vector3d(0, 0, 0);
@@ -40,9 +44,13 @@ Entity* enemy_spawn(Vector2D position, enum enemy_type type) {
 	if (type == ENEMY_TYPE_1)
 		ent->speed = 2;
 	else if (type == ENEMY_TYPE_2)
-		ent->speed = 0.5;
-	else if (type == ENEMY_TYPE_2)
-		ent->speed = 4;
+		ent->speed = 1;
+	else if (type == ENEMY_TYPE_3)
+		ent->speed = 3;
+	else if (type == ENEMY_TYPE_4)
+		ent->speed = 2;
+	else if (type == ENEMY_TYPE_5)
+		ent->speed = 2;
 	ent->flip = vector2d(FACE_RIGHT, 0);
 
 	if (type == ENEMY_TYPE_1)
@@ -50,6 +58,10 @@ Entity* enemy_spawn(Vector2D position, enum enemy_type type) {
 	else if (type == ENEMY_TYPE_2)
 		ent->scale = vector2d(8, 8);
 	else if (type == ENEMY_TYPE_3)
+		ent->scale = vector2d(1, 1);
+	else if (type == ENEMY_TYPE_4)
+		ent->scale = vector2d(1, 1);
+	else if (type == ENEMY_TYPE_5)
 		ent->scale = vector2d(1, 1);
 
 	return ent;
@@ -72,25 +84,22 @@ void enemy_update_side(Entity* self) {
 Vector2D enemy_move_to_player(Entity* self) {
 	Vector2D playerPosition;
 	Vector2D currentPosition;
-	float xchange, ychange;
 
 	playerPosition = player_get_position();
 	currentPosition = entity_real_position(self);
-	xchange = 1;
-	ychange = 1;
-
+	
 	if (playerPosition.x - currentPosition.x > 0) {
-		self->drawPosition.x += xchange;
+		self->drawPosition.x += self->speed;
 	}
 	else if (playerPosition.x - currentPosition.x < 0) {
-		self->drawPosition.x -= xchange;
+		self->drawPosition.x -= self->speed;
 	}
 
 	if (playerPosition.y -currentPosition.y > 0) {
-		self->drawPosition.y += ychange;
+		self->drawPosition.y += self->speed;
 	}
 	else if (playerPosition.y - currentPosition.y < 0) {
-		self->drawPosition.y -= ychange;
+		self->drawPosition.y -= self->speed;
 	}
 
 	enemy_update_side(self);

@@ -36,7 +36,14 @@ void player_spawn(Vector2D position) {
 }
 
 Vector2D player_get_position() {
-	return entity_real_position(player.entity);
+	Vector2D realPosition;
+
+	realPosition = entity_real_position(player.entity);
+
+	if (player.entity->side == FACE_LEFT)
+		realPosition.x -= player.entity->sprite->frame_w / 2;
+
+	return realPosition;
 }
 
 void player_free() {
