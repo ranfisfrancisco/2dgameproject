@@ -9,7 +9,6 @@ void player_update(Entity* self);
 void player_hurt(Entity* self);
 
 static PlayerEntity player = { 0 };
-static int attack_hit = 0;
 
 void player_spawn(Vector2D position) {
 	if (player.entity != NULL)
@@ -21,10 +20,8 @@ void player_spawn(Vector2D position) {
 		return NULL;
 	}
 	player.entity->sprite = gf2d_sprite_load_all("images/kyo_2.png", 128, 144, 13);
-	gfc_rect_set(player.entity->hurtbox, player.entity->position.x, player.entity->position.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
-	vector2d_copy(player.entity->position, position);
-	player.entity->frameRate = 0.1;
-	player.entity->frameCount = 16;
+	gfc_rect_set(player.entity->hurtbox, player.entity->drawPosition.x, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
+	vector2d_copy(player.entity->drawPosition, position);
 	player.entity->maxHealth = 100;
 	player.entity->health = player.entity->maxHealth;
 	player.entity->type = PLAYER_TYPE;
@@ -34,10 +31,12 @@ void player_spawn(Vector2D position) {
 	player.entity->speed = 3;
 	player.entity->flip = vector2d(FACE_RIGHT, 0);
 	player.entity->scale = vector2d(2, 2);
+	player.entity->attackHit = 0;
+
 }
 
 Vector2D player_get_position() {
-	return player.entity->position;
+	return entity_real_position(player.entity);
 }
 
 void player_free() {
@@ -58,31 +57,31 @@ void player_movement(const Uint8* keys) {
 	left = keys[SDL_SCANCODE_A];
 
 	if (left) {
-		player.entity->position.x -= player.entity->speed;
-		if (player.entity->position.x < 0)
-			player.entity->position.x = 0;
+		player.entity->drawPosition.x -= player.entity->speed;
+		if (player.entity->drawPosition.x < 0)
+			player.entity->drawPosition.x = 0;
 
 		camera_move(vector2d(-player.entity->speed, 0));
 
 	}
 	else if (right) {
-		player.entity->position.x += player.entity->speed;
-		if (player.entity->position.x > 1200 - 2*player.entity->sprite->frame_w)
-			player.entity->position.x = 1200 - 2*player.entity->sprite->frame_w;
+		player.entity->drawPosition.x += player.entity->speed;
+		if (player.entity->drawPosition.x > 1200 - 2*player.entity->sprite->frame_w)
+			player.entity->drawPosition.x = 1200 - 2*player.entity->sprite->frame_w;
 
 		camera_move(vector2d(player.entity->speed, 0));
 	}
 	if (up) {
-		player.entity->position.y -= player.entity->speed;
-		if (player.entity->position.y < 0 + player.entity->sprite->frame_h)
-			player.entity->position.y = 0 + player.entity->sprite->frame_h;
+		player.entity->drawPosition.y -= player.entity->speed;
+		if (player.entity->drawPosition.y < 0 + player.entity->sprite->frame_h)
+			player.entity->drawPosition.y = 0 + player.entity->sprite->frame_h;
 
 		camera_move(vector2d(0, -player.entity->speed));
 	}
 	else if (down) {
-		player.entity->position.y += player.entity->speed;
-		if (player.entity->position.y > 1200 - 5*player.entity->sprite->frame_h)
-			player.entity->position.y = 1200 - 5*player.entity->sprite->frame_h;
+		player.entity->drawPosition.y += player.entity->speed;
+		if (player.entity->drawPosition.y > 1200 - 5*player.entity->sprite->frame_h)
+			player.entity->drawPosition.y = 1200 - 5*player.entity->sprite->frame_h;
 
 		camera_move(vector2d(0, player.entity->speed));
 	}
@@ -107,7 +106,7 @@ void player_update_side(const Uint8* keys) {
 void player_change_state(enum player_state state) {
 	player.entity->frame = 0;
 	player.entity->statePos = 0;
-	attack_hit = 0;
+	player.entity->attackHit = 0;
 	player.entity->state = state;
 }
 
@@ -235,15 +234,15 @@ void player_input(const Uint8* keys) {
 		endFrame = 23;
 		player.entity->statePos++;
 
-		gfc_rect_set(hitbox, player.entity->position.x + player.entity->sprite->frame_w, player.entity->position.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
+		gfc_rect_set(hitbox, player.entity->drawPosition.x + player.entity->sprite->frame_w, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
 
-		if (!attack_hit) {
+		if (!player.entity->attackHit) {
 			if (player.entity->side == FACE_LEFT) {
 				hitbox.x -= 2 * player.entity->sprite->frame_w;
 			}
 
 			if (entity_manager_check_collison(hitbox, 20))
-				attack_hit = 1;
+				player.entity->attackHit = 1;
 		}
 	
 
@@ -264,6 +263,17 @@ void player_input(const Uint8* keys) {
 		startFrame = 18;
 		endFrame = 22;
 		player.entity->statePos++;
+
+		gfc_rect_set(hitbox, player.entity->drawPosition.x + player.entity->sprite->frame_w, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
+
+		if (!player.entity->attackHit) {
+			if (player.entity->side == FACE_LEFT) {
+				hitbox.x -= 2 * player.entity->sprite->frame_w;
+			}
+
+			if (entity_manager_check_collison(hitbox, 20))
+				player.entity->attackHit = 1;
+		}
 		
 		if (player.entity->frame < startFrame)
 			player.entity->frame = startFrame;
@@ -289,6 +299,17 @@ void player_input(const Uint8* keys) {
 
 		player.entity->statePos++;
 
+		gfc_rect_set(hitbox, player.entity->drawPosition.x + player.entity->sprite->frame_w, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
+
+		if (!player.entity->attackHit) {
+			if (player.entity->side == FACE_LEFT) {
+				hitbox.x -= 2 * player.entity->sprite->frame_w;
+			}
+
+			if (entity_manager_check_collison(hitbox, 20))
+				player.entity->attackHit = 1;
+		}
+
 		if (player.entity->frame < startFrame)
 			player.entity->frame = startFrame;
 		else if (player.entity->frame == endFrame) {
@@ -308,6 +329,17 @@ void player_input(const Uint8* keys) {
 		endFrame = 39;
 
 		player.entity->statePos++;
+
+		gfc_rect_set(hitbox, player.entity->drawPosition.x + player.entity->sprite->frame_w, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
+
+		if (!player.entity->attackHit) {
+			if (player.entity->side == FACE_LEFT) {
+				hitbox.x -= 2 * player.entity->sprite->frame_w;
+			}
+
+			if (entity_manager_check_collison(hitbox, 20))
+				player.entity->attackHit = 1;
+		}
 
 		if (player.entity->frame < startFrame)
 			player.entity->frame = startFrame;
@@ -329,6 +361,17 @@ void player_input(const Uint8* keys) {
 
 		player.entity->statePos++;
 
+		gfc_rect_set(hitbox, player.entity->drawPosition.x + player.entity->sprite->frame_w, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
+
+		if (!player.entity->attackHit) {
+			if (player.entity->side == FACE_LEFT) {
+				hitbox.x -= 2 * player.entity->sprite->frame_w;
+			}
+
+			if (entity_manager_check_collison(hitbox, 20))
+				player.entity->attackHit = 1;
+		}
+
 		if (player.entity->frame < startFrame)
 			player.entity->frame = startFrame;
 		else if (player.entity->frame == endFrame) {
@@ -349,6 +392,17 @@ void player_input(const Uint8* keys) {
 
 		player.entity->statePos++;
 
+		gfc_rect_set(hitbox, player.entity->drawPosition.x + player.entity->sprite->frame_w, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
+
+		if (!player.entity->attackHit) {
+			if (player.entity->side == FACE_LEFT) {
+				hitbox.x -= 2 * player.entity->sprite->frame_w;
+			}
+
+			if (entity_manager_check_collison(hitbox, 20))
+				player.entity->attackHit = 1;
+		}
+
 		if (player.entity->frame < startFrame)
 			player.entity->frame = startFrame;
 		else if (player.entity->frame == endFrame) {
@@ -368,6 +422,17 @@ void player_input(const Uint8* keys) {
 		endFrame = 63;
 
 		player.entity->statePos++;
+
+		gfc_rect_set(hitbox, player.entity->drawPosition.x + player.entity->sprite->frame_w, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
+
+		if (!player.entity->attackHit) {
+			if (player.entity->side == FACE_LEFT) {
+				hitbox.x -= 2 * player.entity->sprite->frame_w;
+			}
+
+			if (entity_manager_check_collison(hitbox, 60))
+				player.entity->attackHit = 1;
+		}
 
 		if (player.entity->frame < startFrame)
 			player.entity->frame = startFrame;
@@ -392,7 +457,8 @@ void player_update() {
 	keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
 	player_input(keys);
 
-	gfc_rect_set(player.entity->hurtbox, player.entity->position.x, player.entity->position.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
+	player.entity->realPosition = entity_real_position(player.entity);
+	gfc_rect_set(player.entity->hurtbox, player.entity->drawPosition.x, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
 }
 
 void player_hurt(Entity* self, int damage) {

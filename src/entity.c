@@ -66,6 +66,15 @@ void entity_free(Entity* ent) {
 	}
 }
 
+Vector2D entity_real_position(Entity* ent) {
+	int realX, realY;
+
+	realX = ent->drawPosition.x + (ent->sprite->frame_w * ent->scale.x) / 2;
+	realY = ent->drawPosition.y + (ent->sprite->frame_h * ent->scale.y) / 2;
+
+	return vector2d(realX, realY);
+}
+
 void entity_update(Entity* self) {
 	if (!self) return;
 	//do any generic update code
@@ -94,7 +103,7 @@ void entity_draw(Entity* ent) {
 	else {
 		gf2d_sprite_draw(
 			ent->sprite,
-			ent->position,
+			ent->drawPosition,
 			&ent->scale,
 			NULL,
 			&ent->rotation,

@@ -5,7 +5,7 @@
 #include "gfc_vector.h"
 #include "gf2d_sprite.h"
 
-enum entity_type {NO_TYPE, PLAYER_TYPE, ENEMY_TYPE};
+enum entity_type {NO_TYPE, PLAYER_TYPE, ENEMY_TYPE_1, ENEMY_TYPE_2, ENEMY_TYPE_3};
 /*NOTE: FaceLeft and FaceRight are currently not always accurate names; 
 this is because the player sprite is naturally flipped so whne used in other contexts, 
 left an right may be reversed. Treat the names as arbitrary */
@@ -13,13 +13,13 @@ enum facing_side { FACE_RIGHT, FACE_LEFT };
 
 typedef struct Entity_s{
 	Bool _inuse;
-	Vector2D position;
+	Vector2D drawPosition;
+	Vector2D realPosition;
 	Sprite *sprite;
 	Vector2D scale;
 	SDL_Rect hurtbox;
+	int attackHit;
 	float frame;
-	float frameRate;
-	int frameCount;
 	Vector3D rotation;
 	void (*update)(struct Entity_s* self);
 	void (*think)(struct Entity_s* self);
@@ -40,6 +40,8 @@ typedef struct Entity_s{
 void entity_manager_init(Uint32 max_entities);
 
 void entity_manager_free();
+
+Vector2D entity_real_position(Entity* ent);
 
 //calls update function on all entities.
 void entity_manager_update_entities();

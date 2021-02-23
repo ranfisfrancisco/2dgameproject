@@ -3,11 +3,11 @@
 #include "player.h"
 #include <stdlib.h>
 
-void enemy_think();
-void enemy_hurt();
+void enemy_think(Entity* self);
+void enemy_hurt(Entity* self, int damage);
 void enemy_update(Entity* self);
 
-Entity *enemy_spawn(Vector2D position) {
+Entity* enemy_spawn(Vector2D position, enum enemy_type type) {
 	Entity* ent;
 
 	ent = entity_new();
@@ -15,21 +15,42 @@ Entity *enemy_spawn(Vector2D position) {
 		slog("failed to create entity for player");
 		return NULL;
 	}
-	ent->sprite = gf2d_sprite_load_all("images/cat.png", 50, 50, 10);
-	vector2d_copy(ent->position, position);
-	gfc_rect_set(ent->hurtbox, ent->position.x, ent->position.y, ent->sprite->frame_w, ent->sprite->frame_h);
-	ent->frameRate = 0.1;
-	ent->frameCount = 16;
-	ent->maxHealth = 100;
+	if (type == ENEMY_TYPE_1 || type == ENEMY_TYPE_2 || type == ENEMY_TYPE_3) {
+		ent->sprite = gf2d_sprite_load_all("images/cat.png", 50, 50, 10);
+	}
+	else {
+		slog("Attempted to spawn enemy as non-enemy type");
+		entity_free(ent);
+		return NULL;
+	}
+	vector2d_copy(ent->drawPosition, position);
+	gfc_rect_set(ent->hurtbox, ent->drawPosition.x, ent->drawPosition.y, ent->sprite->frame_w, ent->sprite->frame_h);
+	if (type == ENEMY_TYPE_1)
+		ent->maxHealth = 100;
+	else if (type == ENEMY_TYPE_2)
+		ent->maxHealth = 150;
+	else if (type == ENEMY_TYPE_3)
+		ent->maxHealth = 50;
 	ent->health = ent->maxHealth;
-	ent->type = ENEMY_TYPE;
+	ent->type = type;
 	ent->rotation = vector3d(0, 0, 0);
 	ent->update = enemy_update;
 	ent->think = enemy_think;
 	ent->hurt = enemy_hurt;
-	ent->speed = 2;
+	if (type == ENEMY_TYPE_1)
+		ent->speed = 2;
+	else if (type == ENEMY_TYPE_2)
+		ent->speed = 0.5;
+	else if (type == ENEMY_TYPE_2)
+		ent->speed = 4;
 	ent->flip = vector2d(FACE_RIGHT, 0);
-	ent->scale = vector2d(4, 4);
+
+	if (type == ENEMY_TYPE_1)
+		ent->scale = vector2d(4, 4);
+	else if (type == ENEMY_TYPE_2)
+		ent->scale = vector2d(8, 8);
+	else if (type == ENEMY_TYPE_3)
+		ent->scale = vector2d(1, 1);
 
 	return ent;
 }
@@ -39,10 +60,10 @@ void enemy_update_side(Entity* self) {
 
 	playerPosition = player_get_position();
 
-	if (playerPosition.x - self->position.x > 0) {
+	if (playerPosition.x - self->drawPosition.x > 0) {
 		self->flip.x = FACE_RIGHT;
 	}
-	else if (playerPosition.x - self->position.x < 0) {
+	else if (playerPosition.x - self->drawPosition.x < 0) {
 		self->flip.x = FACE_LEFT;
 	}
 }
@@ -50,29 +71,31 @@ void enemy_update_side(Entity* self) {
 //Moves enemy closer to player and returns current distance from enemy to player
 Vector2D enemy_move_to_player(Entity* self) {
 	Vector2D playerPosition;
+	Vector2D currentPosition;
 	float xchange, ychange;
 
 	playerPosition = player_get_position();
+	currentPosition = entity_real_position(self);
 	xchange = 1;
 	ychange = 1;
 
-	if (playerPosition.x - self->position.x > 0) {
-		self->position.x += xchange;
+	if (playerPosition.x - currentPosition.x > 0) {
+		self->drawPosition.x += xchange;
 	}
-	else if (playerPosition.x - self->position.x < 0) {
-		self->position.x -= xchange;
+	else if (playerPosition.x - currentPosition.x < 0) {
+		self->drawPosition.x -= xchange;
 	}
 
-	if (playerPosition.y - self->position.y > 0) {
-		self->position.y += ychange;
+	if (playerPosition.y -currentPosition.y > 0) {
+		self->drawPosition.y += ychange;
 	}
-	else if (playerPosition.y - self->position.y < 0) {
-		self->position.y -= ychange;
+	else if (playerPosition.y - currentPosition.y < 0) {
+		self->drawPosition.y -= ychange;
 	}
 
 	enemy_update_side(self);
 
-	return vector2d(abs(playerPosition.x - self->position.x), abs(playerPosition.y - self->position.y));
+	return vector2d(abs(playerPosition.x - currentPosition.x), abs(playerPosition.y - currentPosition.y));
 }
 
 void enemy_change_state(Entity* self, enum enemy_state state) {
@@ -84,6 +107,7 @@ void enemy_change_state(Entity* self, enum enemy_state state) {
 //TODO: Add randomness to movement
 void enemy_think(Entity* self) {
 	int startFrame, endFrame;
+	SDL_Rect hitbox;
 	Vector2D distToPlayer;
 
 	switch (self->state) {
@@ -121,6 +145,17 @@ void enemy_think(Entity* self) {
 
 		self->statePos += 1;
 
+		gfc_rect_set(hitbox, self->drawPosition.x + self->sprite->frame_w, self->drawPosition.y, self->sprite->frame_w, self->sprite->frame_h);
+
+		if (!self->attackHit) {
+			if (self->side == FACE_LEFT) {
+				hitbox.x -= 2 * self->sprite->frame_w;
+			}
+
+			if (entity_manager_check_collison(hitbox, 4))
+				self->attackHit = 1;
+		}
+
 		if (self->frame < startFrame)
 			self->frame = startFrame;
 		else if (self->frame >= endFrame) {
@@ -152,7 +187,9 @@ void enemy_update(Entity* self) {
 		return;
 	}
 
-	gfc_rect_set(self->hurtbox, self->position.x, self->position.y, self->sprite->frame_w, self->sprite->frame_h);
+	self->realPosition = entity_real_position(self);
+
+	gfc_rect_set(self->hurtbox, self->drawPosition.x, self->drawPosition.y, self->sprite->frame_w * self->scale.x, self->sprite->frame_h * self->scale.y);
 }
 
 
