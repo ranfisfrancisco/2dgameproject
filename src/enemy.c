@@ -7,7 +7,7 @@ void enemy_think(Entity* self);
 void enemy_hurt(Entity* self, int damage);
 void enemy_update(Entity* self);
 
-Entity* enemy_spawn(Vector2D position, enum enemy_type type) {
+Entity* enemy_spawn(Vector2D position, enum entity_type type) {
 	Entity* ent;
 
 	ent = entity_new();
@@ -24,7 +24,6 @@ Entity* enemy_spawn(Vector2D position, enum enemy_type type) {
 		return NULL;
 	}
 	vector2d_copy(ent->drawPosition, position);
-	gfc_rect_set(ent->hurtbox, ent->drawPosition.x, ent->drawPosition.y, ent->sprite->frame_w, ent->sprite->frame_h);
 
 	if (type == ENEMY_TYPE_1)
 		ent->maxHealth = 100;
@@ -43,6 +42,7 @@ Entity* enemy_spawn(Vector2D position, enum enemy_type type) {
 	ent->update = enemy_update;
 	ent->think = enemy_think;
 	ent->hurt = enemy_hurt;
+	ent->type = type;
 
 	if (type == ENEMY_TYPE_1)
 		ent->speed = 2;
@@ -72,6 +72,8 @@ Entity* enemy_spawn(Vector2D position, enum enemy_type type) {
 		ent->scale = vector2d(4, 4);
 	else if (type == ENEMY_TYPE_5)
 		ent->scale = vector2d(4, 4);
+
+	gfc_rect_set(ent->hurtbox, ent->drawPosition.x, ent->drawPosition.y, ent->sprite->frame_w * ent->scale.x, ent->sprite->frame_h * ent->scale.y);
 
 	return ent;
 }

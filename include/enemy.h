@@ -7,6 +7,6 @@
 
 enum enemy_state { ENEMY_IDLE, ENEMY_HURT, ENEMY_WALK, ENEMY_ATTACK };
 
-Entity* enemy_spawn(Vector2D position, enum enemy_type type);
+Entity* enemy_spawn(Vector2D position, enum entity_type type);
 
 #endif

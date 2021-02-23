@@ -43,6 +43,7 @@ Entity *entity_new(){
 		if (entity_manager.entity_list[i]._inuse) 
 			continue;
 		memset(&entity_manager.entity_list[i], 0, sizeof(Entity));
+		entity_manager.entity_list[i].colorShift = vector4d(255, 255, 255, 255);
 		entity_manager.entity_list[i]._inuse = 1;
 		return &entity_manager.entity_list[i];
 	}
