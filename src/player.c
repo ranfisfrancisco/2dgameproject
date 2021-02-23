@@ -33,7 +33,6 @@ void player_spawn(Vector2D position) {
 	player.entity->flip = vector2d(FACE_RIGHT, 0);
 	player.entity->scale = vector2d(2, 2);
 	player.entity->attackHit = 0;
-
 }
 
 Vector2D player_get_position() {
@@ -325,7 +324,7 @@ void player_input(const Uint8* keys) {
 				hitbox.x -= 2 * player.entity->sprite->frame_w;
 			}
 
-			if (entity_manager_check_collison(hitbox, 20))
+			if (entity_manager_check_collison(hitbox, 31))
 				player.entity->attackHit = 1;
 		}
 
@@ -356,7 +355,7 @@ void player_input(const Uint8* keys) {
 				hitbox.x -= 2 * player.entity->sprite->frame_w;
 			}
 
-			if (entity_manager_check_collison(hitbox, 20))
+			if (entity_manager_check_collison(hitbox, 32))
 				player.entity->attackHit = 1;
 		}
 
@@ -387,7 +386,7 @@ void player_input(const Uint8* keys) {
 				hitbox.x -= 2 * player.entity->sprite->frame_w;
 			}
 
-			if (entity_manager_check_collison(hitbox, 20))
+			if (entity_manager_check_collison(hitbox, 31))
 				player.entity->attackHit = 1;
 		}
 
@@ -418,7 +417,7 @@ void player_input(const Uint8* keys) {
 				hitbox.x -= 2 * player.entity->sprite->frame_w;
 			}
 
-			if (entity_manager_check_collison(hitbox, 20))
+			if (entity_manager_check_collison(hitbox, 32))
 				player.entity->attackHit = 1;
 		}
 

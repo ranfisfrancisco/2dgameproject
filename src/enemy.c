@@ -219,6 +219,29 @@ void enemy_update(Entity* self) {
 
 
 void enemy_hurt(Entity* self, int damage) {
-	enemy_change_state(self, ENEMY_HURT);
-	self->health -= damage;
+	if (self->type == ENEMY_TYPE_4) {
+		if (damage > 30) {
+			enemy_change_state(self, ENEMY_HURT);
+			self->health -= damage;
+		}
+		else {
+			enemy_change_state(self, ENEMY_HURT);
+			self->health -= damage/4;
+		}
+	}
+	else if (self->type == ENEMY_TYPE_5) {
+		if (damage < 30) {
+			enemy_change_state(self, ENEMY_HURT);
+			self->health -= damage;
+		}
+		else {
+			enemy_change_state(self, ENEMY_HURT);
+			self->health -= damage / 4;
+		}
+	}
+	else {
+		enemy_change_state(self, ENEMY_HURT);
+		self->health -= damage;
+	}
+	
 }
