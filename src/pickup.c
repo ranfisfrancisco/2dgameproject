@@ -18,6 +18,9 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 	else if (type == PICKUP_TYPE_KNIFE) {
 		ent->sprite = gf2d_sprite_load_image("images/knife.png");
 	}
+	else if (type == PICKUP_TYPE_POWERUP) {
+		ent->sprite = gf2d_sprite_load_image("images/chicken.png");
+	}
 	else {
 		slog("Attempted to spawn pickup as non-pickup type");
 		entity_free(ent);
@@ -34,12 +37,10 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 	else
 		ent->scale = vector2d(1, 1);
 
-	if (type == PICKUP_TYPE_MEDKIT)
-		ent->colorShift = vector4d(255, 255, 255, 255);
-	else if (type == PICKUP_TYPE_FMEDKIT) {
+	if (type == PICKUP_TYPE_FMEDKIT) {
 		ent->colorShift = vector4d(100, 100, 100, 255);
 	}
-	else if (type == PICKUP_TYPE_KNIFE) {
+	else {
 		ent->colorShift = vector4d(255, 255, 255, 255);
 	}
 
@@ -71,6 +72,10 @@ void pickup_update(Entity* self) {
 		}
 		else if (self->type == PICKUP_TYPE_FMEDKIT) {
 			player_change_health(-5);
+			entity_free(self);
+		}
+		else if (self->type == PICKUP_TYPE_POWERUP) {
+			player_power_up(60 * 20);
 			entity_free(self);
 		}
 		else if (self->type == PICKUP_TYPE_KNIFE) {
