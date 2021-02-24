@@ -26,6 +26,8 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 
 	vector2d_copy(ent->drawPosition, position);
 	ent->type = type;
+	ent->maxHealth = 100;
+	ent->health = ent->maxHealth;
 
 	if (type == PICKUP_TYPE_KNIFE)
 		ent->scale = vector2d(1.0/12, 1.0/12);
@@ -52,6 +54,13 @@ void pickup_update(Entity* self) {
 
 	if (self->type == PICKUP_TYPE_KNIFE && self->state == 1) {
 		vector2d_copy(self->drawPosition, player_get_weapon_position());
+		self->statePos++;
+		if (self->statePos > 60 * 60)
+			entity_free(self);
+
+		if (self->health <= 0)
+			entity_free(self);
+
 		return;
 	}
 
@@ -66,6 +75,7 @@ void pickup_update(Entity* self) {
 		}
 		else if (self->type == PICKUP_TYPE_KNIFE) {
 			self->state = 1;
+			player_attatch_weapon(self);
 		}
 	}
 }

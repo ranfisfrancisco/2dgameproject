@@ -46,6 +46,22 @@ Vector2D player_get_position() {
 	return realPosition;
 }
 
+void player_attatch_weapon(Entity* ent) {
+	if (ent->type != PICKUP_TYPE_KNIFE) {
+		slog("Attempted to attatch non-weapon to player");
+		return;
+	}
+	else if (!ent->_inuse) {
+		slog("Attempted to attatch entity not in use to player");
+		return;
+	}
+
+	if (player.weapon != NULL)
+		free(player.weapon);
+
+	player.weapon = ent;
+}
+
 Vector2D player_get_weapon_position() {
 	return player_get_position();
 }
@@ -60,8 +76,12 @@ void player_change_health(int amount) {
 	player.entity->health += amount;
 }
 
+
+
 void player_free() {
 	//if player struct has any pointers free them
+	if (player.weapon != NULL)
+		entity_free(player.weapon);
 
 	if (player.entity->_inuse)
 		entity_free(player.entity);
@@ -132,12 +152,14 @@ void player_change_state(enum player_state state) {
 	player.entity->state = state;
 }
 
+
 void player_input(const Uint8* keys) {
 	enum player_directional_input raw_input = NO_INPUT;
 	enum player_move move = 0;
 	int up, down, left, right;
 	int punch, kick;
 	int startFrame, endFrame;
+	int attackPower;
 	SDL_Rect hitbox;
 
 	up = keys[SDL_SCANCODE_W];
@@ -254,19 +276,26 @@ void player_input(const Uint8* keys) {
 	case PLAYER_PUNCH:
 		startFrame = 23;
 		endFrame = 23;
+		attackPower = 20;
 		player.entity->statePos++;
 
 		gfc_rect_set(hitbox, player.entity->drawPosition.x + player.entity->sprite->frame_w, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
+
+		if (player.weapon)
+			attackPower += 10;
 
 		if (!player.entity->attackHit) {
 			if (player.entity->side == FACE_LEFT) {
 				hitbox.x -= 2 * player.entity->sprite->frame_w;
 			}
 
-			if (entity_manager_check_collison(hitbox, 20))
+			if (entity_manager_check_collison(hitbox, attackPower)) {
 				player.entity->attackHit = 1;
+
+				if (player.weapon)
+					player.weapon->health -= 50;
+			}
 		}
-	
 
 		if (player.entity->frame < startFrame)
 			player.entity->frame = startFrame;
@@ -277,8 +306,6 @@ void player_input(const Uint8* keys) {
 			player_change_state(PLAYER_PK);
 		}
 
-		
-		
 		break;
 
 	case PLAYER_KICK:
@@ -476,11 +503,18 @@ void player_input(const Uint8* keys) {
 
 void player_update() {
 	const Uint8* keys;
+
+	if (player.weapon)
+		if (!player.weapon->_inuse)
+			player.weapon = NULL;
+
 	keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
 	player_input(keys);
 
 	player.entity->realPosition = entity_real_position(player.entity);
 	gfc_rect_set(player.entity->hurtbox, player.entity->drawPosition.x, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
+
+	
 }
 
 void player_hurt(Entity* self, int damage) {
