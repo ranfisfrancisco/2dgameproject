@@ -6,10 +6,10 @@
 #include "gfc_types.h"
 
 typedef struct {
-	Entity* entity;
 	Entity* weapon;
 	int powerUpTime;
-}PlayerEntity;
+}PlayerData;
+
 
 void player_spawn(Vector2D position);
 
