@@ -76,8 +76,6 @@ void player_change_health(int amount) {
 	player.entity->health += amount;
 }
 
-
-
 void player_free() {
 	//if player struct has any pointers free them
 	if (player.weapon != NULL)
@@ -150,6 +148,17 @@ void player_change_state(enum player_state state) {
 	player.entity->attackHit = 0;
 	player.entity->colorShift = vector4d(255, 255, 255, 255);
 	player.entity->state = state;
+}
+
+void player_attack_check(SDL_Rect hitbox, int attackPower, int weaponDegradation) {
+	if (player.entity->attackHit == 0) {
+		if (entity_manager_check_collison(hitbox, attackPower)) {
+			player.entity->attackHit = 1;
+
+			if (player.weapon)
+				player.weapon->health -= weaponDegradation;
+		}
+	}
 }
 
 
@@ -280,22 +289,14 @@ void player_input(const Uint8* keys) {
 		player.entity->statePos++;
 
 		gfc_rect_set(hitbox, player.entity->drawPosition.x + player.entity->sprite->frame_w, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
+		if (player.entity->side == FACE_LEFT) {
+			hitbox.x -= 2 * player.entity->sprite->frame_w;
+		}
 
 		if (player.weapon)
 			attackPower += 10;
 
-		if (!player.entity->attackHit) {
-			if (player.entity->side == FACE_LEFT) {
-				hitbox.x -= 2 * player.entity->sprite->frame_w;
-			}
-
-			if (entity_manager_check_collison(hitbox, attackPower)) {
-				player.entity->attackHit = 1;
-
-				if (player.weapon)
-					player.weapon->health -= 50;
-			}
-		}
+		player_attack_check(hitbox, attackPower, 20);
 
 		if (player.entity->frame < startFrame)
 			player.entity->frame = startFrame;
@@ -311,19 +312,16 @@ void player_input(const Uint8* keys) {
 	case PLAYER_KICK:
 		startFrame = 18;
 		endFrame = 22;
+		attackPower = 20;
 		player.entity->statePos++;
 
 		gfc_rect_set(hitbox, player.entity->drawPosition.x + player.entity->sprite->frame_w, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
-
-		if (!player.entity->attackHit) {
-			if (player.entity->side == FACE_LEFT) {
-				hitbox.x -= 2 * player.entity->sprite->frame_w;
-			}
-
-			if (entity_manager_check_collison(hitbox, 20))
-				player.entity->attackHit = 1;
+		if (player.entity->side == FACE_LEFT) {
+			hitbox.x -= 2 * player.entity->sprite->frame_w;
 		}
-		
+
+		player_attack_check(hitbox, attackPower, 0);
+
 		if (player.entity->frame < startFrame)
 			player.entity->frame = startFrame;
 
@@ -345,19 +343,18 @@ void player_input(const Uint8* keys) {
 	case PLAYER_QCFP:
 		startFrame = 14;
 		endFrame = 16;
+		attackPower = 31;
 
 		player.entity->statePos++;
 
 		gfc_rect_set(hitbox, player.entity->drawPosition.x + player.entity->sprite->frame_w, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
-
-		if (!player.entity->attackHit) {
-			if (player.entity->side == FACE_LEFT) {
-				hitbox.x -= 2 * player.entity->sprite->frame_w;
-			}
-
-			if (entity_manager_check_collison(hitbox, 31))
-				player.entity->attackHit = 1;
+		if (player.entity->side == FACE_LEFT) {
+			hitbox.x -= 2 * player.entity->sprite->frame_w;
 		}
+
+		if (player.weapon)
+			attackPower += 10;
+		player_attack_check(hitbox, attackPower, 30);
 
 		if (player.entity->frame < startFrame)
 			player.entity->frame = startFrame;
@@ -376,19 +373,16 @@ void player_input(const Uint8* keys) {
 	case PLAYER_QCFK:
 		startFrame = 30;
 		endFrame = 39;
+		attackPower = 32;
 
 		player.entity->statePos++;
 
 		gfc_rect_set(hitbox, player.entity->drawPosition.x + player.entity->sprite->frame_w, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
-
-		if (!player.entity->attackHit) {
-			if (player.entity->side == FACE_LEFT) {
-				hitbox.x -= 2 * player.entity->sprite->frame_w;
-			}
-
-			if (entity_manager_check_collison(hitbox, 32))
-				player.entity->attackHit = 1;
+		if (player.entity->side == FACE_LEFT) {
+			hitbox.x -= 2 * player.entity->sprite->frame_w;
 		}
+
+		player_attack_check(hitbox, attackPower, 0);
 
 		if (player.entity->frame < startFrame)
 			player.entity->frame = startFrame;
@@ -407,19 +401,19 @@ void player_input(const Uint8* keys) {
 	case PLAYER_BFP:
 		startFrame = 41;
 		endFrame = 47;
+		attackPower = 31;
 
 		player.entity->statePos++;
 
 		gfc_rect_set(hitbox, player.entity->drawPosition.x + player.entity->sprite->frame_w, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
-
-		if (!player.entity->attackHit) {
-			if (player.entity->side == FACE_LEFT) {
-				hitbox.x -= 2 * player.entity->sprite->frame_w;
-			}
-
-			if (entity_manager_check_collison(hitbox, 31))
-				player.entity->attackHit = 1;
+		if (player.entity->side == FACE_LEFT) {
+			hitbox.x -= 2 * player.entity->sprite->frame_w;
 		}
+
+		if (player.weapon)
+			attackPower += 10;
+
+		player_attack_check(hitbox, attackPower, 10);
 
 		if (player.entity->frame < startFrame)
 			player.entity->frame = startFrame;
@@ -438,19 +432,16 @@ void player_input(const Uint8* keys) {
 	case PLAYER_BFK:
 		startFrame = 24;
 		endFrame = 29;
+		attackPower = 32;
 
 		player.entity->statePos++;
 
 		gfc_rect_set(hitbox, player.entity->drawPosition.x + player.entity->sprite->frame_w, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
-
-		if (!player.entity->attackHit) {
-			if (player.entity->side == FACE_LEFT) {
-				hitbox.x -= 2 * player.entity->sprite->frame_w;
-			}
-
-			if (entity_manager_check_collison(hitbox, 32))
-				player.entity->attackHit = 1;
+		if (player.entity->side == FACE_LEFT) {
+			hitbox.x -= 2 * player.entity->sprite->frame_w;
 		}
+
+		player_attack_check(hitbox, attackPower, 0);
 
 		if (player.entity->frame < startFrame)
 			player.entity->frame = startFrame;
@@ -469,19 +460,16 @@ void player_input(const Uint8* keys) {
 	case PLAYER_PK:
 		startFrame = 48;
 		endFrame = 63;
+		attackPower = 60;
 
 		player.entity->statePos++;
 
 		gfc_rect_set(hitbox, player.entity->drawPosition.x + player.entity->sprite->frame_w, player.entity->drawPosition.y, player.entity->sprite->frame_w, player.entity->sprite->frame_h);
-
-		if (!player.entity->attackHit) {
-			if (player.entity->side == FACE_LEFT) {
-				hitbox.x -= 2 * player.entity->sprite->frame_w;
-			}
-
-			if (entity_manager_check_collison(hitbox, 60))
-				player.entity->attackHit = 1;
+		if (player.entity->side == FACE_LEFT) {
+			hitbox.x -= 2 * player.entity->sprite->frame_w;
 		}
+
+		player_attack_check(hitbox, attackPower, 0);
 
 		if (player.entity->frame < startFrame)
 			player.entity->frame = startFrame;
