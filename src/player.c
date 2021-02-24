@@ -60,7 +60,7 @@ Vector2D player_get_position() {
 }
 
 void player_attatch_weapon(Entity* ent) {
-	if (ent->type != PICKUP_TYPE_KNIFE) {
+	if (ent->type != PICKUP_TYPE_KNIFE && ent->type != PICKUP_TYPE_CROWBAR) {
 		slog("Attempted to attatch non-weapon to player");
 		return;
 	}
@@ -519,7 +519,6 @@ void player_update() {
 			player->baseDamage = 10;
 		}
 	}
-
 
 	if (((PlayerData*)player->data)->weapon)
 		if (!((PlayerData*)player->data)->weapon->_inuse)

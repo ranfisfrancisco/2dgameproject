@@ -18,6 +18,9 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 	else if (type == PICKUP_TYPE_KNIFE) {
 		ent->sprite = gf2d_sprite_load_image("images/knife.png");
 	}
+	else if (type == PICKUP_TYPE_CROWBAR) {
+		ent->sprite = gf2d_sprite_load_image("images/crowbar.png");
+	}
 	else if (type == PICKUP_TYPE_POWERUP) {
 		ent->sprite = gf2d_sprite_load_image("images/chicken.png");
 	}
@@ -34,6 +37,8 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 
 	if (type == PICKUP_TYPE_KNIFE)
 		ent->scale = vector2d(1.0/12, 1.0/12);
+	else if (type == PICKUP_TYPE_CROWBAR)
+		ent->scale = vector2d(0.5, 0.5);
 	else
 		ent->scale = vector2d(1, 1);
 
@@ -53,7 +58,7 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 void pickup_update(Entity* self) {
 	gfc_rect_set(self->hurtbox, self->drawPosition.x, self->drawPosition.y, self->sprite->frame_w * self->scale.x, self->sprite->frame_h * self->scale.y);
 
-	if (self->type == PICKUP_TYPE_KNIFE && self->state == 1) {
+	if ((self->type == PICKUP_TYPE_KNIFE || self->type == PICKUP_TYPE_CROWBAR) && self->state == 1) {
 		vector2d_copy(self->drawPosition, player_get_weapon_position());
 		self->statePos++;
 		if (self->statePos > 60 * 60)
@@ -78,7 +83,7 @@ void pickup_update(Entity* self) {
 			player_power_up(60 * 20);
 			entity_free(self);
 		}
-		else if (self->type == PICKUP_TYPE_KNIFE) {
+		else if (self->type == PICKUP_TYPE_KNIFE || self->type == PICKUP_TYPE_CROWBAR) {
 			self->state = 1;
 			player_attatch_weapon(self);
 		}

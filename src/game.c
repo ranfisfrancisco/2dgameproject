@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
     enemy_spawn(vector2d(600, 200), ENEMY_TYPE_3);
     enemy_spawn(vector2d(600, 200), ENEMY_TYPE_4);
     enemy_spawn(vector2d(600, 200), ENEMY_TYPE_5);*/
-    pickup_spawn(vector2d(300, 160), PICKUP_TYPE_POWERUP);
+    pickup_spawn(vector2d(300, 160), PICKUP_TYPE_CROWBAR);
 
     /*main game loop*/
     while (!done)
