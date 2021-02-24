@@ -46,6 +46,10 @@ Vector2D player_get_position() {
 	return realPosition;
 }
 
+Vector2D player_get_weapon_position() {
+	return player_get_position();
+}
+
 int player_collison_check(SDL_Rect rect) {
 	if (SDL_HasIntersection(&rect, &player.entity->hurtbox))
 		return 1;

@@ -14,6 +14,8 @@ void player_spawn(Vector2D position);
 
 Vector2D player_get_position();
 
+Vector2D player_get_weapon_position();
+
 int player_collison_check(SDL_Rect rect);
 
 void player_change_health(int amount);

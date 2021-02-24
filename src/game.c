@@ -52,12 +52,12 @@ int main(int argc, char* argv[])
 
     level = level_load("levels/exampleLevel.json");
     player_spawn(vector2d(600, 360));
-    enemy_spawn(vector2d(600, 200), ENEMY_TYPE_1);
+    /*enemy_spawn(vector2d(600, 200), ENEMY_TYPE_1);
     enemy_spawn(vector2d(600, 200), ENEMY_TYPE_2);
     enemy_spawn(vector2d(600, 200), ENEMY_TYPE_3);
     enemy_spawn(vector2d(600, 200), ENEMY_TYPE_4);
-    enemy_spawn(vector2d(600, 200), ENEMY_TYPE_5);
-    pickup_spawn(vector2d(600, 160), PICKUP_TYPE_2);
+    enemy_spawn(vector2d(600, 200), ENEMY_TYPE_5);*/
+    pickup_spawn(vector2d(300, 160), PICKUP_TYPE_KNIFE);
 
     /*main game loop*/
     while (!done)
@@ -69,8 +69,8 @@ int main(int argc, char* argv[])
         /*update things here*/
         SDL_GetMouseState(&mx, &my);
         
-        entity_manager_update_entities();
         entity_manager_think_entities();
+        entity_manager_update_entities();
         level_update(level);
 
         gf2d_graphics_clear_screen();// clears drawing buffers

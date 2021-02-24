@@ -5,10 +5,8 @@
 #include "gfc_vector.h"
 #include "gf2d_sprite.h"
 
-enum entity_type {NO_TYPE, PLAYER_TYPE, ENEMY_TYPE_1, ENEMY_TYPE_2, ENEMY_TYPE_3, ENEMY_TYPE_4, ENEMY_TYPE_5, PICKUP_TYPE_1, PICKUP_TYPE_2};
-/*NOTE: FaceLeft and FaceRight are currently not always accurate names; 
-this is because the player sprite is naturally flipped so whne used in other contexts, 
-left an right may be reversed. Treat the names as arbitrary */
+enum entity_type {NO_TYPE, PLAYER_TYPE, ENEMY_TYPE_1, ENEMY_TYPE_2, ENEMY_TYPE_3, ENEMY_TYPE_4, ENEMY_TYPE_5, PICKUP_TYPE_MEDKIT, PICKUP_TYPE_FMEDKIT, PICKUP_TYPE_KNIFE};
+
 enum facing_side { FACE_RIGHT, FACE_LEFT };
 
 typedef struct Entity_s{
