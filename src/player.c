@@ -40,6 +40,7 @@ void player_spawn(Vector2D position) {
 	player->colorShift = vector4d(255, 255, 255, 255);
 	player->update = player_update;
 	player->hurt = player_hurt;
+	player->baseDamage = 10;
 	player->defaultSpeed = 4;
 	player->speed = player->defaultSpeed;
 	player->flip = vector2d(FACE_RIGHT, 0);
@@ -77,6 +78,7 @@ void player_attatch_weapon(Entity* ent) {
 void player_power_up(int frameTime) {
 	((PlayerData*)player->data)->powerUpTime = frameTime;
 	player->colorShift = vector4d(255, 100, 100, 255);
+	player->baseDamage = 20;
 }
 
 Vector2D player_get_weapon_position() {
@@ -301,7 +303,7 @@ void player_input(const Uint8* keys) {
 	case PLAYER_PUNCH:
 		startFrame = 23;
 		endFrame = 23;
-		attackPower = 20;
+		attackPower = player->baseDamage + 10;
 		player->statePos++;
 
 		gfc_rect_set(hitbox, player->drawPosition.x + player->sprite->frame_w, player->drawPosition.y, player->sprite->frame_w, player->sprite->frame_h);
@@ -328,7 +330,7 @@ void player_input(const Uint8* keys) {
 	case PLAYER_KICK:
 		startFrame = 18;
 		endFrame = 22;
-		attackPower = 20;
+		attackPower = player->baseDamage + 10;
 		player->statePos++;
 
 		gfc_rect_set(hitbox, player->drawPosition.x + player->sprite->frame_w, player->drawPosition.y, player->sprite->frame_w, player->sprite->frame_h);
@@ -359,7 +361,7 @@ void player_input(const Uint8* keys) {
 	case PLAYER_QCFP:
 		startFrame = 14;
 		endFrame = 16;
-		attackPower = 31;
+		attackPower = player->baseDamage + 21;
 
 		player->statePos++;
 
@@ -389,7 +391,7 @@ void player_input(const Uint8* keys) {
 	case PLAYER_QCFK:
 		startFrame = 30;
 		endFrame = 39;
-		attackPower = 32;
+		attackPower = player->baseDamage + 22;
 
 		player->statePos++;
 
@@ -417,7 +419,7 @@ void player_input(const Uint8* keys) {
 	case PLAYER_BFP:
 		startFrame = 41;
 		endFrame = 47;
-		attackPower = 31;
+		attackPower = player->baseDamage + 21;
 
 		player->statePos++;
 
@@ -448,7 +450,7 @@ void player_input(const Uint8* keys) {
 	case PLAYER_BFK:
 		startFrame = 24;
 		endFrame = 29;
-		attackPower = 32;
+		attackPower = player->baseDamage + 21;
 
 		player->statePos++;
 
@@ -476,7 +478,7 @@ void player_input(const Uint8* keys) {
 	case PLAYER_PK:
 		startFrame = 48;
 		endFrame = 63;
-		attackPower = 60;
+		attackPower = player->baseDamage + 50;
 
 		player->statePos++;
 
@@ -514,6 +516,7 @@ void player_update() {
 			player->colorShift = vector4d(255, 255, 255, 255);
 			player->speed = player->defaultSpeed;
 			player->maxHealth;
+			player->baseDamage = 10;
 		}
 	}
 

@@ -17,6 +17,7 @@ typedef struct Entity_s{
 	Vector2D scale;
 	SDL_Rect hurtbox;
 	int attackHit;
+	int baseDamage;
 	float frame;
 	Vector3D rotation;
 	Vector4D colorShift;
