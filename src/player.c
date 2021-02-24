@@ -29,10 +29,13 @@ void player_spawn(Vector2D position) {
 	player.entity->colorShift = vector4d(255, 255, 255, 255);
 	player.entity->update = player_update;
 	player.entity->hurt = player_hurt;
-	player.entity->speed = 4;
+	player.entity->defaultSpeed = 4;
+	player.entity->speed = player.entity->defaultSpeed;
 	player.entity->flip = vector2d(FACE_RIGHT, 0);
 	player.entity->scale = vector2d(2, 2);
 	player.entity->attackHit = 0;
+
+	player_power_up(60 * 5);
 }
 
 Vector2D player_get_position() {
@@ -60,6 +63,11 @@ void player_attatch_weapon(Entity* ent) {
 		free(player.weapon);
 
 	player.weapon = ent;
+}
+
+void player_power_up(int frameTime) {
+	player.powerUpTime = frameTime;
+	player.entity->colorShift = vector4d(255, 100, 100, 255);
 }
 
 Vector2D player_get_weapon_position() {
@@ -146,7 +154,6 @@ void player_change_state(enum player_state state) {
 	player.entity->frame = 0;
 	player.entity->statePos = 0;
 	player.entity->attackHit = 0;
-	player.entity->colorShift = vector4d(255, 255, 255, 255);
 	player.entity->state = state;
 }
 
@@ -491,6 +498,16 @@ void player_input(const Uint8* keys) {
 
 void player_update() {
 	const Uint8* keys;
+
+	if (player.powerUpTime > 0) {
+		player.powerUpTime--;
+		if (player.powerUpTime <= 0) {
+			player.entity->colorShift = vector4d(255, 255, 255, 255);
+			player.entity->speed = player.entity->defaultSpeed;
+			player.entity->maxHealth;
+		}
+	}
+
 
 	if (player.weapon)
 		if (!player.weapon->_inuse)

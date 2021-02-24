@@ -8,6 +8,7 @@
 typedef struct {
 	Entity* entity;
 	Entity* weapon;
+	int powerUpTime;
 }PlayerEntity;
 
 void player_spawn(Vector2D position);
@@ -17,6 +18,8 @@ Vector2D player_get_position();
 void player_attatch_weapon(Entity* ent);
 
 Vector2D player_get_weapon_position();
+
+void player_power_up(int frameTime);
 
 int player_collison_check(SDL_Rect rect);
 

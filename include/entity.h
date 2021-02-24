@@ -33,6 +33,7 @@ typedef struct Entity_s{
 	int statePos;
 	int health;
 	int maxHealth;
+	int defaultSpeed;
 	int speed;
 } Entity;
 
