@@ -169,7 +169,7 @@ void enemy_think(Entity* self) {
 
 		self->statePos += 1;
 
-		gfc_rect_set(hitbox, self->drawPosition.x + self->sprite->frame_w, self->drawPosition.y, self->sprite->frame_w, self->sprite->frame_h);
+		gfc_rect_set(hitbox, self->drawPosition.x, self->drawPosition.y, self->sprite->frame_w * 1.2, self->sprite->frame_h);
 
 		if (!self->attackHit) {
 			if (self->side == FACE_LEFT) {

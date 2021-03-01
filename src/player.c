@@ -74,10 +74,10 @@ void player_attatch_weapon(Entity* ent) {
 	}
 	else if (!ent->_inuse) {
 		slog("Attempted to attatch entity not in use to player");
-		return;
+return;
 	}
 
-	if (((PlayerData *)player->data)->weapon != NULL)
+	if (((PlayerData*)player->data)->weapon != NULL)
 		free(((PlayerData*)player->data)->weapon);
 
 	((PlayerData*)player->data)->weapon = ent;
@@ -132,22 +132,22 @@ void player_movement(const Uint8* keys) {
 	}
 	else if (right) {
 		player->drawPosition.x += player->speed;
-		if (player->drawPosition.x > 1200 - 2*player->sprite->frame_w)
-			player->drawPosition.x = 1200 - 2*player->sprite->frame_w;
+		if (player->drawPosition.x > 1200 - 2 * player->sprite->frame_w)
+			player->drawPosition.x = 1200 - 2 * player->sprite->frame_w;
 
 		camera_move(vector2d(player->speed, 0));
 	}
 	if (up) {
 		player->drawPosition.y -= player->speed;
-		if (player->drawPosition.y < 0 + player->sprite->frame_h/2)
-			player->drawPosition.y = 0 + player->sprite->frame_h/2;
+		if (player->drawPosition.y < 0 + player->sprite->frame_h / 2)
+			player->drawPosition.y = 0 + player->sprite->frame_h / 2;
 
 		camera_move(vector2d(0, -player->speed));
 	}
 	else if (down) {
 		player->drawPosition.y += player->speed;
-		if (player->drawPosition.y > 1200 - 5*player->sprite->frame_h)
-			player->drawPosition.y = 1200 - 5*player->sprite->frame_h;
+		if (player->drawPosition.y > 1200 - 5 * player->sprite->frame_h)
+			player->drawPosition.y = 1200 - 5 * player->sprite->frame_h;
 
 		camera_move(vector2d(0, player->speed));
 	}
@@ -166,6 +166,15 @@ void player_update_side(const Uint8* keys) {
 	else if (right && !left) {
 		player->side = FACE_RIGHT;
 		player->flip.x = FACE_LEFT;
+	}
+}
+
+void player_update_hurtbox() {
+	if (player->side == FACE_LEFT) {
+		gfc_rect_set(player->hurtbox, player->drawPosition.x - player->sprite->frame_w, player->drawPosition.y, player->sprite->frame_w, player->sprite->frame_h);
+	}
+	else if (player->side == FACE_RIGHT){
+		gfc_rect_set(player->hurtbox, player->drawPosition.x, player->drawPosition.y, player->sprite->frame_w, player->sprite->frame_h);
 	}
 }
 
@@ -536,7 +545,7 @@ void player_update() {
 	player_input(keys);
 
 	player->realPosition = entity_real_position(player);
-	gfc_rect_set(player->hurtbox, player->drawPosition.x, player->drawPosition.y, player->sprite->frame_w, player->sprite->frame_h);
+	player_update_hurtbox();
 }
 
 void player_hurt(Entity* self, int damage) {
