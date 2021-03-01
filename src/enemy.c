@@ -10,7 +10,7 @@ void enemy_update(Entity* self);
 Entity* enemy_spawn(Vector2D position, enum entity_type type) {
 	Entity* ent;
 
-	ent = entity_new();
+	ent = entity_new(type);
 	if (!ent) {
 		slog("failed to create entity for player");
 		return NULL;
@@ -42,7 +42,6 @@ Entity* enemy_spawn(Vector2D position, enum entity_type type) {
 	ent->update = enemy_update;
 	ent->think = enemy_think;
 	ent->hurt = enemy_hurt;
-	ent->type = type;
 
 	if (type == ENEMY_TYPE_1)
 		ent->speed = 2;

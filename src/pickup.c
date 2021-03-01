@@ -7,7 +7,7 @@ void pickup_update(Entity* self);
 Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 	Entity* ent;
 
-	ent = entity_new();
+	ent = entity_new(type);
 	if (!ent) {
 		slog("failed to create entity for pickup");
 		return NULL;
@@ -31,7 +31,6 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 	}
 
 	vector2d_copy(ent->drawPosition, position);
-	ent->type = type;
 	ent->maxHealth = 100;
 	ent->health = ent->maxHealth;
 

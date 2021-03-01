@@ -16,7 +16,7 @@ void player_spawn(Vector2D position) {
 	if (player != NULL)
 		entity_free(player);
 
-	player = entity_new();
+	player = entity_new(PLAYER_TYPE);
 	if (!player) {
 		slog("failed to create entity for player");
 		return;
@@ -35,7 +35,6 @@ void player_spawn(Vector2D position) {
 	vector2d_copy(player->drawPosition, position);
 	player->maxHealth = 100;
 	player->health = player->maxHealth;
-	player->type = PLAYER_TYPE;
 	player->rotation = vector3d(0,0,0);
 	player->colorShift = vector4d(255, 255, 255, 255);
 	player->update = player_update;

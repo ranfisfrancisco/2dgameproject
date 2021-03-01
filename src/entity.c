@@ -4,6 +4,7 @@
 typedef struct{
 	Entity *entity_list;
 	Uint32 max_entities;
+	int population[NUM_OF_ENTITY_TYPES];
 }EntityManager;
 
 static EntityManager entity_manager = {0};
@@ -34,7 +35,7 @@ void entity_manager_free(){
 	slog("entity system closed");
 }
 
-Entity *entity_new(){
+Entity *entity_new(enum entity_type type){
 	if (entity_manager.entity_list == NULL){
 		slog("entity system does not exist");
 		return NULL;
@@ -45,6 +46,10 @@ Entity *entity_new(){
 		memset(&entity_manager.entity_list[i], 0, sizeof(Entity));
 		entity_manager.entity_list[i].colorShift = vector4d(255, 255, 255, 255);
 		entity_manager.entity_list[i]._inuse = 1;
+		entity_manager.entity_list[i].type = type;
+
+		entity_manager.population[type]++;
+
 		return &entity_manager.entity_list[i];
 	}
 	slog("No free entities available");
@@ -65,6 +70,8 @@ void entity_free(Entity* ent) {
 		ent->sprite = NULL;
 		ent->_inuse = 0;
 	}
+
+	entity_manager.population[ent->type]--;
 }
 
 Vector2D entity_real_position(Entity* ent) {
@@ -74,6 +81,13 @@ Vector2D entity_real_position(Entity* ent) {
 	realY = ent->drawPosition.y + (ent->sprite->frame_h * ent->scale.y) / 2;
 
 	return vector2d(realX, realY);
+}
+
+int entity_get_population(enum entity_type type) {
+	if (type > NUM_OF_ENTITY_TYPES || type < 0)
+		return -1;
+
+	return entity_manager.population[type];
 }
 
 void entity_update(Entity* self) {

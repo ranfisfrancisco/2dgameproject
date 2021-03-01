@@ -11,11 +11,6 @@ typedef struct {
 
 static InputManager input_manager = { 0 };
 
-/*static int* input_buffer = { 0 };
-static int input_index = 0;
-const static int buffer_len = 60;
-static enum player_move* move_buffer = { 0 };*/
-
 //init frame buffer
 void input_buffer_init() {
 	input_manager.input_len = 60;
@@ -33,7 +28,6 @@ void input_buffer_init() {
 		return;
 	}
 }
-
 
 //free frame buffer
 void input_buffer_free() {

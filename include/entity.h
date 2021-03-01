@@ -5,9 +5,10 @@
 #include "gfc_vector.h"
 #include "gf2d_sprite.h"
 
-enum entity_type {NO_TYPE, PLAYER_TYPE, ENEMY_TYPE_1, ENEMY_TYPE_2, ENEMY_TYPE_3, ENEMY_TYPE_4, ENEMY_TYPE_5, PICKUP_TYPE_MEDKIT, PICKUP_TYPE_FMEDKIT, PICKUP_TYPE_KNIFE, PICKUP_TYPE_CROWBAR, PICKUP_TYPE_POWERUP};
-
+typedef enum entity_type { NO_TYPE, PLAYER_TYPE, ENEMY_TYPE_1, ENEMY_TYPE_2, ENEMY_TYPE_3, ENEMY_TYPE_4, ENEMY_TYPE_5, PICKUP_TYPE_MEDKIT, PICKUP_TYPE_FMEDKIT, PICKUP_TYPE_KNIFE, PICKUP_TYPE_CROWBAR, PICKUP_TYPE_POWERUP };
 enum facing_side { FACE_RIGHT, FACE_LEFT };
+
+#define NUM_OF_ENTITY_TYPES 12
 
 typedef struct Entity_s{
 	Bool _inuse;
@@ -41,6 +42,8 @@ typedef struct Entity_s{
 void entity_manager_init(Uint32 max_entities);
 
 void entity_manager_free();
+
+int entity_get_population(enum entity_type type);
 
 Vector2D entity_real_position(Entity* ent);
 
