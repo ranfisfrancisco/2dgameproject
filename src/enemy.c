@@ -135,6 +135,7 @@ void enemy_think(Entity* self) {
 
 	switch (self->state) {
 	case ENEMY_IDLE:
+		self->attackHit = 0;
 		distToPlayer = enemy_move_to_player(self);
 
 		if (distToPlayer.x < 10 && distToPlayer.y < 3)
