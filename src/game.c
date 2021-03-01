@@ -47,6 +47,7 @@ int main(int argc, char* argv[])
     entity_manager_init(100);
     input_buffer_init();
     font_init(10);
+    hud_init();
     SDL_ShowCursor(SDL_DISABLE);
 
     /*demo setup*/

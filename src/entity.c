@@ -90,6 +90,14 @@ int entity_get_population(enum entity_type type) {
 	return entity_manager.population[type];
 }
 
+int entity_get_enemy_population() {
+	int sum = 0;
+	for (int i = ENEMY_TYPE_1; i <= ENEMY_TYPE_5; i++)
+		sum += entity_get_population(i);
+
+	return sum;
+}
+
 void entity_update(Entity* self) {
 	if (!self) return;
 	//do any generic update code

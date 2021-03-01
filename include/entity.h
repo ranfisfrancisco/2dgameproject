@@ -45,6 +45,8 @@ void entity_manager_free();
 
 int entity_get_population(enum entity_type type);
 
+int entity_get_enemy_population();
+
 Vector2D entity_real_position(Entity* ent);
 
 //calls update function on all entities.
