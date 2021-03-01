@@ -59,6 +59,14 @@ Vector2D player_get_position() {
 	return realPosition;
 }
 
+int player_get_health() {
+	return player->health;
+}
+
+int player_get_max_health() {
+	return player->maxHealth;
+}
+
 void player_attatch_weapon(Entity* ent) {
 	if (ent->type != PICKUP_TYPE_KNIFE && ent->type != PICKUP_TYPE_CROWBAR) {
 		slog("Attempted to attatch non-weapon to player");

@@ -6,6 +6,7 @@
 #include "gf2d_sprite.h"
 #include "gf2d_draw.h"
 
+#include "hud.h"
 #include "player.h"
 #include "enemy.h"
 #include "pickup.h"
@@ -21,7 +22,8 @@ int main(int argc, char* argv[])
     const Uint8* keys;
     //Sprite* sprite;
     //Entity* mouse;
-    Level* level;
+    Level* level; 
+
 
     //Sprite* mouse;
     int mx, my;
@@ -44,6 +46,7 @@ int main(int argc, char* argv[])
     gf2d_sprite_init(1024);
     entity_manager_init(100);
     input_buffer_init();
+    font_init(10);
     SDL_ShowCursor(SDL_DISABLE);
 
     /*demo setup*/
@@ -52,10 +55,10 @@ int main(int argc, char* argv[])
 
     level = level_load("levels/exampleLevel.json");
     player_spawn(vector2d(600, 360));
-    /*enemy_spawn(vector2d(600, 200), ENEMY_TYPE_1);
+    enemy_spawn(vector2d(600, 200), ENEMY_TYPE_1);
     enemy_spawn(vector2d(600, 200), ENEMY_TYPE_2);
     enemy_spawn(vector2d(600, 200), ENEMY_TYPE_3);
-    enemy_spawn(vector2d(600, 200), ENEMY_TYPE_4);
+    /*enemy_spawn(vector2d(600, 200), ENEMY_TYPE_4);
     enemy_spawn(vector2d(600, 200), ENEMY_TYPE_5);*/
     pickup_spawn(vector2d(300, 160), PICKUP_TYPE_CROWBAR);
 
@@ -79,6 +82,7 @@ int main(int argc, char* argv[])
         level_draw(level);
         // gf2d_sprite_draw_image(sprite, vector2d(0, 0));
         entity_manager_draw_entities();
+        hud_draw();
 
         gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
 
