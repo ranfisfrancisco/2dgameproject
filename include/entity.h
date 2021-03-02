@@ -56,7 +56,7 @@ void entity_manager_think_entities();
 
 void entity_manager_draw_entities();
 
-int entity_manager_check_collison(SDL_Rect rect, int damage);
+int entity_manager_player_attack_collison(SDL_Rect rect, int damage);
 
 Entity *entity_new();
 

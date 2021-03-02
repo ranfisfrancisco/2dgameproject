@@ -194,7 +194,7 @@ void entity_manager_draw_entities() {
 	}
 }
 
-int entity_manager_check_collison(SDL_Rect rect, int damage) {
+int entity_manager_player_attack_collison(SDL_Rect rect, int damage) {
 	int count = 0;
 
 	if (entity_manager.entity_list == NULL) {
@@ -204,6 +204,9 @@ int entity_manager_check_collison(SDL_Rect rect, int damage) {
 
 	for (int i = 0; i < entity_manager.max_entities; i++) {
 		if (entity_manager.entity_list[i]._inuse == 0)
+			continue;
+
+		if (entity_manager.entity_list[i].type == PLAYER_TYPE)
 			continue;
 
 		if (SDL_HasIntersection(&rect, &entity_manager.entity_list[i].hurtbox)) {

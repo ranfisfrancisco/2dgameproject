@@ -186,7 +186,7 @@ void player_change_state(enum player_state state) {
 
 void player_attack_check(SDL_Rect hitbox, int attackPower, int weaponDegradation) {
 	if (player->attackHit == 0) {
-		if (entity_manager_check_collison(hitbox, attackPower)) {
+		if (entity_manager_player_attack_collison(hitbox, attackPower)) {
 			player->attackHit = 1;
 
 			if (((PlayerData*)player->data)->weapon)
