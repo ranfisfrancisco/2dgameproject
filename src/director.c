@@ -26,6 +26,10 @@ int director_get_score() {
     return score;
 }
 
+void save_score() {
+
+}
+
 void director_init_game() {
     quit_flag = 0;
     score = 0;
@@ -86,6 +90,8 @@ int director_run_game() {
 }
 
 void director_end_game() {
+    save_score();
+
     entity_manager_free();
     input_buffer_free();
     slog("---==== END ====---");

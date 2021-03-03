@@ -113,6 +113,8 @@ void player_free() {
 	memset(&player, 0, sizeof(Entity));
 }
 
+
+//TODO: REWORDK CAMERA SET TO CENTER ON PLAYER THEN CHECK BOUNDS
 void player_movement(const Uint8* keys) {
 	int up, down, left, right;
 
@@ -126,7 +128,6 @@ void player_movement(const Uint8* keys) {
 		if (player->drawPosition.x < 0)
 			player->drawPosition.x = 0;
 
-		camera_move(vector2d(-player->speed, 0));
 
 	}
 	else if (right) {
@@ -134,22 +135,21 @@ void player_movement(const Uint8* keys) {
 		if (player->drawPosition.x > 1200 - 2 * player->sprite->frame_w)
 			player->drawPosition.x = 1200 - 2 * player->sprite->frame_w;
 
-		camera_move(vector2d(player->speed, 0));
 	}
 	if (up) {
 		player->drawPosition.y -= player->speed;
 		if (player->drawPosition.y < 0 + player->sprite->frame_h / 2)
 			player->drawPosition.y = 0 + player->sprite->frame_h / 2;
 
-		camera_move(vector2d(0, -player->speed));
 	}
 	else if (down) {
 		player->drawPosition.y += player->speed;
 		if (player->drawPosition.y > 1200 - 5 * player->sprite->frame_h)
 			player->drawPosition.y = 1200 - 5 * player->sprite->frame_h;
 
-		camera_move(vector2d(0, player->speed));
 	}
+
+	camera_set_position(player->drawPosition);
 }
 
 void player_update_side(const Uint8* keys) {
