@@ -12,11 +12,13 @@
 #include "input.h"
 #include "camera.h"
 #include "level.h"
+#include "simple_json.h"
 
 Level* currentLevel;
 const Uint8* keys;
 int quit_flag;
 int score;
+int highScore;
 
 void director_add_score(int amount) {
     score += amount;
@@ -27,12 +29,24 @@ int director_get_score() {
 }
 
 void save_score() {
+    SJson* root;
+    SJson* j_int;
 
+    j_int = sj_new_int(highScore);
+    root = sj_object_new();
+
+    sj_object_insert(root, "HighScore", j_int);
+
+    sj_save(root, "score.json");
+
+    sj_object_free(j_int);
+    sj_object_free(root);
 }
 
 void director_init_game() {
     quit_flag = 0;
     score = 0;
+    highScore = 0;
 
     init_logger("gf2d.log");
     slog("---==== BEGIN ====---");
@@ -86,6 +100,10 @@ int director_run_game() {
     gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
 
 //        slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
+
+    if (score > highScore)
+        highScore = score;
+    
     return quit_flag;
 }
 
