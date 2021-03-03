@@ -3,6 +3,7 @@
 #include "player.h"
 
 void pickup_update(Entity* self);
+void container_hurt(Entity* self, int damage);
 
 Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 	Entity* ent;
@@ -24,6 +25,9 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 	else if (type == PICKUP_TYPE_POWERUP) {
 		ent->sprite = gf2d_sprite_load_image("images/chicken.png");
 	}
+	else if (type == INTERACTABLE_BOX) {
+		ent->sprite = gf2d_sprite_load_image("images/box.png");
+	}
 	else {
 		slog("Attempted to spawn pickup as non-pickup type");
 		entity_free(ent);
@@ -38,6 +42,8 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 		ent->scale = vector2d(1.0/12, 1.0/12);
 	else if (type == PICKUP_TYPE_CROWBAR)
 		ent->scale = vector2d(0.5, 0.5);
+	else if (type == INTERACTABLE_BOX)
+		ent->scale = vector2d(3, 3);
 	else
 		ent->scale = vector2d(1, 1);
 
@@ -49,6 +55,9 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 	}
 
 	ent->update = pickup_update;
+	if (type == INTERACTABLE_BOX) {
+		ent->hurt = container_hurt;
+	}
 	gfc_rect_set(ent->hurtbox, ent->drawPosition.x, ent->drawPosition.y, ent->sprite->frame_w * ent->scale.x, ent->sprite->frame_h * ent->scale.y);
 
 	return ent;
@@ -86,5 +95,14 @@ void pickup_update(Entity* self) {
 			self->state = 1;
 			player_attatch_weapon(self);
 		}
+	}
+}
+
+void container_hurt(Entity* self, int damage){
+	self->health -= damage;
+
+	if (self->health <= 0) {
+		pickup_spawn(self->drawPosition, PICKUP_TYPE_MEDKIT);
+		entity_free(self);
 	}
 }

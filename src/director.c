@@ -101,7 +101,7 @@ void director_init_game() {
    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_5);
 
    //TODO:
-   pickup_spawn(vector2d(300, 160), INTERACTABLE_TRASH_CAN);
+   pickup_spawn(vector2d(300, 160), INTERACTABLE_BOX);
 }
 
 int director_run_game() {
