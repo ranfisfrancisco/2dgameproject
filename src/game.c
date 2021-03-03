@@ -12,6 +12,7 @@ int main(int argc, char* argv[])
     while (!director_run_game())
     {
     }
+
     director_end_game();
     return 0;
 }

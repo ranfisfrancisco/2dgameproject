@@ -16,9 +16,20 @@
 Level* currentLevel;
 const Uint8* keys;
 int quit_flag;
+int score;
+
+void director_add_score(int amount) {
+    score += amount;
+}
+
+int director_get_score() {
+    return score;
+}
 
 void director_init_game() {
     quit_flag = 0;
+    score = 0;
+
     init_logger("gf2d.log");
     slog("---==== BEGIN ====---");
     gf2d_graphics_initialize(
@@ -41,12 +52,14 @@ void director_init_game() {
 
     currentLevel = level_load("levels/exampleLevel.json");
     player_spawn(vector2d(600, 360));
-    enemy_spawn(vector2d(600, 200), ENEMY_TYPE_1);
-    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_2);
+    enemy_spawn(vector2d(1500, 200), ENEMY_TYPE_1);
+   //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_2);
    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_3);
    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_4);
    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_5);
-   //pickup_spawn(vector2d(300, 160), PICKUP_TYPE_CROWBAR);
+
+   //TODO:
+   pickup_spawn(vector2d(300, 160), INTERACTABLE_TRASH_CAN);
 }
 
 int director_run_game() {

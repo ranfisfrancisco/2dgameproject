@@ -1,4 +1,5 @@
 #include "simple_logger.h"
+#include "director.h"
 #include "enemy.h"
 #include "player.h"
 #include <stdlib.h>
@@ -202,6 +203,7 @@ void enemy_think(Entity* self) {
 }
 
 void enemy_die(Entity* self) {
+	director_add_score(100);
 	entity_free(self);
 	return;
 }
