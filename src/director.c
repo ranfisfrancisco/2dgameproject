@@ -14,28 +14,34 @@
 #include "level.h"
 #include "simple_json.h"
 
-Level* currentLevel;
-const Uint8* keys;
-int quit_flag;
-int score;
-int highScore;
+const char* scoreFileName = "score.json";
+
+Level* CURRENT_LEVEL;
+const Uint8* KEYS;
+int QUIT_FLAG;
+int SCORE;
+int HIGH_SCORE;
 
 void director_add_score(int amount) {
-    score += amount;
+    SCORE += amount;
 }
 
 int director_get_score() {
-    return score;
+    return SCORE;
+}
+
+int director_get_high_score() {
+    return HIGH_SCORE;
 }
 
 void save_score() {
     SJson* root;
     SJson* j_int;
 
-    j_int = sj_new_int(highScore);
+    j_int = sj_new_int(HIGH_SCORE);
     root = sj_object_new();
 
-    sj_object_insert(root, "HighScore", j_int);
+    sj_object_insert(root, "High Score", j_int);
 
     sj_save(root, "score.json");
 
@@ -43,10 +49,28 @@ void save_score() {
     sj_object_free(root);
 }
 
-void director_init_game() {
-    quit_flag = 0;
+int load_score() {
+    SJson* json, *scoreJson;
+    int score;
+
     score = 0;
-    highScore = 0;
+    json = sj_load(scoreFileName);
+
+    if (!json)return 0;
+
+    scoreJson = sj_object_get_value(json, "High Score");
+    if (!scoreJson)return 0;
+
+    sj_get_integer_value(scoreJson, &score);
+
+    return score;
+}
+
+void director_init_game() {
+    QUIT_FLAG = 0;
+    SCORE = 0;
+    HIGH_SCORE = load_score();
+    slog("Loaded High Score: %d", HIGH_SCORE);
 
     init_logger("gf2d.log");
     slog("---==== BEGIN ====---");
@@ -68,7 +92,7 @@ void director_init_game() {
     hud_init();
     SDL_ShowCursor(SDL_DISABLE);
 
-    currentLevel = level_load("levels/exampleLevel.json");
+    CURRENT_LEVEL = level_load("levels/exampleLevel.json");
     player_spawn(vector2d(600, 360));
     enemy_spawn(vector2d(1500, 200), ENEMY_TYPE_1);
    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_2);
@@ -82,17 +106,17 @@ void director_init_game() {
 
 int director_run_game() {
     SDL_PumpEvents();   // update SDL's internal event structures
-    keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
-    if (keys[SDL_SCANCODE_ESCAPE])quit_flag = 1; // exit condition
+    KEYS = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
+    if (KEYS[SDL_SCANCODE_ESCAPE])QUIT_FLAG = 1; // exit condition
 
     entity_manager_think_entities();
     entity_manager_update_entities();
-    level_update(currentLevel);
+    level_update(CURRENT_LEVEL);
 
     gf2d_graphics_clear_screen();// clears drawing buffers
     // all drawing should happen betweem clear_screen and next_frame
         //backgrounds drawn first
-    level_draw(currentLevel);
+    level_draw(CURRENT_LEVEL);
     // gf2d_sprite_draw_image(sprite, vector2d(0, 0));
     entity_manager_draw_entities();
     hud_draw();
@@ -101,10 +125,10 @@ int director_run_game() {
 
 //        slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
 
-    if (score > highScore)
-        highScore = score;
+    if (SCORE > HIGH_SCORE)
+        HIGH_SCORE = SCORE;
     
-    return quit_flag;
+    return QUIT_FLAG;
 }
 
 void director_end_game() {
