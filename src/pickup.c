@@ -80,8 +80,10 @@ void pickup_update(Entity* self) {
 
 	if (player_collison_check(self->hurtbox)) {
 		if (self->type == PICKUP_TYPE_MEDKIT) {
-			player_change_health(30);
-			entity_free(self);
+			if (player_get_max_health() - player_get_health() > 1) {
+				player_change_health(30);
+				entity_free(self);
+			}
 		}
 		else if (self->type == PICKUP_TYPE_FMEDKIT) {
 			player_change_health(-5);

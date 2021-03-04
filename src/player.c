@@ -149,6 +149,7 @@ void player_movement(const Uint8* keys) {
 		//	player->drawPosition.y = 1200 - 5 * player->sprite->frame_h;
 
 	}
+
 	setPosition.x = player->drawPosition.x - 1200/2;
 	setPosition.y = player->drawPosition.y - 720 / 2;
 	camera_set_position(setPosition);
