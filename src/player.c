@@ -66,7 +66,7 @@ int player_get_max_health() {
 	return player->maxHealth;
 }
 
-void player_attatch_weapon(Entity* ent) {
+void player_attach_weapon(Entity* ent) {
 	if (ent->type != PICKUP_TYPE_KNIFE && ent->type != PICKUP_TYPE_CROWBAR) {
 		slog("Attempted to attatch non-weapon to player");
 		return;
@@ -319,7 +319,16 @@ void player_input(const Uint8* keys) {
 
 		//TODO
 	case PLAYER_HURT:
-		player_change_state(PLAYER_IDLE);
+		startFrame = 64;
+		endFrame = 64;
+		player->statePos++;
+
+		player->frame = startFrame;
+
+		if (player->statePos > 2) {
+			player_change_state(PLAYER_IDLE);
+		}
+
 		break;
 
 	case PLAYER_PUNCH:

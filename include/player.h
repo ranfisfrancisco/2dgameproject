@@ -19,7 +19,7 @@ int player_get_health();
 
 int player_get_max_health();
 
-void player_attatch_weapon(Entity* ent);
+void player_attach_weapon(Entity* ent);
 
 Vector2D player_get_weapon_position();
 

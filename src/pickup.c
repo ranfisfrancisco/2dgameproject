@@ -95,7 +95,7 @@ void pickup_update(Entity* self) {
 		}
 		else if (self->type == PICKUP_TYPE_KNIFE || self->type == PICKUP_TYPE_CROWBAR) {
 			self->state = 1;
-			player_attatch_weapon(self);
+			player_attach_weapon(self);
 		}
 	}
 }
