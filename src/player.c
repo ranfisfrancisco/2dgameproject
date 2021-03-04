@@ -117,39 +117,44 @@ void player_free() {
 //TODO: REWORDK CAMERA SET TO CENTER ON PLAYER THEN CHECK BOUNDS
 void player_movement(const Uint8* keys) {
 	int up, down, left, right;
+	Vector2D setPosition;
 
 	up = keys[SDL_SCANCODE_W];
 	right = keys[SDL_SCANCODE_D];
 	down = keys[SDL_SCANCODE_S];
 	left = keys[SDL_SCANCODE_A];
 
+	//TODO: Redo boundary check
 	if (left) {
 		player->drawPosition.x -= player->speed;
-		if (player->drawPosition.x < 0)
-			player->drawPosition.x = 0;
-
+		//if (player->drawPosition.x < 0)
+		//	player->drawPosition.x = 0;
 
 	}
 	else if (right) {
 		player->drawPosition.x += player->speed;
-		if (player->drawPosition.x > 1200 - 2 * player->sprite->frame_w)
-			player->drawPosition.x = 1200 - 2 * player->sprite->frame_w;
+		//if (player->drawPosition.x > 1200 - 2 * player->sprite->frame_w)
+		//	player->drawPosition.x = 1200 - 2 * player->sprite->frame_w;
 
 	}
 	if (up) {
 		player->drawPosition.y -= player->speed;
-		if (player->drawPosition.y < 0 + player->sprite->frame_h / 2)
-			player->drawPosition.y = 0 + player->sprite->frame_h / 2;
+		//if (player->drawPosition.y < 0 + player->sprite->frame_h / 2)
+		//	player->drawPosition.y = 0 + player->sprite->frame_h / 2;
 
 	}
 	else if (down) {
 		player->drawPosition.y += player->speed;
-		if (player->drawPosition.y > 1200 - 5 * player->sprite->frame_h)
-			player->drawPosition.y = 1200 - 5 * player->sprite->frame_h;
+		//if (player->drawPosition.y > 1200 - 5 * player->sprite->frame_h)
+		//	player->drawPosition.y = 1200 - 5 * player->sprite->frame_h;
 
 	}
+	setPosition.x = player->drawPosition.x - 1200/2;
+	setPosition.y = player->drawPosition.y - 720 / 2;
+	camera_set_position(setPosition);
 
-	camera_set_position(player->drawPosition);
+	slog("Player Position %f %f", player->drawPosition.x, player->drawPosition.y);
+	slog("Camera Position %f %f", camera_get_position().x, camera_get_position().y);
 }
 
 void player_update_side(const Uint8* keys) {

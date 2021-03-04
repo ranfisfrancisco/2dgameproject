@@ -1,5 +1,6 @@
 #include "simple_logger.h"
 #include "entity.h"
+#include "camera.h"
 
 typedef struct{
 	Entity *entity_list;
@@ -124,9 +125,15 @@ void entity_draw(Entity* ent) {
 	if (ent->draw)
 		ent->draw(ent);
 	else {
+		Vector2D offset, drawPosition;
+
+		offset = camera_get_offset();
+		drawPosition.x = ent->drawPosition.x + offset.x;
+		drawPosition.y = ent->drawPosition.y + offset.y;
+
 		gf2d_sprite_draw(
 			ent->sprite,
-			ent->drawPosition,
+			drawPosition,
 			&ent->scale,
 			NULL,
 			&ent->rotation,
