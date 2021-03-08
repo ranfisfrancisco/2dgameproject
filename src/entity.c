@@ -131,6 +131,11 @@ void entity_draw(Entity* ent) {
 		drawPosition.x = ent->drawPosition.x + offset.x;
 		drawPosition.y = ent->drawPosition.y + offset.y;
 
+		//do not render if outside screen bounds
+		if (drawPosition.x < -20 || drawPosition.x > 1220 || drawPosition.y < -20 || drawPosition.y > 720) {
+			return;
+		}
+
 		gf2d_sprite_draw(
 			ent->sprite,
 			drawPosition,
