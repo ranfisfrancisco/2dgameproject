@@ -5,6 +5,7 @@
 #include "gf2d_sprite.h"
 #include "gf2d_draw.h"
 
+#include "director.h"
 #include "hud.h"
 #include "player.h"
 #include "enemy.h"
@@ -14,47 +15,44 @@
 #include "level.h"
 #include "simple_json.h"
 
-const char* scoreFileName = "score.json";
-
-Level* CURRENT_LEVEL;
-const Uint8* KEYS;
+GameVarsStruct game_vars = { 0 };
+const Uint8* KEYS; 
 int QUIT_FLAG;
-int SCORE;
-int HIGH_SCORE;
+const char* SCORE_FILE_NAME = "score.json";
 
 void director_add_score(int amount) {
-    SCORE += amount;
+    game_vars.score += amount;
 }
 
 int director_get_score() {
-    return SCORE;
+    return game_vars.score;
 }
 
 int director_get_high_score() {
-    return HIGH_SCORE;
+    return game_vars.highScore;
 }
 
-void save_score() {
+void save_score(char* fileName) {
     SJson* root;
     SJson* j_int;
 
-    j_int = sj_new_int(HIGH_SCORE);
+    j_int = sj_new_int(game_vars.highScore);
     root = sj_object_new();
 
     sj_object_insert(root, "High Score", j_int);
 
-    sj_save(root, "score.json");
+    sj_save(root, fileName);
 
     sj_object_free(j_int);
     sj_object_free(root);
 }
 
-int load_score() {
+int load_score(char* fileName) {
     SJson* json, *scoreJson;
     int score;
 
     score = 0;
-    json = sj_load(scoreFileName);
+    json = sj_load(fileName);
 
     if (!json)return 0;
 
@@ -68,9 +66,10 @@ int load_score() {
 
 void director_init_game() {
     QUIT_FLAG = 0;
-    SCORE = 0;
-    HIGH_SCORE = load_score();
-    slog("Loaded High Score: %d", HIGH_SCORE);
+    game_vars.score = 0;
+    game_vars.highScore = load_score(SCORE_FILE_NAME);
+
+    slog("Loaded High Score: %d", game_vars.highScore);
 
     init_logger("gf2d.log");
     slog("---==== BEGIN ====---");
@@ -92,7 +91,7 @@ void director_init_game() {
     hud_init();
     SDL_ShowCursor(SDL_DISABLE);
 
-    CURRENT_LEVEL = level_load("levels/exampleLevel.json");
+    game_vars.currentLevel = level_load("levels/exampleLevel.json");
     player_spawn(vector2d(600, 360));
     enemy_spawn(vector2d(1500, 200), ENEMY_TYPE_1);
    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_2);
@@ -100,7 +99,6 @@ void director_init_game() {
    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_4);
    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_5);
 
-   //TODO:
    pickup_spawn(vector2d(300, 160), INTERACTABLE_BOX);
 }
 
@@ -109,14 +107,14 @@ int director_run_game() {
     KEYS = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
     if (KEYS[SDL_SCANCODE_ESCAPE])QUIT_FLAG = 1; // exit condition
 
-    entity_manager_think_entities();
     entity_manager_update_entities();
-    level_update(CURRENT_LEVEL);
+    entity_manager_think_entities();
+    level_update(game_vars.currentLevel);
 
     gf2d_graphics_clear_screen();// clears drawing buffers
     // all drawing should happen betweem clear_screen and next_frame
         //backgrounds drawn first
-    level_draw(CURRENT_LEVEL);
+    level_draw(game_vars.currentLevel);
     // gf2d_sprite_draw_image(sprite, vector2d(0, 0));
     entity_manager_draw_entities();
     hud_draw();
@@ -125,16 +123,17 @@ int director_run_game() {
 
 //        slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
 
-    if (SCORE > HIGH_SCORE)
-        HIGH_SCORE = SCORE;
+    if (game_vars.score > game_vars.highScore)
+        game_vars.highScore = game_vars.score;
     
     return QUIT_FLAG;
 }
 
 void director_end_game() {
-    save_score();
+    save_score(SCORE_FILE_NAME);
 
     entity_manager_free();
     input_buffer_free();
+
     slog("---==== END ====---");
 }
