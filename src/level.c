@@ -44,6 +44,7 @@ Level* level_load(const char* filename)
         sj_free(json);
         return NULL;
     }
+    strcpy(level->fileName, filename);
 
     levelJS = sj_object_get_value(json, "level");
     if (!levelJS)

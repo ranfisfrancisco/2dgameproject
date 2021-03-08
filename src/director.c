@@ -92,6 +92,9 @@ void director_init_game() {
     SDL_ShowCursor(SDL_DISABLE);
 
     game_vars.currentLevel = level_load("levels/exampleLevel.json");
+    slog("Loaded Level:");
+    slog(game_vars.currentLevel->fileName);
+    
     player_spawn(vector2d(600, 360));
     enemy_spawn(vector2d(1500, 200), ENEMY_TYPE_1);
    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_2);
