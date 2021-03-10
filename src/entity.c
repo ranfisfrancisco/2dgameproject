@@ -218,7 +218,7 @@ int entity_manager_player_attack_collison(SDL_Rect rect, int damage) {
 		if (entity_manager.entity_list[i]._inuse == 0)
 			continue;
 
-		if (entity_manager.entity_list[i].type == PLAYER_TYPE)
+		if (!entity_is_enemy(&entity_manager.entity_list[i]) && !entity_is_interactable(&entity_manager.entity_list[i]))
 			continue;
 
 		if (SDL_HasIntersection(&rect, &entity_manager.entity_list[i].hurtbox)) {
@@ -230,3 +230,26 @@ int entity_manager_player_attack_collison(SDL_Rect rect, int damage) {
 	return count;
 }
 
+int entity_is_player(Entity* ent) {
+	if (ent->type == PLAYER_TYPE)
+		return true;
+	return false;
+}
+
+int entity_is_enemy(Entity* ent) {
+	if (ent->type >= ENEMY_TYPE_1 && ent->type <= ENEMY_TYPE_5)
+		return true;
+	return false;
+}
+
+int entity_is_pickup(Entity* ent) {
+	if (ent->type >= PICKUP_TYPE_MEDKIT && ent->type <= PICKUP_TYPE_POWERUP)
+		return true;
+	return false;
+}
+
+int entity_is_interactable(Entity* ent) {
+	if (ent->type >= INTERACTABLE_BOX && ent->type <= INTERACTABLE_BOX)
+		return true;
+	return false;
+}

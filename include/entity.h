@@ -64,4 +64,12 @@ void entity_free(Entity *ent);
 
 void entity_draw(Entity *ent);
 
+int entity_is_player(Entity* ent);
+
+int entity_is_enemy(Entity* ent);
+
+int entity_is_pickup(Entity* ent);
+
+int entity_is_interactable(Entity* ent);
+
 #endif
