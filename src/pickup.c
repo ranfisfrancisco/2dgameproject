@@ -26,7 +26,7 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 	else if (type == PICKUP_TYPE_POWERUP) {
 		ent->sprite = gf2d_sprite_load_image("images/chicken.png");
 	}
-	else if (type == INTERACTABLE_BOX) {
+	else if (type == INTERACTABLE_BOX || type == INTERACTABLE_METAL_BOX) {
 		ent->sprite = gf2d_sprite_load_image("images/box.png");
 	}
 	else {
@@ -43,13 +43,16 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 		ent->scale = vector2d(1.0/12, 1.0/12);
 	else if (type == PICKUP_TYPE_CROWBAR)
 		ent->scale = vector2d(0.5, 0.5);
-	else if (type == INTERACTABLE_BOX)
+	else if (type == INTERACTABLE_BOX || type == INTERACTABLE_METAL_BOX)
 		ent->scale = vector2d(3, 3);
 	else
 		ent->scale = vector2d(1, 1);
 
 	if (type == PICKUP_TYPE_FMEDKIT) {
 		ent->colorShift = vector4d(100, 100, 100, 255);
+	}
+	else if (type == INTERACTABLE_METAL_BOX) {
+		ent->colorShift = vector4d(50, 50, 50, 255);
 	}
 	else {
 		ent->colorShift = vector4d(255, 255, 255, 255);
@@ -110,6 +113,8 @@ void pickup_update(Entity* self) {
 }
 
 void container_hurt(Entity* self, int damage){
+	if (self->type == INTERACTABLE_METAL_BOX)
+		return;
 	self->health -= damage;
 
 	if (self->health <= 0) {

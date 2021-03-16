@@ -101,14 +101,13 @@ void director_init_game() {
     slog(game_vars.currentLevel->fileName);
     
     player_spawn(vector2d(600, 360));
-    enemy_spawn(vector2d(1500, 200), ENEMY_TYPE_1);
+    //enemy_spawn(vector2d(1500, 200), ENEMY_TYPE_1);
    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_2);
    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_3);
    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_4);
    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_5);
 
-   pickup_spawn(vector2d(300, 160), INTERACTABLE_BOX);
-   pickup_spawn(vector2d(600, 160), PICKUP_TYPE_MEDKIT);
+   pickup_spawn(vector2d(300, 160), INTERACTABLE_METAL_BOX);
 }
 
 int director_run_game() {

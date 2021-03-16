@@ -270,7 +270,7 @@ int entity_is_pickup(Entity* ent) {
 }
 
 int entity_is_interactable(Entity* ent) {
-	if (ent->type >= INTERACTABLE_BOX && ent->type <= INTERACTABLE_BOX)
+	if (ent->type >= INTERACTABLE_BOX && ent->type <= INTERACTABLE_METAL_BOX)
 		return true;
 	return false;
 }
