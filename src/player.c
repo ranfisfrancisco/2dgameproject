@@ -2,11 +2,13 @@
 #include "player.h"
 #include "input.h"
 #include "camera.h"
+#include "director.h"
 
 enum player_state {PLAYER_IDLE, PLAYER_HURT, PLAYER_WALK, PLAYER_PUNCH, PLAYER_KICK, PLAYER_QCFP, PLAYER_QCFK, PLAYER_BFP, PLAYER_BFK, PLAYER_PK};
 
 void player_update(Entity* self);
 void player_hurt(Entity* self);
+void player_set_hurtbox(SDL_Rect* hurtbox, Vector2D* drawPosition);
 
 static Entity* player = { 0 };
 
@@ -117,7 +119,10 @@ void player_free() {
 //TODO: REWORDK CAMERA SET TO CENTER ON PLAYER THEN CHECK BOUNDS
 void player_movement(const Uint8* keys) {
 	int up, down, left, right;
-	Vector2D setPosition;
+	Vector2D cameraNewPosition, playerNewPosition;
+	SDL_Rect testHurtbox;
+
+	playerNewPosition = player->drawPosition;
 
 	up = keys[SDL_SCANCODE_W];
 	right = keys[SDL_SCANCODE_D];
@@ -126,41 +131,49 @@ void player_movement(const Uint8* keys) {
 
 	//TODO: Redo boundary check
 	if (left) {
-		player->drawPosition.x -= player->speed;
+		playerNewPosition.x -= player->speed;
 		//if (player->drawPosition.x < 0)
 		//	player->drawPosition.x = 0;
 
 	}
 	else if (right) {
-		player->drawPosition.x += player->speed;
+		playerNewPosition.x += player->speed;
 		//if (player->drawPosition.x > 1200 - 2 * player->sprite->frame_w)
 		//	player->drawPosition.x = 1200 - 2 * player->sprite->frame_w;
 
 	}
 	if (up) {
-		player->drawPosition.y -= player->speed;
+		playerNewPosition.y -= player->speed;
 		//if (player->drawPosition.y < 0 + player->sprite->frame_h / 2)
 		//	player->drawPosition.y = 0 + player->sprite->frame_h / 2;
 
 	}
 	else if (down) {
-		player->drawPosition.y += player->speed;
+		playerNewPosition.y += player->speed;
 		//if (player->drawPosition.y > 1200 - 5 * player->sprite->frame_h)
 		//	player->drawPosition.y = 1200 - 5 * player->sprite->frame_h;
-
 	}
 
-	setPosition.x = player->drawPosition.x - 1200/2;
-	setPosition.y = player->drawPosition.y - 720 / 2;
-	camera_set_position(setPosition);
+	player_set_hurtbox(&testHurtbox, &playerNewPosition);
+
+	//check hurtbox overlap with interactbles
+	if (entity_manager_player_interactable_collision(testHurtbox))
+		return;
+
+	player->drawPosition = playerNewPosition;
+
+	cameraNewPosition.x = player->drawPosition.x - 1200 / 2;
+	cameraNewPosition.y = player->drawPosition.y - 720 / 2;
+	camera_set_position(cameraNewPosition);
+	director_snap_camera();
 
 	slog("Player Position %f %f", player->drawPosition.x, player->drawPosition.y);
+	slog("Hurtbox Position %d %d", player->hurtbox.x, player->hurtbox.y);
 	slog("Camera Position %f %f", camera_get_position().x, camera_get_position().y);
 }
 
 void player_update_side(const Uint8* keys) {
 	int left, right;
-
 	left = keys[SDL_SCANCODE_A];
 	right = keys[SDL_SCANCODE_D];
 
@@ -174,12 +187,16 @@ void player_update_side(const Uint8* keys) {
 	}
 }
 
-void player_update_hurtbox() {
+void player_set_hurtbox(SDL_Rect* hurtbox, Vector2D* drawPosition) {
+	Vector2D cameraOffset;
+
+	cameraOffset = camera_get_offset();
+
 	if (player->side == FACE_LEFT) {
-		gfc_rect_set(player->hurtbox, player->drawPosition.x - player->sprite->frame_w, player->drawPosition.y, player->sprite->frame_w, player->sprite->frame_h);
+		gfc_rect_set((*hurtbox), drawPosition->x + cameraOffset.x, drawPosition->y + cameraOffset.y, player->sprite->frame_w, player->sprite->frame_h * 1.3);
 	}
 	else if (player->side == FACE_RIGHT){
-		gfc_rect_set(player->hurtbox, player->drawPosition.x, player->drawPosition.y, player->sprite->frame_w, player->sprite->frame_h);
+		gfc_rect_set((*hurtbox), drawPosition->x + player->sprite->frame_w + cameraOffset.x, drawPosition->y + cameraOffset.y, player->sprite->frame_w, player->sprite->frame_h * 1.3);
 	}
 }
 
@@ -200,7 +217,6 @@ void player_attack_check(SDL_Rect hitbox, int attackPower, int weaponDegradation
 		}
 	}
 }
-
 
 void player_input(const Uint8* keys) {
 	enum player_directional_input raw_input = NO_INPUT;
@@ -559,10 +575,11 @@ void player_update() {
 	player_input(keys);
 
 	player->realPosition = entity_real_position(player);
-	player_update_hurtbox();
+	player_set_hurtbox(&player->hurtbox, &player->drawPosition);
 }
 
 void player_hurt(Entity* self, int damage) {
 	player_change_state(PLAYER_HURT);
 	player->health -= damage;
 }
+

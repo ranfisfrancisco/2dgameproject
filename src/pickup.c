@@ -1,6 +1,7 @@
 #include "simple_logger.h"
 #include "pickup.h"
 #include "player.h"
+#include "camera.h"
 
 void pickup_update(Entity* self);
 void container_hurt(Entity* self, int damage);
@@ -63,8 +64,16 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 	return ent;
 }
 
+void pickup_set_hurtbox(Entity* self) {
+	Vector2D cameraOffset;
+
+	cameraOffset = camera_get_offset();
+
+	gfc_rect_set(self->hurtbox, self->drawPosition.x + cameraOffset.x, self->drawPosition.y + cameraOffset.y, self->sprite->frame_w * self->scale.x, self->sprite->frame_h * self->scale.y);
+}
+
 void pickup_update(Entity* self) {
-	gfc_rect_set(self->hurtbox, self->drawPosition.x, self->drawPosition.y, self->sprite->frame_w * self->scale.x, self->sprite->frame_h * self->scale.y);
+	pickup_set_hurtbox(self);
 
 	if ((self->type == PICKUP_TYPE_KNIFE || self->type == PICKUP_TYPE_CROWBAR) && self->state == 1) {
 		vector2d_copy(self->drawPosition, player_get_weapon_position());

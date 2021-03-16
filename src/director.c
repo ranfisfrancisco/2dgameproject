@@ -64,6 +64,11 @@ int load_score(char* fileName) {
     return score;
 }
 
+void director_snap_camera() {
+    if (game_vars.currentLevel != NULL)
+        level_update(game_vars.currentLevel);
+}
+
 void director_init_game() {
     QUIT_FLAG = 0;
     game_vars.score = 0;
@@ -103,6 +108,7 @@ void director_init_game() {
    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_5);
 
    pickup_spawn(vector2d(300, 160), INTERACTABLE_BOX);
+   pickup_spawn(vector2d(600, 160), PICKUP_TYPE_MEDKIT);
 }
 
 int director_run_game() {
@@ -120,6 +126,7 @@ int director_run_game() {
     level_draw(game_vars.currentLevel);
     // gf2d_sprite_draw_image(sprite, vector2d(0, 0));
     entity_manager_draw_entities();
+    entity_debug_draw_hurtboxes();
     hud_draw();
 
     gf2d_grahics_next_frame();// render current draw frame and skip to the next frame

@@ -206,7 +206,7 @@ void entity_manager_draw_entities() {
 	}
 }
 
-int entity_manager_player_attack_collison(SDL_Rect rect, int damage) {
+int entity_manager_player_attack_collison(SDL_Rect playerHurtbox, int damage) {
 	int count = 0;
 
 	if (entity_manager.entity_list == NULL) {
@@ -221,13 +221,34 @@ int entity_manager_player_attack_collison(SDL_Rect rect, int damage) {
 		if (!entity_is_enemy(&entity_manager.entity_list[i]) && !entity_is_interactable(&entity_manager.entity_list[i]))
 			continue;
 
-		if (SDL_HasIntersection(&rect, &entity_manager.entity_list[i].hurtbox)) {
+		if (SDL_HasIntersection(&playerHurtbox, &entity_manager.entity_list[i].hurtbox)) {
 			entity_hurt(&entity_manager.entity_list[i], damage);
 			count++;
 		}
 	}
 
 	return count;
+}
+
+int entity_manager_player_interactable_collision(SDL_Rect playerHurtbox) {
+	if (entity_manager.entity_list == NULL) {
+		slog("entity system does not exist");
+		return NULL;
+	}
+
+	for (int i = 0; i < entity_manager.max_entities; i++) {
+		if (entity_manager.entity_list[i]._inuse == 0)
+			continue;
+
+		if (!entity_is_interactable(&entity_manager.entity_list[i]))
+			continue;
+
+		if (SDL_HasIntersection(&playerHurtbox, &entity_manager.entity_list[i].hurtbox)) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 int entity_is_player(Entity* ent) {
@@ -252,4 +273,13 @@ int entity_is_interactable(Entity* ent) {
 	if (ent->type >= INTERACTABLE_BOX && ent->type <= INTERACTABLE_BOX)
 		return true;
 	return false;
+}
+
+void entity_debug_draw_hurtboxes() {
+	for (int i = 0; i < entity_manager.max_entities; i++) {
+		if (entity_manager.entity_list[i]._inuse == 0)
+			continue;
+
+		SDL_RenderDrawRect(gf2d_graphics_get_renderer(), &entity_manager.entity_list[i].hurtbox);
+	}
 }

@@ -2,6 +2,7 @@
 #include "director.h"
 #include "enemy.h"
 #include "player.h"
+#include "camera.h"
 #include <stdlib.h>
 
 void enemy_think(Entity* self);
@@ -208,6 +209,14 @@ void enemy_die(Entity* self) {
 	return;
 }
 
+void enemy_set_hurtbox(Entity* self) {
+	Vector2D cameraOffset;
+
+	cameraOffset = camera_get_offset();
+
+	gfc_rect_set(self->hurtbox, self->drawPosition.x + cameraOffset.x, self->drawPosition.y + cameraOffset.y, self->sprite->frame_w * self->scale.x, self->sprite->frame_h * self->scale.y);
+}
+
 void enemy_update(Entity* self) {
 	if (self->health <= 0) {
 		enemy_die(self);
@@ -216,7 +225,7 @@ void enemy_update(Entity* self) {
 
 	self->realPosition = entity_real_position(self);
 
-	gfc_rect_set(self->hurtbox, self->drawPosition.x, self->drawPosition.y, self->sprite->frame_w * self->scale.x, self->sprite->frame_h * self->scale.y);
+	enemy_set_hurtbox(self);
 }
 
 

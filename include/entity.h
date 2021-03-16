@@ -56,7 +56,9 @@ void entity_manager_think_entities();
 
 void entity_manager_draw_entities();
 
-int entity_manager_player_attack_collison(SDL_Rect rect, int damage);
+int entity_manager_player_attack_collison(SDL_Rect playerHurtbox, int damage);
+
+int entity_manager_player_interactable_collision(SDL_Rect playerHurtbox);
 
 Entity *entity_new();
 
@@ -71,5 +73,7 @@ int entity_is_enemy(Entity* ent);
 int entity_is_pickup(Entity* ent);
 
 int entity_is_interactable(Entity* ent);
+
+void entity_debug_draw_hurtboxes();
 
 #endif
