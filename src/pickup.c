@@ -5,6 +5,8 @@
 
 void pickup_update(Entity* self);
 void container_hurt(Entity* self, int damage);
+void explosive_hurt(Entity* self, int damage);
+void pickup_set_hurtbox(Entity* self);
 
 Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 	Entity* ent;
@@ -29,11 +31,16 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 	else if (type == INTERACTABLE_BOX || type == INTERACTABLE_METAL_BOX) {
 		ent->sprite = gf2d_sprite_load_image("images/box.png");
 	}
+	else if (type == INTERACTABLE_EXPLOSIVE) {
+		ent->sprite = gf2d_sprite_load_image("images/explosive_barrel.png");
+	}
 	else {
 		slog("Attempted to spawn pickup as non-pickup type");
 		entity_free(ent);
 		return NULL;
 	}
+
+	ent->type = type;
 
 	vector2d_copy(ent->drawPosition, position);
 	ent->maxHealth = 100;
@@ -62,7 +69,11 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 	if (type == INTERACTABLE_BOX) {
 		ent->hurt = container_hurt;
 	}
-	gfc_rect_set(ent->hurtbox, ent->drawPosition.x, ent->drawPosition.y, ent->sprite->frame_w * ent->scale.x, ent->sprite->frame_h * ent->scale.y);
+	else if (type == INTERACTABLE_EXPLOSIVE) {
+		ent->hurt = explosive_hurt;
+	}
+
+	pickup_set_hurtbox(ent);
 
 	return ent;
 }
@@ -119,6 +130,18 @@ void container_hurt(Entity* self, int damage){
 
 	if (self->health <= 0) {
 		pickup_spawn(self->drawPosition, PICKUP_TYPE_MEDKIT);
+		entity_free(self);
+	}
+}
+
+void explosive_hurt(Entity* self, int damage) {
+	self->health -= damage;
+
+	if (self->health <= 0) {
+		self->hurtbox.w *= 1.3;
+		if (player_collison_check(self->hurtbox)) {
+			player_change_health(-30);
+		}
 		entity_free(self);
 	}
 }

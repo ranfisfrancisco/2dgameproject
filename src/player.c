@@ -33,8 +33,8 @@ void player_spawn(Vector2D position) {
 	player->data = data;
 
 	player->sprite = gf2d_sprite_load_all("images/kyo_2.png", 128, 144, 13);
-	gfc_rect_set(player->hurtbox, player->drawPosition.x, player->drawPosition.y, player->sprite->frame_w, player->sprite->frame_h);
 	vector2d_copy(player->drawPosition, position);
+	player_set_hurtbox(&player->hurtbox, &player->drawPosition);
 	player->maxHealth = 100;
 	player->health = player->maxHealth;
 	player->rotation = vector3d(0,0,0);
