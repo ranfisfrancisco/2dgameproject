@@ -39,41 +39,117 @@ typedef struct Entity_s{
 	int speed;
 } Entity;
 
+/**
+ * @brief Initialize entity manager. Must be done before using any other entity manager constructs.
+ * @param max_entitites The max number of entitities the entity manager can support
+ */
 void entity_manager_init(Uint32 max_entities);
 
+/**
+ * @brief Free the memory used by the entity manager
+ */
 void entity_manager_free();
 
+/**
+ * @brief Return the number of entities in use of a given type.
+ * @param type The type of entity to be counted
+ * @return The population count for that type
+ */
 int entity_get_population(enum entity_type type);
 
+/**
+ * @brief Return the number of enemy entities in use.
+ * @return The number of enemy entities.
+ */
 int entity_get_enemy_population();
 
+/**
+ * @brief Get the position of the center of the enemy.
+ * @param ent The entity whose real position you want
+ * @return The position as a Vector2D
+ */
 Vector2D entity_real_position(Entity* ent);
 
-//calls update function on all entities.
+/**
+ * @brief Calls update on all entities
+ */
 void entity_manager_update_entities();
 
+/**
+ * @brief Calls think on all entities
+ */
 void entity_manager_think_entities();
 
+/**
+ * @brief Calls draw on all entities
+ */
 void entity_manager_draw_entities();
 
-int entity_manager_player_attack_collison(SDL_Rect playerHurtbox, int damage);
+/**
+ * @brief Checks an attack hitbox against relevant entity's hurtboxes
+ * @param playerHitBox The SDL_RECT representing the hitbox
+ * @param damage The amount of damage for the enemy to take
+ * @return The number of entities that were hit
+ */
+int entity_manager_player_attack_collison(SDL_Rect playerHitbox, int damage);
 
-int entity_manager_player_interactable_collision(SDL_Rect playerHurtbox);
+/**
+ * @brief Check if an interactable's hurtbox collides with the given hurtbox
+ * @param hurtbox The hurtbox to be checked against
+ * @return The number of collisions
+ */
+int entity_manager_player_interactable_collision(SDL_Rect hurtbox);
 
-Entity *entity_new();
+/**
+ * @brief Create a new entity of a given type. Do not use this to spawn new entities directly. Use enemy_spawn for enemies in enemy.h, etc.
+ * @param type The entity type to be created
+ * @return The pointer to the new entity
+ */
+Entity* entity_new(enum entity_type type);
 
+/**
+ * @brief Free the given entity
+ * @param ent The entity to be freed
+ */
 void entity_free(Entity *ent);
 
+/**
+ * @brief Draw the given entity
+ * @param ent The entity to be drawn
+ */
 void entity_draw(Entity *ent);
 
+/**
+ * @brief Returns whether or not the given entity is a player entity
+ * @param ent The entity to be examined
+ * @return 1 if the entity is a player, 0 otherwise
+ */
 int entity_is_player(Entity* ent);
 
+/**
+ * @brief Returns whether or not the given entity is a enemy entity
+ * @param ent The entity to be examined
+ * @return 1 if the entity is an enemy, 0 otherwise
+ */
 int entity_is_enemy(Entity* ent);
 
+/**
+ * @brief Returns whether or not the given entity is a pickup entity
+ * @param ent The entity to be examined
+ * @return 1 if the entity is a pickup, 0 otherwise
+ */
 int entity_is_pickup(Entity* ent);
 
+/**
+ * @brief Returns whether or not the given entity is an interactable entity
+ * @param ent The entity to be examined
+ * @return 1 if the entity is an interactable, 0 otherwise
+ */
 int entity_is_interactable(Entity* ent);
 
+/**
+ * @brief Draws hurtboxes for all entities.
+ */
 void entity_debug_draw_hurtboxes();
 
 #endif

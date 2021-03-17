@@ -7,6 +7,10 @@
 
 enum enemy_state { ENEMY_IDLE, ENEMY_HURT, ENEMY_WALK, ENEMY_ATTACK };
 
+/**
+ * @brief Spawns an entity of a given type
+ * @return Pointer to new entity construct if it was made, NULL otherwise
+ */
 Entity* enemy_spawn(Vector2D position, enum entity_type type);
 
 #endif

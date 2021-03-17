@@ -206,7 +206,7 @@ void entity_manager_draw_entities() {
 	}
 }
 
-int entity_manager_player_attack_collison(SDL_Rect playerHurtbox, int damage) {
+int entity_manager_player_attack_collison(SDL_Rect playerHitbox, int damage) {
 	int count = 0;
 
 	if (entity_manager.entity_list == NULL) {
@@ -221,7 +221,7 @@ int entity_manager_player_attack_collison(SDL_Rect playerHurtbox, int damage) {
 		if (!entity_is_enemy(&entity_manager.entity_list[i]) && !entity_is_interactable(&entity_manager.entity_list[i]))
 			continue;
 
-		if (SDL_HasIntersection(&playerHurtbox, &entity_manager.entity_list[i].hurtbox)) {
+		if (SDL_HasIntersection(&playerHitbox, &entity_manager.entity_list[i].hurtbox)) {
 			entity_hurt(&entity_manager.entity_list[i], damage);
 			count++;
 		}
@@ -230,7 +230,7 @@ int entity_manager_player_attack_collison(SDL_Rect playerHurtbox, int damage) {
 	return count;
 }
 
-int entity_manager_player_interactable_collision(SDL_Rect playerHurtbox) {
+int entity_manager_player_interactable_collision(SDL_Rect hurtbox) {
 	if (entity_manager.entity_list == NULL) {
 		slog("entity system does not exist");
 		return NULL;
@@ -243,7 +243,7 @@ int entity_manager_player_interactable_collision(SDL_Rect playerHurtbox) {
 		if (!entity_is_interactable(&entity_manager.entity_list[i]))
 			continue;
 
-		if (SDL_HasIntersection(&playerHurtbox, &entity_manager.entity_list[i].hurtbox)) {
+		if (SDL_HasIntersection(&hurtbox, &entity_manager.entity_list[i].hurtbox)) {
 			return true;
 		}
 	}

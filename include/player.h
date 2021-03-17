@@ -10,23 +10,58 @@ typedef struct {
 	int powerUpTime;
 }PlayerData;
 
-
+/**
+ * @brief Spawns a player
+ * @param position The position the player will spawn at.
+ */
 void player_spawn(Vector2D position);
 
+/**
+ * @brief Return the position of the player
+ * @return  Vector2D with the position of the player
+ */
 Vector2D player_get_position();
 
+/**
+ * @brief Returns the player's health
+ * @return Integer indicating the player's health
+ */
 int player_get_health();
 
+/**
+ * @brief Returns the player's max health
+ * @return Integer indicating the player's max health
+ */
 int player_get_max_health();
 
+/**
+ * @brief Attach a weapon entity to the player
+ * @param ent The weapon type entity to attach to the player
+ */
 void player_attach_weapon(Entity* ent);
 
+/**
+ * @brief Get the position to draw the weapon at.
+ * @return Vector2D indicating the position to draw the weapon at.
+ */
 Vector2D player_get_weapon_position();
 
+/**
+ * @brief Puts the player in a power up state
+ * @param frameTime The number of frames the player should be powered up.
+ */
 void player_power_up(int frameTime);
 
+/**
+ * @brief Checks if a given rect collides with the player hurtbox
+ * @return 1 if there is a collision, 0 otherwise
+ */
 int player_collison_check(SDL_Rect rect);
 
+/**
+ * @brief Changes the player's health
+ * @param amount The amount to change by. Negative integers deecrease health
+ */
 void player_change_health(int amount);
 
 #endif
