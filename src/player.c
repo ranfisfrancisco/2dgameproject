@@ -178,12 +178,18 @@ void player_update_side(const Uint8* keys) {
 	right = keys[SDL_SCANCODE_D];
 
 	if (left && !right) {
-		player->side = FACE_LEFT;
-		player->flip.x = FACE_RIGHT;
+		if (player->side == FACE_RIGHT) {
+			player->side = FACE_LEFT;
+			player->flip.x = FACE_RIGHT;
+			player->drawPosition.x += player->sprite->frame_w;
+		}
 	}
 	else if (right && !left) {
-		player->side = FACE_RIGHT;
-		player->flip.x = FACE_LEFT;
+		if (player->side == FACE_LEFT) {
+			player->side = FACE_RIGHT;
+			player->flip.x = FACE_LEFT;
+			player->drawPosition.x -= player->sprite->frame_w;
+		}
 	}
 }
 
