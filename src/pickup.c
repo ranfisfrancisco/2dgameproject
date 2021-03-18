@@ -34,13 +34,14 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 	else if (type == INTERACTABLE_EXPLOSIVE) {
 		ent->sprite = gf2d_sprite_load_image("images/explosive_barrel.png");
 	}
+	else if (type == INTERACTABLE_CAR) {
+		ent->sprite = gf2d_sprite_load_image("images/car.png");
+	}
 	else {
 		slog("Attempted to spawn pickup as non-pickup type");
 		entity_free(ent);
 		return NULL;
 	}
-
-	ent->type = type;
 
 	vector2d_copy(ent->drawPosition, position);
 	ent->maxHealth = 100;
@@ -52,6 +53,9 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 		ent->scale = vector2d(0.5, 0.5);
 	else if (type == INTERACTABLE_BOX || type == INTERACTABLE_METAL_BOX)
 		ent->scale = vector2d(3, 3);
+	else if (type == INTERACTABLE_CAR) {
+		ent->scale = vector2d(2,2);
+	}
 	else
 		ent->scale = vector2d(1, 1);
 
