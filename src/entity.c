@@ -270,7 +270,7 @@ int entity_is_pickup(Entity* ent) {
 }
 
 int entity_is_interactable(Entity* ent) {
-	if (ent->type >= INTERACTABLE_BOX && ent->type <= INTERACTABLE_5)
+	if (ent->type >= INTERACTABLE_BOX && ent->type <= INTERACTABLE_TRASH_CAN)
 		return true;
 	return false;
 }

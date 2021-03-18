@@ -37,8 +37,17 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 	else if (type == INTERACTABLE_CAR) {
 		ent->sprite = gf2d_sprite_load_image("images/car.png");
 	}
+	else if (type == INTERACTABLE_TRASH_CAN) {
+		ent->sprite = gf2d_sprite_load_image("images/trash_can.png");
+	}
 	else {
-		slog("Attempted to spawn pickup as non-pickup type");
+		slog("Attempted to spawn pickup/interactable as non-pickup/interactable type");
+		entity_free(ent);
+		return NULL;
+	}
+
+	if (ent->sprite == NULL) {
+		slog("Failed to load sprite for pickup/interactable!");
 		entity_free(ent);
 		return NULL;
 	}
@@ -55,6 +64,9 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 		ent->scale = vector2d(3, 3);
 	else if (type == INTERACTABLE_CAR) {
 		ent->scale = vector2d(2,2);
+	}
+	else if (type == INTERACTABLE_TRASH_CAN) {
+		ent->scale = vector2d(2, 2);
 	}
 	else
 		ent->scale = vector2d(1, 1);
