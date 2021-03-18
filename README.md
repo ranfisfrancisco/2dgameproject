@@ -1,4 +1,4 @@
-###To Play:
+### To Play ###
 
 Once the game is compiled and run, you use WASD to move the character. J attacks with a punch and K attacks with a kick.
 Certain special moves can be performed by inputting certain directional inputs followed by punch or kick. For example, left-right then punch or kick (or right-left to do it the other directions).
