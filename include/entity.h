@@ -7,12 +7,13 @@
 
 typedef enum entity_type { NO_TYPE, PLAYER_TYPE,
 ENEMY_TYPE_1, ENEMY_TYPE_2, ENEMY_TYPE_3, ENEMY_TYPE_4, ENEMY_TYPE_5, 
+BOSS_TYPE_1, BOSS_TYPE_2,
 PICKUP_TYPE_MEDKIT, PICKUP_TYPE_FMEDKIT, PICKUP_TYPE_KNIFE, PICKUP_TYPE_CROWBAR, PICKUP_TYPE_POWERUP,
 INTERACTABLE_BOX, INTERACTABLE_METAL_BOX, INTERACTABLE_EXPLOSIVE, INTERACTABLE_CAR, INTERACTABLE_TRASH_CAN };
 
 enum facing_side { FACE_RIGHT, FACE_LEFT };
 
-#define NUM_OF_ENTITY_TYPES 17
+#define NUM_OF_ENTITY_TYPES 19
 
 typedef struct Entity_s{
 	Bool _inuse;
@@ -125,31 +126,38 @@ void entity_draw(Entity *ent);
 
 /**
  * @brief Returns whether or not the given entity is a player entity
- * @param ent The entity to be examined
+ * @param type The type to be checked
  * @return 1 if the entity is a player, 0 otherwise
  */
-int entity_is_player(Entity* ent);
+int entity_is_player(enum entity_type type);
 
 /**
- * @brief Returns whether or not the given entity is a enemy entity
- * @param ent The entity to be examined
+ * @brief Returns whether or not the given entity is an enemy entity
+ * @param type The type to be checked
  * @return 1 if the entity is an enemy, 0 otherwise
  */
-int entity_is_enemy(Entity* ent);
+int entity_is_enemy(enum entity_type type);
+
+/**
+ * @brief Returns whether or not the given entity is a boss entity
+ * @param type The type to be checked
+ * @return 1 if the entity is an enemy, 0 otherwise
+ */
+int entity_is_enemy(enum entity_type type);
 
 /**
  * @brief Returns whether or not the given entity is a pickup entity
- * @param ent The entity to be examined
+ * @param type The type to be checked
  * @return 1 if the entity is a pickup, 0 otherwise
  */
-int entity_is_pickup(Entity* ent);
+int entity_is_pickup(enum entity_type type);
 
 /**
  * @brief Returns whether or not the given entity is an interactable entity
- * @param ent The entity to be examined
+ * @param type The type to be checked
  * @return 1 if the entity is an interactable, 0 otherwise
  */
-int entity_is_interactable(Entity* ent);
+int entity_is_interactable(enum entity_type type);
 
 /**
  * @brief Draws hurtboxes for all entities.

@@ -218,7 +218,7 @@ int entity_manager_player_attack_collison(SDL_Rect playerHitbox, int damage) {
 		if (entity_manager.entity_list[i]._inuse == 0)
 			continue;
 
-		if (!entity_is_enemy(&entity_manager.entity_list[i]) && !entity_is_interactable(&entity_manager.entity_list[i]))
+		if (!entity_is_enemy(entity_manager.entity_list[i].type) && !entity_is_interactable(entity_manager.entity_list[i].type))
 			continue;
 
 		if (SDL_HasIntersection(&playerHitbox, &entity_manager.entity_list[i].hurtbox)) {
@@ -240,7 +240,7 @@ int entity_manager_player_interactable_collision(SDL_Rect hurtbox) {
 		if (entity_manager.entity_list[i]._inuse == 0)
 			continue;
 
-		if (!entity_is_interactable(&entity_manager.entity_list[i]))
+		if (!entity_is_interactable(entity_manager.entity_list[i].type))
 			continue;
 
 		if (SDL_HasIntersection(&hurtbox, &entity_manager.entity_list[i].hurtbox)) {
@@ -251,26 +251,32 @@ int entity_manager_player_interactable_collision(SDL_Rect hurtbox) {
 	return false;
 }
 
-int entity_is_player(Entity* ent) {
-	if (ent->type == PLAYER_TYPE)
+int entity_is_player(enum entity_type type) {
+	if (type == PLAYER_TYPE)
 		return true;
 	return false;
 }
 
-int entity_is_enemy(Entity* ent) {
-	if (ent->type >= ENEMY_TYPE_1 && ent->type <= ENEMY_TYPE_5)
+int entity_is_enemy(enum entity_type type) {
+	if (type >= ENEMY_TYPE_1 && type <= ENEMY_TYPE_5)
 		return true;
 	return false;
 }
 
-int entity_is_pickup(Entity* ent) {
-	if (ent->type >= PICKUP_TYPE_MEDKIT && ent->type <= PICKUP_TYPE_POWERUP)
+int entity_is_boss(enum entity_type type) {
+	if (type >= BOSS_TYPE_1 && type <= BOSS_TYPE_2)
 		return true;
 	return false;
 }
 
-int entity_is_interactable(Entity* ent) {
-	if (ent->type >= INTERACTABLE_BOX && ent->type <= INTERACTABLE_TRASH_CAN)
+int entity_is_pickup(enum entity_type type) {
+	if (type >= PICKUP_TYPE_MEDKIT && type <= PICKUP_TYPE_POWERUP)
+		return true;
+	return false;
+}
+
+int entity_is_interactable(enum entity_type type) {
+	if (type >= INTERACTABLE_BOX && type <= INTERACTABLE_TRASH_CAN)
 		return true;
 	return false;
 }
