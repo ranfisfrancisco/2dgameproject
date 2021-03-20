@@ -128,7 +128,7 @@ void pickup_update(Entity* self) {
 			}
 		}
 		else if (self->type == PICKUP_TYPE_FMEDKIT) {
-			player_change_health(-5);
+			player_change_health(-30);
 			entity_free(self);
 		}
 		else if (self->type == PICKUP_TYPE_POWERUP) {
@@ -157,6 +157,7 @@ void explosive_hurt(Entity* self, int damage) {
 
 	if (self->health <= 0) {
 		self->hurtbox.w *= 1.3;
+		self->hurtbox.x -= 20;
 		if (player_collison_check(self->hurtbox)) {
 			player_change_health(-30);
 		}

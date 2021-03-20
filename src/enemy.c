@@ -238,6 +238,7 @@ void dog_enemy_1_think(Entity* self) {
 
 	case ENEMY_HURT:
 		self->statePos += 1;
+		self->colorShift = vector4d(255, 0, 0, 255);
 
 		if (self->statePos > 30) {
 			enemy_change_state(self, ENEMY_IDLE);
@@ -356,8 +357,7 @@ void cat_enemy_hurt(Entity* self, int damage) {
 			self->health -= damage;
 		}
 		else {
-			enemy_change_state(self, ENEMY_HURT);
-			self->health -= damage/4;
+
 		}
 	}
 	else if (self->type == ENEMY_TYPE_5) {
@@ -366,8 +366,7 @@ void cat_enemy_hurt(Entity* self, int damage) {
 			self->health -= damage;
 		}
 		else {
-			enemy_change_state(self, ENEMY_HURT);
-			self->health -= damage / 4;
+
 		}
 	}
 	else {

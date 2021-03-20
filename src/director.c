@@ -137,8 +137,7 @@ int director_run_game() {
 
     if (SPAWN_FLAG == 1 && entity_get_enemy_population() == 0) {
         SPAWN_FLAG++;
-        pickup_spawn(vector2d(300, 160), PICKUP_TYPE_KNIFE);
-        pickup_spawn(vector2d(300, 160), PICKUP_TYPE_CROWBAR);
+        pickup_spawn(vector2d(300, 260), PICKUP_TYPE_KNIFE);
         enemy_spawn(vector2d(1500, 200), ENEMY_TYPE_1);
     } else if (SPAWN_FLAG == 2 && entity_get_enemy_population() == 0) {
         SPAWN_FLAG++;
