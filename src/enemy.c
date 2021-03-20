@@ -13,84 +13,74 @@ void enemy_update(Entity* self);
 Entity* enemy_spawn(Vector2D position, enum entity_type type) {
 	Entity* ent;
 
+	if (!entity_is_enemy(type)) {
+		slog("Attempted to spawn enemy as non-enemy type");
+		return NULL;
+	}
+
 	ent = entity_new(type);
 	if (!ent) {
 		slog("failed to create entity for player");
 		return NULL;
 	}
-	if (type == ENEMY_TYPE_1 || type == ENEMY_TYPE_2 || type == ENEMY_TYPE_3 || type == ENEMY_TYPE_4 || type == ENEMY_TYPE_5) {
-		ent->sprite = gf2d_sprite_load_all("images/cat.png", 50, 50, 10);
-	}
-	else if (type == BOSS_TYPE_1 || type == BOSS_TYPE_2) {
+
+	if (type == BOSS_TYPE_1 || type == BOSS_TYPE_2) {
 		ent->sprite = gf2d_sprite_load_image("images/dog.PNG");
-	}
-	else {
-		slog("Attempted to spawn enemy as non-enemy type");
-		entity_free(ent);
-		return NULL;
-	}
-	vector2d_copy(ent->drawPosition, position);
-
-	if (type == ENEMY_TYPE_1)
-		ent->maxHealth = 100;
-	else if (type == ENEMY_TYPE_2)
-		ent->maxHealth = 150;
-	else if (type == ENEMY_TYPE_3)
-		ent->maxHealth = 50;
-	else if (type == ENEMY_TYPE_4)
-		ent->maxHealth = 100;
-	else if (type == ENEMY_TYPE_5)
-		ent->maxHealth = 100;
-	else if (type == BOSS_TYPE_1 || type == BOSS_TYPE_2)
-		ent->maxHealth = 200;
-
-	ent->health = ent->maxHealth;
-	ent->type = type;
-	ent->rotation = vector3d(0, 0, 0);
-	ent->update = enemy_update;
-	if (type == BOSS_TYPE_1 || type == BOSS_TYPE_2)
 		ent->think = dog_enemy_think;
-	else
+	}
+	else if (type == ENEMY_TYPE_1 || type == ENEMY_TYPE_2 || type == ENEMY_TYPE_3 || type == ENEMY_TYPE_4 || type == ENEMY_TYPE_5) {
+		ent->sprite = gf2d_sprite_load_all("images/cat.png", 50, 50, 10);
 		ent->think = cat_enemy_think;
+	} 
+
+	vector2d_copy(ent->drawPosition, position);
+	ent->flip = vector2d(FACE_RIGHT, 0);
+	ent->rotation = vector3d(0, 0, 0);
+	ent->colorShift = vector4d(255, 255, 255, 255);
+	ent->update = enemy_update;	
 	ent->hurt = enemy_hurt;
 
-	if (type == ENEMY_TYPE_1)
+	switch (type) {
+	case ENEMY_TYPE_1:
+		ent->maxHealth = 100;
 		ent->speed = 2;
-	else if (type == ENEMY_TYPE_2)
+		ent->scale = vector2d(4, 4);
+		break;
+	case ENEMY_TYPE_2:
+		ent->maxHealth = 150;
 		ent->speed = 1;
-	else if (type == ENEMY_TYPE_3)
-		ent->speed = 3;
-	else if (type == ENEMY_TYPE_4)
-		ent->speed = 2;
-	else if (type == ENEMY_TYPE_5)
-		ent->speed = 2;
-	else if (type == BOSS_TYPE_1 || type == BOSS_TYPE_2)
-		ent->speed = 2;
-	ent->flip = vector2d(FACE_RIGHT, 0);
-
-	ent->colorShift = vector4d(255, 255, 255, 255);
-	if (type == ENEMY_TYPE_4)
-		ent->colorShift = vector4d(255, 255, 255, 100);
-	else if (type == ENEMY_TYPE_5)
-		ent->colorShift = vector4d(255, 100, 255, 255);
-
-	if (type == ENEMY_TYPE_1)
-		ent->scale = vector2d(4, 4);
-	else if (type == ENEMY_TYPE_2)
 		ent->scale = vector2d(8, 8);
-	else if (type == ENEMY_TYPE_3)
+		break;
+	case ENEMY_TYPE_3:
+		ent->maxHealth = 50;
+		ent->speed = 3;
 		ent->scale = vector2d(1, 1);
-	else if (type == ENEMY_TYPE_4)
+		break;
+	case ENEMY_TYPE_4:
+		ent->maxHealth = 100;
+		ent->speed = 2;
+		ent->colorShift = vector4d(255, 255, 255, 100);
 		ent->scale = vector2d(4, 4);
-	else if (type == ENEMY_TYPE_5)
+		break;
+	case ENEMY_TYPE_5:
+		ent->maxHealth = 100;
+		ent->speed = 2;
+		ent->colorShift = vector4d(255, 100, 255, 255);
 		ent->scale = vector2d(4, 4);
-	else if (type == BOSS_TYPE_1 || type == BOSS_TYPE_2)
+		break;
+	case BOSS_TYPE_1:
+		ent->maxHealth = 20;
+		ent->speed = 2;
 		ent->scale = vector2d(4, 4);
+		break;
+	case BOSS_TYPE_2:
+		ent->maxHealth = 200;
+		ent->speed = 4;
+		ent->scale = vector2d(4, 4);
+		break;
+	}
 
-	if (type == ENEMY_TYPE_3)
-		gfc_rect_set(ent->hurtbox, ent->drawPosition.x, ent->drawPosition.y, ent->sprite->frame_w * 2, ent->sprite->frame_h * 2);
-	else
-		gfc_rect_set(ent->hurtbox, ent->drawPosition.x, ent->drawPosition.y, ent->sprite->frame_w * ent->scale.x, ent->sprite->frame_h * ent->scale.y);
+	ent->health = ent->maxHealth;
 
 	return ent;
 }
