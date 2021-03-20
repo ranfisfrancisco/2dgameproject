@@ -275,6 +275,12 @@ int entity_is_pickup(enum entity_type type) {
 	return false;
 }
 
+int entity_is_weapon(enum entity_type type) {
+	if (type >= PICKUP_TYPE_KNIFE && type <= PICKUP_TYPE_CROWBAR)
+		return true;
+	return false;
+}
+
 int entity_is_interactable(enum entity_type type) {
 	if (type >= INTERACTABLE_BOX && type <= INTERACTABLE_TRASH_CAN)
 		return true;

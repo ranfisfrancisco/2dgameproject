@@ -71,19 +71,34 @@ int player_get_max_health() {
 }
 
 void player_attach_weapon(Entity* ent) {
-	if (ent->type != PICKUP_TYPE_KNIFE && ent->type != PICKUP_TYPE_CROWBAR) {
-		slog("Attempted to attatch non-weapon to player");
+	slog("Starting Attachment");
+	if (!entity_is_weapon(ent->type)) {
+		slog("Attempted to attach non-weapon to player");
 		return;
 	}
 	else if (!ent->_inuse) {
 		slog("Attempted to attatch entity not in use to player");
-return;
+		return;
 	}
+	slog("Checked for type and in use");
 
 	if (((PlayerData*)player->data)->weapon != NULL)
-		free(((PlayerData*)player->data)->weapon);
+		player_discard_weapon();
+
 
 	((PlayerData*)player->data)->weapon = ent;
+	((PlayerData*)player->data)->weapon->state = 1;
+
+	slog("Done!");
+}
+
+void player_discard_weapon() {
+	if (((PlayerData*)player->data)->weapon == NULL) {
+		return;
+	}
+
+	entity_free(((PlayerData*)player->data)->weapon);
+	((PlayerData*)player->data)->weapon = NULL;
 }
 
 void player_power_up(int frameTime) {

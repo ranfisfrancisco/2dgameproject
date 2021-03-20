@@ -47,6 +47,11 @@ void player_attach_weapon(Entity* ent);
 Vector2D player_get_weapon_position();
 
 /**
+ * @brief Frees and discards held weapon.
+ */
+void player_discard_weapon();
+
+/**
  * @brief Puts the player in a power up state
  * @param frameTime The number of frames the player should be powered up.
  */

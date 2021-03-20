@@ -17,7 +17,7 @@
 
 GameVarsStruct game_vars = { 0 };
 const Uint8* KEYS; 
-int QUIT_FLAG;
+int QUIT_FLAG, SPAWN_FLAG;
 const char* SCORE_FILE_NAME = "score.json";
 
 void director_add_score(int amount) {
@@ -71,6 +71,7 @@ void director_snap_camera() {
 
 void director_init_game() {
     QUIT_FLAG = 0;
+    SPAWN_FLAG = 1;
     game_vars.score = 0;
     game_vars.highScore = load_score(SCORE_FILE_NAME);
 
@@ -100,15 +101,13 @@ void director_init_game() {
     slog("Loaded Level:");
     slog(game_vars.currentLevel->fileName);
     
-    player_spawn(vector2d(600, 360));
-    //enemy_spawn(vector2d(1500, 200), ENEMY_TYPE_1);
-   //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_2);
-   //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_3);
-   //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_4);
-   //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_5);
-    enemy_spawn(vector2d(600, 200), BOSS_TYPE_2);
+    player_spawn(vector2d(100, 360));
 
-   pickup_spawn(vector2d(300, 160), INTERACTABLE_TRASH_CAN);
+    pickup_spawn(vector2d(300, 30), INTERACTABLE_TRASH_CAN);
+    pickup_spawn(vector2d(400, 160), INTERACTABLE_BOX);
+    pickup_spawn(vector2d(700, 80), INTERACTABLE_METAL_BOX);
+    pickup_spawn(vector2d(700, 160), INTERACTABLE_CAR);
+    pickup_spawn(vector2d(700, 600), INTERACTABLE_EXPLOSIVE);
 }
 
 int director_run_game() {
@@ -135,6 +134,39 @@ int director_run_game() {
 
     if (game_vars.score > game_vars.highScore)
         game_vars.highScore = game_vars.score;
+
+    if (SPAWN_FLAG == 1 && entity_get_enemy_population() == 0) {
+        SPAWN_FLAG++;
+        pickup_spawn(vector2d(300, 160), PICKUP_TYPE_KNIFE);
+        pickup_spawn(vector2d(300, 160), PICKUP_TYPE_CROWBAR);
+        enemy_spawn(vector2d(1500, 200), ENEMY_TYPE_1);
+    } else if (SPAWN_FLAG == 2 && entity_get_enemy_population() == 0) {
+        SPAWN_FLAG++;
+
+        pickup_spawn(vector2d(300, 160), PICKUP_TYPE_FMEDKIT);
+
+        enemy_spawn(vector2d(600, 200), ENEMY_TYPE_2);
+        enemy_spawn(vector2d(500, 200), ENEMY_TYPE_3);
+    } else if (SPAWN_FLAG == 3 && entity_get_enemy_population() == 0) {
+        SPAWN_FLAG++;
+
+        pickup_spawn(vector2d(300, 160), PICKUP_TYPE_CROWBAR);
+        pickup_spawn(vector2d(600, 160), PICKUP_TYPE_MEDKIT);
+
+        enemy_spawn(vector2d(600, 200), ENEMY_TYPE_4);
+        enemy_spawn(vector2d(500, 200), ENEMY_TYPE_5);
+    }
+    else if (SPAWN_FLAG == 4 && entity_get_enemy_population() == 0) {
+        SPAWN_FLAG++;
+
+        enemy_spawn(vector2d(600, 200), BOSS_TYPE_1);
+    } else if (SPAWN_FLAG == 5 && entity_get_enemy_population() == 0) {
+        SPAWN_FLAG = 0;
+
+        pickup_spawn(vector2d(300, 160), PICKUP_TYPE_POWERUP);
+
+        enemy_spawn(vector2d(600, 200), BOSS_TYPE_2);
+    }
     
     return QUIT_FLAG;
 }

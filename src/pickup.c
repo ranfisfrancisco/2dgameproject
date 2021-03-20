@@ -7,15 +7,22 @@ void pickup_update(Entity* self);
 void container_hurt(Entity* self, int damage);
 void explosive_hurt(Entity* self, int damage);
 void pickup_set_hurtbox(Entity* self);
+void pickup_die(Entity* self);
 
 Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 	Entity* ent;
 
-	ent = entity_new(type);
-	if (!ent) {
-		slog("failed to create entity for pickup");
+	if (!entity_is_pickup(type) && !entity_is_interactable(type)) {
+		slog("Attempted to spawn pickup/interactable as non-pickup/interactable type");
 		return NULL;
 	}
+
+	ent = entity_new(type);
+	if (!ent) {
+		slog("failed to create entity for pickup/interactable");
+		return NULL;
+	}
+
 	if (type == PICKUP_TYPE_MEDKIT || type == PICKUP_TYPE_FMEDKIT) {
 		ent->sprite = gf2d_sprite_load_image("images/medkit.png");
 	}
@@ -40,30 +47,21 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 	else if (type == INTERACTABLE_TRASH_CAN) {
 		ent->sprite = gf2d_sprite_load_image("images/trash_can.png");
 	}
-	else {
-		slog("Attempted to spawn pickup/interactable as non-pickup/interactable type");
-		entity_free(ent);
-		return NULL;
-	}
-
+	
 	if (ent->sprite == NULL) {
 		slog("Failed to load sprite for pickup/interactable!");
 		entity_free(ent);
 		return NULL;
 	}
 
-	vector2d_copy(ent->drawPosition, position);
-	ent->maxHealth = 100;
-	ent->health = ent->maxHealth;
-
 	if (type == PICKUP_TYPE_KNIFE)
-		ent->scale = vector2d(1.0/12, 1.0/12);
+		ent->scale = vector2d(1.0 / 12, 1.0 / 12);
 	else if (type == PICKUP_TYPE_CROWBAR)
 		ent->scale = vector2d(0.5, 0.5);
 	else if (type == INTERACTABLE_BOX || type == INTERACTABLE_METAL_BOX)
 		ent->scale = vector2d(3, 3);
 	else if (type == INTERACTABLE_CAR) {
-		ent->scale = vector2d(2,2);
+		ent->scale = vector2d(2, 2);
 	}
 	else if (type == INTERACTABLE_TRASH_CAN) {
 		ent->scale = vector2d(2, 2);
@@ -72,16 +70,21 @@ Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
 		ent->scale = vector2d(1, 1);
 
 	if (type == PICKUP_TYPE_FMEDKIT) {
-		ent->colorShift = vector4d(100, 100, 100, 255);
+		ent->defaultColorShift = vector4d(100, 100, 100, 255);
 	}
 	else if (type == INTERACTABLE_METAL_BOX) {
-		ent->colorShift = vector4d(50, 50, 50, 255);
+		ent->defaultColorShift = vector4d(50, 50, 50, 255);
 	}
 	else {
-		ent->colorShift = vector4d(255, 255, 255, 255);
+		ent->defaultColorShift = vector4d(255, 255, 255, 255);
 	}
 
+	ent->colorShift = ent->defaultColorShift;
+	ent->maxHealth = 100;
+	ent->health = ent->maxHealth;
+	vector2d_copy(ent->drawPosition, position);
 	ent->update = pickup_update;
+
 	if (type == INTERACTABLE_BOX) {
 		ent->hurt = container_hurt;
 	}
@@ -105,14 +108,14 @@ void pickup_set_hurtbox(Entity* self) {
 void pickup_update(Entity* self) {
 	pickup_set_hurtbox(self);
 
-	if ((self->type == PICKUP_TYPE_KNIFE || self->type == PICKUP_TYPE_CROWBAR) && self->state == 1) {
+	if (entity_is_weapon(self->type) && self->state == 1) {
 		vector2d_copy(self->drawPosition, player_get_weapon_position());
 		self->statePos++;
 		if (self->statePos > 60 * 60)
 			entity_free(self);
 
 		if (self->health <= 0)
-			entity_free(self);
+			pickup_die(self);
 
 		return;
 	}
@@ -133,7 +136,6 @@ void pickup_update(Entity* self) {
 			entity_free(self);
 		}
 		else if (self->type == PICKUP_TYPE_KNIFE || self->type == PICKUP_TYPE_CROWBAR) {
-			self->state = 1;
 			player_attach_weapon(self);
 		}
 	}
@@ -146,7 +148,7 @@ void container_hurt(Entity* self, int damage){
 
 	if (self->health <= 0) {
 		pickup_spawn(self->drawPosition, PICKUP_TYPE_MEDKIT);
-		entity_free(self);
+		pickup_die(self);
 	}
 }
 
@@ -160,4 +162,10 @@ void explosive_hurt(Entity* self, int damage) {
 		}
 		entity_free(self);
 	}
+}
+
+void pickup_die(Entity* self) {
+	director_add_score(self->deathScore);
+	entity_free(self);
+	return;
 }

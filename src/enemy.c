@@ -36,6 +36,12 @@ Entity* enemy_spawn(Vector2D position, enum entity_type type) {
 		ent->hurt = cat_enemy_hurt;
 	} 
 
+	if (ent->sprite == NULL) {
+		slog("Failed to load sprite for enemy!");
+		entity_free(ent);
+		return NULL;
+	}
+
 	vector2d_copy(ent->drawPosition, position);
 	ent->deathScore = 100;
 	ent->flip = vector2d(FACE_RIGHT, 0);

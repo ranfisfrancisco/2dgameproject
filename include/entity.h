@@ -155,6 +155,13 @@ int entity_is_boss(enum entity_type type);
 int entity_is_pickup(enum entity_type type);
 
 /**
+ * @brief Returns whether or not the given entity is a weapon entity
+ * @param type The type to be checked
+ * @return 1 if the entity is a weapon, 0 otherwise
+ */
+int entity_is_weapon(enum entity_type type);
+
+/**
  * @brief Returns whether or not the given entity is an interactable entity
  * @param type The type to be checked
  * @return 1 if the entity is an interactable, 0 otherwise
