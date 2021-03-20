@@ -5,7 +5,8 @@
 #include "camera.h"
 #include <stdlib.h>
 
-void enemy_think(Entity* self);
+void cat_enemy_think(Entity* self);
+void dog_enemy_think(Entity* self);
 void enemy_hurt(Entity* self, int damage);
 void enemy_update(Entity* self);
 
@@ -19,6 +20,9 @@ Entity* enemy_spawn(Vector2D position, enum entity_type type) {
 	}
 	if (type == ENEMY_TYPE_1 || type == ENEMY_TYPE_2 || type == ENEMY_TYPE_3 || type == ENEMY_TYPE_4 || type == ENEMY_TYPE_5) {
 		ent->sprite = gf2d_sprite_load_all("images/cat.png", 50, 50, 10);
+	}
+	else if (type == BOSS_TYPE_1 || type == BOSS_TYPE_2) {
+		ent->sprite = gf2d_sprite_load_image("images/dog.PNG");
 	}
 	else {
 		slog("Attempted to spawn enemy as non-enemy type");
@@ -37,12 +41,17 @@ Entity* enemy_spawn(Vector2D position, enum entity_type type) {
 		ent->maxHealth = 100;
 	else if (type == ENEMY_TYPE_5)
 		ent->maxHealth = 100;
+	else if (type == BOSS_TYPE_1 || type == BOSS_TYPE_2)
+		ent->maxHealth = 200;
 
 	ent->health = ent->maxHealth;
 	ent->type = type;
 	ent->rotation = vector3d(0, 0, 0);
 	ent->update = enemy_update;
-	ent->think = enemy_think;
+	if (type == BOSS_TYPE_1 || type == BOSS_TYPE_2)
+		ent->think = dog_enemy_think;
+	else
+		ent->think = cat_enemy_think;
 	ent->hurt = enemy_hurt;
 
 	if (type == ENEMY_TYPE_1)
@@ -54,6 +63,8 @@ Entity* enemy_spawn(Vector2D position, enum entity_type type) {
 	else if (type == ENEMY_TYPE_4)
 		ent->speed = 2;
 	else if (type == ENEMY_TYPE_5)
+		ent->speed = 2;
+	else if (type == BOSS_TYPE_1 || type == BOSS_TYPE_2)
 		ent->speed = 2;
 	ent->flip = vector2d(FACE_RIGHT, 0);
 
@@ -72,6 +83,8 @@ Entity* enemy_spawn(Vector2D position, enum entity_type type) {
 	else if (type == ENEMY_TYPE_4)
 		ent->scale = vector2d(4, 4);
 	else if (type == ENEMY_TYPE_5)
+		ent->scale = vector2d(4, 4);
+	else if (type == BOSS_TYPE_1 || type == BOSS_TYPE_2)
 		ent->scale = vector2d(4, 4);
 
 	if (type == ENEMY_TYPE_3)
@@ -126,10 +139,11 @@ void enemy_change_state(Entity* self, enum enemy_state state) {
 	self->frame = 0;
 	self->statePos = 0;
 	self->state = state;
+	self->colorShift = vector4d(255, 255, 255, 255);
 }
 
 //TODO: Add randomness to movement
-void enemy_think(Entity* self) {
+void cat_enemy_think(Entity* self) {
 	int startFrame, endFrame;
 	SDL_Rect hitbox;
 	Vector2D distToPlayer;
@@ -203,6 +217,56 @@ void enemy_think(Entity* self) {
 	
 }
 
+void dog_enemy_think(Entity* self) {
+	SDL_Rect hitbox;
+	Vector2D distToPlayer;
+
+	switch (self->state) {
+	case ENEMY_IDLE:
+		self->attackHit = 0;
+		distToPlayer = enemy_move_to_player(self);
+
+		if (distToPlayer.x < 10 && distToPlayer.y < 3)
+			enemy_change_state(self, ENEMY_ATTACK);
+
+		break;
+
+	case ENEMY_HURT:
+		self->statePos += 1;
+
+		if (self->statePos > 30) {
+			enemy_change_state(self, ENEMY_IDLE);
+		}
+		break;
+
+	case ENEMY_ATTACK:
+		self->statePos += 1;
+		self->colorShift = vector4d(255, 0, 0, 255);
+
+		gfc_rect_set(hitbox, self->drawPosition.x, self->drawPosition.y, self->sprite->frame_w * 1.2, self->sprite->frame_h);
+
+		if (!self->attackHit) {
+			if (self->side == FACE_LEFT) {
+				hitbox.x -= 2 * self->sprite->frame_w;
+			}
+
+			if (player_collison_check(hitbox)) {
+				self->attackHit = 1;
+				player_hurt(NULL, 2);
+			}
+		}
+
+		if (self->statePos > 40) {
+			enemy_change_state(self, ENEMY_IDLE);
+		}
+		break;
+
+	default:
+		break;
+	}
+
+}
+
 void enemy_die(Entity* self) {
 	director_add_score(100);
 	entity_free(self);
@@ -249,6 +313,12 @@ void enemy_hurt(Entity* self, int damage) {
 			enemy_change_state(self, ENEMY_HURT);
 			self->health -= damage / 4;
 		}
+	}
+	else if (self->type == BOSS_TYPE_1 || self->type == BOSS_TYPE_2) {
+		if (self->state != ENEMY_ATTACK)
+			return;
+		enemy_change_state(self, ENEMY_HURT);
+		self->health -= damage;
 	}
 	else {
 		enemy_change_state(self, ENEMY_HURT);

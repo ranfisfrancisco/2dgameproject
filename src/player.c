@@ -166,10 +166,6 @@ void player_movement(const Uint8* keys) {
 	cameraNewPosition.y = player->drawPosition.y - 720 / 2;
 	camera_set_position(cameraNewPosition);
 	director_snap_camera();
-
-	slog("Player Position %f %f", player->drawPosition.x, player->drawPosition.y);
-	slog("Hurtbox Position %d %d", player->hurtbox.x, player->hurtbox.y);
-	slog("Camera Position %f %f", camera_get_position().x, camera_get_position().y);
 }
 
 void player_update_side(const Uint8* keys) {
@@ -359,7 +355,7 @@ void player_input(const Uint8* keys) {
 		attackPower = player->baseDamage + 10;
 		player->statePos++;
 
-		gfc_rect_set(hitbox, player->drawPosition.x + player->sprite->frame_w, player->drawPosition.y, player->sprite->frame_w, player->sprite->frame_h);
+		gfc_rect_set(hitbox, player->drawPosition.x + player->sprite->frame_w, player->drawPosition.y, player->sprite->frame_w *1.4, player->sprite->frame_h);
 		if (player->side == FACE_LEFT) {
 			hitbox.x -= 2 * player->sprite->frame_w;
 		}

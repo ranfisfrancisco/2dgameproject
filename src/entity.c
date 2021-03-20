@@ -93,7 +93,7 @@ int entity_get_population(enum entity_type type) {
 
 int entity_get_enemy_population() {
 	int sum = 0;
-	for (int i = ENEMY_TYPE_1; i <= ENEMY_TYPE_5; i++)
+	for (int i = ENEMY_TYPE_1; i <= BOSS_TYPE_2; i++)
 		sum += entity_get_population(i);
 
 	return sum;
@@ -258,7 +258,7 @@ int entity_is_player(enum entity_type type) {
 }
 
 int entity_is_enemy(enum entity_type type) {
-	if (type >= ENEMY_TYPE_1 && type <= ENEMY_TYPE_5)
+	if (type >= ENEMY_TYPE_1 && type <= BOSS_TYPE_2)
 		return true;
 	return false;
 }
