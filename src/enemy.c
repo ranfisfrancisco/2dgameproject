@@ -7,7 +7,8 @@
 
 void cat_enemy_think(Entity* self);
 void dog_enemy_think(Entity* self);
-void enemy_hurt(Entity* self, int damage);
+void cat_enemy_hurt(Entity* self, int damage);
+void dog_enemy_hurt(Entity* self, int damage);
 void enemy_update(Entity* self);
 
 Entity* enemy_spawn(Vector2D position, enum entity_type type) {
@@ -27,18 +28,19 @@ Entity* enemy_spawn(Vector2D position, enum entity_type type) {
 	if (type == BOSS_TYPE_1 || type == BOSS_TYPE_2) {
 		ent->sprite = gf2d_sprite_load_image("images/dog.PNG");
 		ent->think = dog_enemy_think;
+		ent->hurt = dog_enemy_hurt;
 	}
 	else if (type == ENEMY_TYPE_1 || type == ENEMY_TYPE_2 || type == ENEMY_TYPE_3 || type == ENEMY_TYPE_4 || type == ENEMY_TYPE_5) {
 		ent->sprite = gf2d_sprite_load_all("images/cat.png", 50, 50, 10);
 		ent->think = cat_enemy_think;
+		ent->hurt = cat_enemy_hurt;
 	} 
 
 	vector2d_copy(ent->drawPosition, position);
 	ent->flip = vector2d(FACE_RIGHT, 0);
 	ent->rotation = vector3d(0, 0, 0);
-	ent->colorShift = vector4d(255, 255, 255, 255);
+	ent->defaultColorShift = vector4d(255, 255, 255, 255);
 	ent->update = enemy_update;	
-	ent->hurt = enemy_hurt;
 
 	switch (type) {
 	case ENEMY_TYPE_1:
@@ -59,13 +61,13 @@ Entity* enemy_spawn(Vector2D position, enum entity_type type) {
 	case ENEMY_TYPE_4:
 		ent->maxHealth = 100;
 		ent->speed = 2;
-		ent->colorShift = vector4d(255, 255, 255, 100);
+		ent->defaultColorShift = vector4d(255, 255, 255, 100);
 		ent->scale = vector2d(4, 4);
 		break;
 	case ENEMY_TYPE_5:
 		ent->maxHealth = 100;
 		ent->speed = 2;
-		ent->colorShift = vector4d(255, 100, 255, 255);
+		ent->defaultColorShift = vector4d(255, 100, 255, 255);
 		ent->scale = vector2d(4, 4);
 		break;
 	case BOSS_TYPE_1:
@@ -81,6 +83,7 @@ Entity* enemy_spawn(Vector2D position, enum entity_type type) {
 	}
 
 	ent->health = ent->maxHealth;
+	ent->colorShift = ent->defaultColorShift;
 
 	return ent;
 }
@@ -129,7 +132,7 @@ void enemy_change_state(Entity* self, enum enemy_state state) {
 	self->frame = 0;
 	self->statePos = 0;
 	self->state = state;
-	self->colorShift = vector4d(255, 255, 255, 255);
+	self->colorShift = self->defaultColorShift;
 }
 
 //TODO: Add randomness to movement
@@ -283,7 +286,7 @@ void enemy_update(Entity* self) {
 }
 
 
-void enemy_hurt(Entity* self, int damage) {
+void cat_enemy_hurt(Entity* self, int damage) {
 	if (self->type == ENEMY_TYPE_4) {
 		if (damage > 30) {
 			enemy_change_state(self, ENEMY_HURT);
@@ -315,4 +318,17 @@ void enemy_hurt(Entity* self, int damage) {
 		self->health -= damage;
 	}
 	
+}
+
+void dog_enemy_hurt(Entity* self, int damage) {
+	if (self->type == BOSS_TYPE_1 || self->type == BOSS_TYPE_2) {
+		if (self->state != ENEMY_ATTACK)
+			return;
+		enemy_change_state(self, ENEMY_HURT);
+		self->health -= damage;
+	}
+	else {
+		enemy_change_state(self, ENEMY_HURT);
+		self->health -= damage;
+	}
 }

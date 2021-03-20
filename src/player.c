@@ -38,7 +38,8 @@ void player_spawn(Vector2D position) {
 	player->maxHealth = 100;
 	player->health = player->maxHealth;
 	player->rotation = vector3d(0,0,0);
-	player->colorShift = vector4d(255, 255, 255, 255);
+	player->defaultColorShift = vector4d(255, 255, 255, 255);
+	player->colorShift = player->defaultColorShift;
 	player->update = player_update;
 	player->hurt = player_hurt;
 	player->baseDamage = 10;
@@ -207,6 +208,7 @@ void player_change_state(enum player_state state) {
 	player->statePos = 0;
 	player->attackHit = 0;
 	player->state = state;
+	player->colorShift = player->defaultColorShift;
 }
 
 void player_attack_check(SDL_Rect hitbox, int attackPower, int weaponDegradation) {
@@ -355,7 +357,8 @@ void player_input(const Uint8* keys) {
 		attackPower = player->baseDamage + 10;
 		player->statePos++;
 
-		gfc_rect_set(hitbox, player->drawPosition.x + player->sprite->frame_w, player->drawPosition.y, player->sprite->frame_w *1.4, player->sprite->frame_h);
+		gfc_rect_set(hitbox, player->drawPosition.x, player->drawPosition.y, player->sprite->frame_w *1.4, player->sprite->frame_h);
+
 		if (player->side == FACE_LEFT) {
 			hitbox.x -= 2 * player->sprite->frame_w;
 		}

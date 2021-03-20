@@ -27,6 +27,7 @@ typedef struct Entity_s{
 	float frame;
 	Vector3D rotation;
 	Vector4D colorShift;
+	Vector4D defaultColorShift;
 	void (*update)(struct Entity_s* self);
 	void (*think)(struct Entity_s* self);
 	void (*draw)(struct Entity_s* self);
@@ -143,7 +144,7 @@ int entity_is_enemy(enum entity_type type);
  * @param type The type to be checked
  * @return 1 if the entity is an enemy, 0 otherwise
  */
-int entity_is_enemy(enum entity_type type);
+int entity_is_boss(enum entity_type type);
 
 /**
  * @brief Returns whether or not the given entity is a pickup entity
