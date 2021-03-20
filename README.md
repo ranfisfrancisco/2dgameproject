@@ -5,7 +5,9 @@ Certain special moves can be performed by inputting certain directional inputs f
 Rolling from down (S) to down and right (S and D) to right (D) and hitting punch or kick does another move. This can also be done in the other direction.
 Hitting punch and kick at the same time does a stronger attack.
 
-Enemies will move towards you and attack. Defeat them to increase your score. Some enemies are smaller and faster, while others are bigger and stronger. Two other types take vastly reduced damage from kicks or punches, respectively.
+Enemies will move towards you and attack. Defeat them to increase your score. Some enemies are smaller and faster, while others are bigger and stronger. Two other types take vastly reduced damage weak or strong attacks, respectively.
+
+One boss type is only vulnerable when it is attacking you. Another will remain invisible until it attacks.
 
 You can pickup certain weapons by touching them. They will increase your damage. Medkits will restore your health while purple "poison" medkits will reduce it. The powerup item will restore your health and temporarily increase your damage.
 
