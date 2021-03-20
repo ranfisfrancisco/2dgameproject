@@ -9,6 +9,7 @@ enum player_state {PLAYER_IDLE, PLAYER_HURT, PLAYER_WALK, PLAYER_PUNCH, PLAYER_K
 void player_update(Entity* self);
 void player_hurt(Entity* self);
 void player_set_hurtbox(SDL_Rect* hurtbox, Vector2D* drawPosition);
+SDL_Rect player_generic_hitbox();
 
 static Entity* player = { 0 };
 
@@ -203,6 +204,18 @@ void player_set_hurtbox(SDL_Rect* hurtbox, Vector2D* drawPosition) {
 	}
 }
 
+SDL_Rect player_generic_hitbox() {
+	SDL_Rect hitbox;
+
+	hitbox = player->hurtbox;
+
+	if (player->side == FACE_LEFT) {
+		hitbox.x -= player->sprite->frame_w * 0.5;
+	}
+	hitbox.w *= 1.5;
+	return hitbox;
+}
+
 void player_change_state(enum player_state state) {
 	player->frame = 0;
 	player->statePos = 0;
@@ -357,7 +370,7 @@ void player_input(const Uint8* keys) {
 		attackPower = player->baseDamage + 10;
 		player->statePos++;
 
-		gfc_rect_set(hitbox, player->drawPosition.x, player->drawPosition.y, player->sprite->frame_w *1.4, player->sprite->frame_h);
+		hitbox = player_generic_hitbox();
 
 		if (player->side == FACE_LEFT) {
 			hitbox.x -= 2 * player->sprite->frame_w;
@@ -385,10 +398,7 @@ void player_input(const Uint8* keys) {
 		attackPower = player->baseDamage + 10;
 		player->statePos++;
 
-		gfc_rect_set(hitbox, player->drawPosition.x + player->sprite->frame_w, player->drawPosition.y, player->sprite->frame_w, player->sprite->frame_h);
-		if (player->side == FACE_LEFT) {
-			hitbox.x -= 2 * player->sprite->frame_w;
-		}
+		hitbox = player_generic_hitbox();
 
 		player_attack_check(hitbox, attackPower, 0);
 
@@ -417,10 +427,7 @@ void player_input(const Uint8* keys) {
 
 		player->statePos++;
 
-		gfc_rect_set(hitbox, player->drawPosition.x + player->sprite->frame_w, player->drawPosition.y, player->sprite->frame_w, player->sprite->frame_h);
-		if (player->side == FACE_LEFT) {
-			hitbox.x -= 2 * player->sprite->frame_w;
-		}
+		hitbox = player_generic_hitbox();
 
 		if (((PlayerData*)player->data)->weapon)
 			attackPower += 10;
@@ -447,10 +454,7 @@ void player_input(const Uint8* keys) {
 
 		player->statePos++;
 
-		gfc_rect_set(hitbox, player->drawPosition.x + player->sprite->frame_w, player->drawPosition.y, player->sprite->frame_w, player->sprite->frame_h);
-		if (player->side == FACE_LEFT) {
-			hitbox.x -= 2 * player->sprite->frame_w;
-		}
+		hitbox = player_generic_hitbox();
 
 		player_attack_check(hitbox, attackPower, 0);
 
@@ -475,10 +479,7 @@ void player_input(const Uint8* keys) {
 
 		player->statePos++;
 
-		gfc_rect_set(hitbox, player->drawPosition.x + player->sprite->frame_w, player->drawPosition.y, player->sprite->frame_w, player->sprite->frame_h);
-		if (player->side == FACE_LEFT) {
-			hitbox.x -= 2 * player->sprite->frame_w;
-		}
+		hitbox = player_generic_hitbox();
 
 		if (((PlayerData*)player->data)->weapon)
 			attackPower += 10;
@@ -506,10 +507,7 @@ void player_input(const Uint8* keys) {
 
 		player->statePos++;
 
-		gfc_rect_set(hitbox, player->drawPosition.x + player->sprite->frame_w, player->drawPosition.y, player->sprite->frame_w, player->sprite->frame_h);
-		if (player->side == FACE_LEFT) {
-			hitbox.x -= 2 * player->sprite->frame_w;
-		}
+		hitbox = player_generic_hitbox();
 
 		player_attack_check(hitbox, attackPower, 0);
 
@@ -534,10 +532,7 @@ void player_input(const Uint8* keys) {
 
 		player->statePos++;
 
-		gfc_rect_set(hitbox, player->drawPosition.x + player->sprite->frame_w, player->drawPosition.y, player->sprite->frame_w, player->sprite->frame_h);
-		if (player->side == FACE_LEFT) {
-			hitbox.x -= 2 * player->sprite->frame_w;
-		}
+		hitbox = player_generic_hitbox();
 
 		player_attack_check(hitbox, attackPower, 0);
 
