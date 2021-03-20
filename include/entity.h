@@ -43,6 +43,7 @@ typedef struct Entity_s{
 	int maxHealth;
 	int defaultSpeed;
 	int speed;
+	int deathScore;
 } Entity;
 
 /**

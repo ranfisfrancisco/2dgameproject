@@ -106,7 +106,7 @@ void director_init_game() {
    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_3);
    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_4);
    //enemy_spawn(vector2d(600, 200), ENEMY_TYPE_5);
-    enemy_spawn(vector2d(600, 200), BOSS_TYPE_1);
+    enemy_spawn(vector2d(600, 200), BOSS_TYPE_2);
 
    pickup_spawn(vector2d(300, 160), INTERACTABLE_TRASH_CAN);
 }
