@@ -97,9 +97,8 @@ void director_init_game() {
     hud_init();
     SDL_ShowCursor(SDL_DISABLE);
 
-    game_vars.currentLevel = level_load("levels/exampleLevel.json");
-    slog("Loaded Level:");
-    slog(game_vars.currentLevel->fileName);
+    game_vars.currentLevel = level_load("levels/demoLevel.json");
+    slog("Loaded Level!");
     
     player_spawn(vector2d(100, 360));
 
@@ -123,9 +122,8 @@ int director_run_game() {
     // all drawing should happen betweem clear_screen and next_frame
         //backgrounds drawn first
     level_draw(game_vars.currentLevel);
-    // gf2d_sprite_draw_image(sprite, vector2d(0, 0));
     entity_manager_draw_entities();
-    entity_debug_draw_hurtboxes();
+    //entity_debug_draw_hurtboxes();
     hud_draw();
 
     gf2d_grahics_next_frame();// render current draw frame and skip to the next frame

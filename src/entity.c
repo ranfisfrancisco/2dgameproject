@@ -132,7 +132,7 @@ void entity_draw(Entity* ent) {
 		drawPosition.y = ent->drawPosition.y + offset.y;
 
 		//do not render if outside screen bounds
-		if (drawPosition.x < -20 || drawPosition.x > 1220 || drawPosition.y < -20 || drawPosition.y > 740) {
+		if (drawPosition.x < -80 || drawPosition.x > 1280 || drawPosition.y < -100 || drawPosition.y > 800) {
 			return;
 		}
 

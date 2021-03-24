@@ -103,7 +103,7 @@ void player_discard_weapon() {
 
 void player_power_up(int frameTime) {
 	((PlayerData*)player->data)->powerUpTime = frameTime;
-	player->colorShift = vector4d(255, 100, 100, 255);
+	player->defaultColorShift = vector4d(255, 100, 100, 255);
 	player->baseDamage = 20;
 }
 
@@ -575,7 +575,7 @@ void player_update() {
 	if (((PlayerData *)player->data)->powerUpTime > 0) {
 		((PlayerData*)player->data)->powerUpTime--;
 		if (((PlayerData*)player->data)->powerUpTime <= 0) {
-			player->colorShift = vector4d(255, 255, 255, 255);
+			player->defaultColorShift = vector4d(255, 255, 255, 255);
 			player->speed = player->defaultSpeed;
 			player->maxHealth;
 			player->baseDamage = 10;
