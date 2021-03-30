@@ -5,7 +5,6 @@
 
 int main(int argc, char* argv[])
 {
-
     director_init_game();
 
     /*main game loop*/

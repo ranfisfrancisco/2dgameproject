@@ -161,7 +161,7 @@ void level_free(Level* level)
 
     if (level->tileMap != NULL)
     {
-        free(level->tileSet);
+        gf2d_sprite_free(level->tileSet);
         level->tileMap = NULL;
     }
     if (level->bgImageCount)

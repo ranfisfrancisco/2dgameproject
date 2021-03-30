@@ -15,28 +15,28 @@
 #include "level.h"
 #include "simple_json.h"
 
-GameVarsStruct game_vars = { 0 };
+GameVarsStruct GAME_VARS = { 0 };
 const Uint8* KEYS; 
 int QUIT_FLAG, SPAWN_FLAG;
 const char* SCORE_FILE_NAME = "score.json";
 
 void director_add_score(int amount) {
-    game_vars.score += amount;
+    GAME_VARS.score += amount;
 }
 
 int director_get_score() {
-    return game_vars.score;
+    return GAME_VARS.score;
 }
 
 int director_get_high_score() {
-    return game_vars.highScore;
+    return GAME_VARS.highScore;
 }
 
 void save_score(char* fileName) {
     SJson* root;
     SJson* j_int;
 
-    j_int = sj_new_int(game_vars.highScore);
+    j_int = sj_new_int(GAME_VARS.highScore);
     root = sj_object_new();
 
     sj_object_insert(root, "High Score", j_int);
@@ -65,17 +65,51 @@ int load_score(char* fileName) {
 }
 
 void director_snap_camera() {
-    if (game_vars.currentLevel != NULL)
-        level_update(game_vars.currentLevel);
+    if (GAME_VARS.currentLevel != NULL)
+        level_update(GAME_VARS.currentLevel);
+}
+
+int director_set_level(int level) {
+    Level* oldLevel;
+
+    oldLevel = NULL;
+
+    if (GAME_VARS.currentLevel != NULL) {
+        oldLevel = GAME_VARS.currentLevel;
+    }
+
+    switch (level) {
+    case 1:
+        GAME_VARS.currentLevel = level_load("levels/demoLevel.json");
+        break;
+    case 2:
+        GAME_VARS.currentLevel = level_load("levels/exampleLevel.json");
+        break;
+    default:
+        slog("Failed to match integer to level to load");
+        return;
+    }
+
+    if (oldLevel) {
+        level_free(oldLevel);
+    }
+
+    if (GAME_VARS.currentLevel == NULL) {
+        slog("Failed to set level");
+        return 0;
+    }
+
+    slog("Loaded Level!");
+    return 1;
 }
 
 void director_init_game() {
     QUIT_FLAG = 0;
     SPAWN_FLAG = 1;
-    game_vars.score = 0;
-    game_vars.highScore = load_score(SCORE_FILE_NAME);
+    GAME_VARS.score = 0;
+    GAME_VARS.highScore = load_score(SCORE_FILE_NAME);
 
-    slog("Loaded High Score: %d", game_vars.highScore);
+    slog("Loaded High Score: %d", GAME_VARS.highScore);
 
     init_logger("gf2d.log");
     slog("---==== BEGIN ====---");
@@ -97,8 +131,7 @@ void director_init_game() {
     hud_init();
     SDL_ShowCursor(SDL_DISABLE);
 
-    game_vars.currentLevel = level_load("levels/demoLevel.json");
-    slog("Loaded Level!");
+    director_set_level(1);
     
     player_spawn(vector2d(100, 360));
 
@@ -116,12 +149,12 @@ int director_run_game() {
 
     entity_manager_update_entities();
     entity_manager_think_entities();
-    level_update(game_vars.currentLevel);
+    level_update(GAME_VARS.currentLevel);
 
     gf2d_graphics_clear_screen();// clears drawing buffers
     // all drawing should happen betweem clear_screen and next_frame
         //backgrounds drawn first
-    level_draw(game_vars.currentLevel);
+    level_draw(GAME_VARS.currentLevel);
     entity_manager_draw_entities();
     //entity_debug_draw_hurtboxes();
     hud_draw();
@@ -130,10 +163,10 @@ int director_run_game() {
 
 //        slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
 
-    if (game_vars.score > game_vars.highScore)
-        game_vars.highScore = game_vars.score;
+    if (GAME_VARS.score > GAME_VARS.highScore)
+        GAME_VARS.highScore = GAME_VARS.score;
 
-    if (SPAWN_FLAG == 1 && entity_get_enemy_population() == 0) {
+    /*if (SPAWN_FLAG == 1 && entity_get_enemy_population() == 0) {
         SPAWN_FLAG++;
         pickup_spawn(vector2d(300, 260), PICKUP_TYPE_KNIFE);
         enemy_spawn(vector2d(1500, 200), ENEMY_TYPE_1);
@@ -158,11 +191,19 @@ int director_run_game() {
 
         enemy_spawn(vector2d(600, 200), BOSS_TYPE_1);
     } else if (SPAWN_FLAG == 5 && entity_get_enemy_population() == 0) {
-        SPAWN_FLAG = 0;
+        SPAWN_FLAG++;
 
         pickup_spawn(vector2d(300, 160), PICKUP_TYPE_POWERUP);
 
         enemy_spawn(vector2d(600, 200), BOSS_TYPE_2);
+    }
+    else if (SPAWN_FLAG == 6 && entity_get_enemy_population() == 0) {
+
+    }*/
+
+    if (SPAWN_FLAG == 1) {
+        director_set_level(2);
+        SPAWN_FLAG = 0;
     }
     
     return QUIT_FLAG;
