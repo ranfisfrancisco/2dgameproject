@@ -53,6 +53,11 @@ typedef struct Entity_s{
 void entity_manager_init(Uint32 max_entities);
 
 /**
+ * @brief Set all bytes in the entity manager to 0, erasing all entities.
+ */
+void entity_manager_reset_all();
+
+/**
  * @brief Free the memory used by the entity manager
  */
 void entity_manager_free();

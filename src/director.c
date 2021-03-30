@@ -99,6 +99,7 @@ int director_set_level(int level) {
         return 0;
     }
 
+    entity_manager_reset_all();
     slog("Loaded Level!");
     return 1;
 }
@@ -224,7 +225,6 @@ int director_run_game() {
 void director_end_game() {
     save_score(SCORE_FILE_NAME);
 
-    entity_manager_free();
     input_buffer_free();
 
     slog("---==== END ====---");

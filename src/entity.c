@@ -28,6 +28,15 @@ void entity_manager_init(Uint32 max_entities){
 	slog("entity system initialized");
 }
 
+void entity_manager_reset_all() {
+	if (entity_manager.entity_list == NULL) {
+		slog("entity system does not exist");
+		return;
+	}
+
+	memset(entity_manager.entity_list, 0, sizeof(Entity) * entity_manager.max_entities);
+}
+
 void entity_manager_free(){
 	if (entity_manager.entity_list != NULL){
 		free(entity_manager.entity_list);
