@@ -9,7 +9,7 @@
 #include "hud.h"
 #include "player.h"
 #include "enemy.h"
-#include "pickup.h"
+#include "object.h"
 #include "input.h"
 #include "camera.h"
 #include "level.h"
@@ -103,6 +103,18 @@ int director_set_level(int level) {
     return 1;
 }
 
+void director_spawn_entity(Vector2D position, enum entity_type type) {
+    if (entity_is_player(type)) {
+        player_spawn(position);
+    }
+    else if (entity_is_enemy(type)) {
+        enemy_spawn(position, type);
+    }
+    else if (entity_is_object(type)) {
+        object_spawn(position, type);
+    }
+}
+
 void director_init_game() {
     QUIT_FLAG = 0;
     SPAWN_FLAG = 1;
@@ -133,13 +145,13 @@ void director_init_game() {
 
     director_set_level(1);
     
-    player_spawn(vector2d(100, 360));
+    director_spawn_entity(vector2d(100, 360), PLAYER_TYPE);
 
-    pickup_spawn(vector2d(300, 30), INTERACTABLE_TRASH_CAN);
-    pickup_spawn(vector2d(400, 160), INTERACTABLE_BOX);
-    pickup_spawn(vector2d(700, 80), INTERACTABLE_METAL_BOX);
-    pickup_spawn(vector2d(700, 160), INTERACTABLE_CAR);
-    pickup_spawn(vector2d(700, 600), INTERACTABLE_EXPLOSIVE);
+    director_spawn_entity(vector2d(300, 30), INTERACTABLE_TRASH_CAN);
+    director_spawn_entity(vector2d(400, 160), INTERACTABLE_BOX);
+    director_spawn_entity(vector2d(700, 80), INTERACTABLE_METAL_BOX);
+    director_spawn_entity(vector2d(700, 160), INTERACTABLE_CAR);
+    director_spawn_entity(vector2d(700, 600), INTERACTABLE_EXPLOSIVE);
 }
 
 int director_run_game() {

@@ -287,6 +287,12 @@ int entity_is_interactable(enum entity_type type) {
 	return false;
 }
 
+int entity_is_object(enum entity_type type) {
+	if (type >= PICKUP_TYPE_MEDKIT && type <= INTERACTABLE_TRASH_CAN)
+		return true;
+	return false;
+}
+
 void entity_debug_draw_hurtboxes() {
 	for (int i = 0; i < entity_manager.max_entities; i++) {
 		if (entity_manager.entity_list[i]._inuse == 0)

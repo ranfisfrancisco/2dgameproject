@@ -169,6 +169,13 @@ int entity_is_weapon(enum entity_type type);
 int entity_is_interactable(enum entity_type type);
 
 /**
+ * @brief Returns whether or not the given entity is an interactable object
+ * @param type The type to be checked
+ * @return 1 if the entity is an object, 0 otherwise
+ */
+int entity_is_object(enum entity_type type);
+
+/**
  * @brief Draws hurtboxes for all entities.
  */
 void entity_debug_draw_hurtboxes();

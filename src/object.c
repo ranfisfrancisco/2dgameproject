@@ -1,5 +1,5 @@
 #include "simple_logger.h"
-#include "pickup.h"
+#include "object.h"
 #include "player.h"
 #include "camera.h"
 
@@ -9,7 +9,7 @@ void explosive_hurt(Entity* self, int damage);
 void pickup_set_hurtbox(Entity* self);
 void pickup_die(Entity* self);
 
-Entity* pickup_spawn(Vector2D position, enum enemy_type type) {
+Entity* object_spawn(Vector2D position, enum entity_type type) {
 	Entity* ent;
 
 	if (!entity_is_pickup(type) && !entity_is_interactable(type)) {
@@ -147,7 +147,7 @@ void container_hurt(Entity* self, int damage){
 	self->health -= damage;
 
 	if (self->health <= 0) {
-		pickup_spawn(self->drawPosition, PICKUP_TYPE_MEDKIT);
+		object_spawn(self->drawPosition, PICKUP_TYPE_MEDKIT);
 		pickup_die(self);
 	}
 }
