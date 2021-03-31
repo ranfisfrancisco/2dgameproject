@@ -18,7 +18,7 @@
 GameVarsStruct GAME_VARS = { 0 };
 const Uint8* KEYS; 
 int QUIT_FLAG, SPAWN_FLAG;
-const char* SCORE_FILE_NAME = "score.json";
+const char* SCORE_FILE_NAME = "data/score.json";
 
 void director_add_score(int amount) {
     GAME_VARS.score += amount;
@@ -32,7 +32,7 @@ int director_get_high_score() {
     return GAME_VARS.highScore;
 }
 
-void save_score(char* fileName) {
+void director_save_score(char* fileName) {
     SJson* root;
     SJson* j_int;
 
@@ -47,7 +47,7 @@ void save_score(char* fileName) {
     sj_object_free(root);
 }
 
-int load_score(char* fileName) {
+int director_load_score(char* fileName) {
     SJson* json, *scoreJson;
     int score;
 
@@ -57,9 +57,15 @@ int load_score(char* fileName) {
     if (!json)return 0;
 
     scoreJson = sj_object_get_value(json, "High Score");
-    if (!scoreJson)return 0;
+    if (!scoreJson) { 
+        sj_object_free(json);
+        return 0;
+    }
 
     sj_get_integer_value(scoreJson, &score);
+
+    sj_object_free(scoreJson);
+    sj_object_free(json);
 
     return score;
 }
@@ -90,16 +96,17 @@ int director_set_level(int level) {
         return;
     }
 
-    if (oldLevel) {
-        level_free(oldLevel);
-    }
-
     if (GAME_VARS.currentLevel == NULL) {
         slog("Failed to set level");
         return 0;
     }
 
+    if (oldLevel) {
+        level_free(oldLevel);
+    }
+
     entity_manager_reset_all();
+    SPAWN_FLAG = 1;
     slog("Loaded Level!");
     return 1;
 }
@@ -120,7 +127,7 @@ void director_init_game() {
     QUIT_FLAG = 0;
     SPAWN_FLAG = 1;
     GAME_VARS.score = 0;
-    GAME_VARS.highScore = load_score(SCORE_FILE_NAME);
+    GAME_VARS.highScore = director_load_score(SCORE_FILE_NAME);
 
     slog("Loaded High Score: %d", GAME_VARS.highScore);
 
@@ -179,51 +186,49 @@ int director_run_game() {
     if (GAME_VARS.score > GAME_VARS.highScore)
         GAME_VARS.highScore = GAME_VARS.score;
 
-    /*if (SPAWN_FLAG == 1 && entity_get_enemy_population() == 0) {
+    if (SPAWN_FLAG == 1 && entity_get_enemy_population() == 0) {
         SPAWN_FLAG++;
-        pickup_spawn(vector2d(300, 260), PICKUP_TYPE_KNIFE);
-        enemy_spawn(vector2d(1500, 200), ENEMY_TYPE_1);
+        director_spawn_entity(vector2d(300, 260), PICKUP_TYPE_KNIFE);
+        director_spawn_entity(vector2d(1500, 200), ENEMY_TYPE_1);
     } else if (SPAWN_FLAG == 2 && entity_get_enemy_population() == 0) {
         SPAWN_FLAG++;
 
-        pickup_spawn(vector2d(300, 160), PICKUP_TYPE_FMEDKIT);
+        director_spawn_entity(vector2d(300, 160), PICKUP_TYPE_FMEDKIT);
 
-        enemy_spawn(vector2d(600, 200), ENEMY_TYPE_2);
-        enemy_spawn(vector2d(500, 200), ENEMY_TYPE_3);
+        director_spawn_entity(vector2d(600, 200), ENEMY_TYPE_2);
+        director_spawn_entity(vector2d(500, 200), ENEMY_TYPE_3);
     } else if (SPAWN_FLAG == 3 && entity_get_enemy_population() == 0) {
         SPAWN_FLAG++;
 
-        pickup_spawn(vector2d(300, 160), PICKUP_TYPE_CROWBAR);
-        pickup_spawn(vector2d(600, 160), PICKUP_TYPE_MEDKIT);
+        director_spawn_entity(vector2d(300, 160), PICKUP_TYPE_CROWBAR);
+        director_spawn_entity(vector2d(600, 160), PICKUP_TYPE_MEDKIT);
 
-        enemy_spawn(vector2d(600, 200), ENEMY_TYPE_4);
-        enemy_spawn(vector2d(500, 200), ENEMY_TYPE_5);
+        director_spawn_entity(vector2d(600, 200), ENEMY_TYPE_4);
+        director_spawn_entity(vector2d(500, 200), ENEMY_TYPE_5);
     }
     else if (SPAWN_FLAG == 4 && entity_get_enemy_population() == 0) {
         SPAWN_FLAG++;
 
-        enemy_spawn(vector2d(600, 200), BOSS_TYPE_1);
+        director_spawn_entity(vector2d(600, 200), BOSS_TYPE_1);
     } else if (SPAWN_FLAG == 5 && entity_get_enemy_population() == 0) {
-        SPAWN_FLAG++;
+        SPAWN_FLAG=0;
 
-        pickup_spawn(vector2d(300, 160), PICKUP_TYPE_POWERUP);
+        director_spawn_entity(vector2d(300, 160), PICKUP_TYPE_POWERUP);
 
-        enemy_spawn(vector2d(600, 200), BOSS_TYPE_2);
+        director_spawn_entity(vector2d(600, 200), BOSS_TYPE_2);
     }
-    else if (SPAWN_FLAG == 6 && entity_get_enemy_population() == 0) {
+ 
 
-    }*/
-
-    if (SPAWN_FLAG == 1) {
+    /*if (SPAWN_FLAG == 1) {
         director_set_level(2);
         SPAWN_FLAG = 0;
-    }
+    }*/
     
     return QUIT_FLAG;
 }
 
 void director_end_game() {
-    save_score(SCORE_FILE_NAME);
+    director_save_score(SCORE_FILE_NAME);
 
     input_buffer_free();
 
