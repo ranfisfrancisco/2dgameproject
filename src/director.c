@@ -13,6 +13,7 @@
 #include "input.h"
 #include "camera.h"
 #include "level.h"
+#include "fight.h"
 #include "simple_json.h"
 
 GameVarsStruct GAME_VARS = { 0 };
@@ -39,7 +40,7 @@ void director_save_score(char* fileName) {
     j_int = sj_new_int(GAME_VARS.highScore);
     root = sj_object_new();
 
-    sj_object_insert(root, "High Score", j_int);
+    sj_object_insert(root, "highScore", j_int);
 
     sj_save(root, fileName);
 
@@ -56,7 +57,7 @@ int director_load_score(char* fileName) {
 
     if (!json)return 0;
 
-    scoreJson = sj_object_get_value(json, "High Score");
+    scoreJson = sj_object_get_value(json, "highScore");
     if (!scoreJson) { 
         sj_object_free(json);
         return 0;
@@ -75,8 +76,51 @@ void director_snap_camera() {
         level_update(GAME_VARS.currentLevel);
 }
 
-int director_set_level(int level) {
+char* director_int_to_filename(int code) {
+    switch (code) {
+    case 1:
+        return "levels/demoLevel.json";
+        break;
+    case 2:
+        return "levels/exampleLevel.json";
+        break;
+    default:
+        slog("Failed to match code to level");
+        return NULL;
+    }
+}
+
+int director_load_fight_data(int levelCode) {
+    LevelFightData* oldData;
+    char* filename;
+
+    oldData = NULL;
+
+    if (GAME_VARS.fightData != NULL) {
+        oldData = GAME_VARS.fightData;
+    }
+
+    filename = director_int_to_filename(levelCode);
+    if (!filename)
+        return 0;
+
+    GAME_VARS.fightData = levelFightData_load(filename);
+    if (GAME_VARS.fightData == NULL) {
+        slog("Failed to load fight data");
+        GAME_VARS.fightData = oldData;
+        return 0;
+    }
+
+    if (oldData) {
+        levelFightData_free(oldData);
+    }
+
+    return 1;
+}
+
+int director_set_level(int levelCode) {
     Level* oldLevel;
+    char* filename;
 
     oldLevel = NULL;
 
@@ -84,20 +128,20 @@ int director_set_level(int level) {
         oldLevel = GAME_VARS.currentLevel;
     }
 
-    switch (level) {
-    case 1:
-        GAME_VARS.currentLevel = level_load("levels/demoLevel.json");
-        break;
-    case 2:
-        GAME_VARS.currentLevel = level_load("levels/exampleLevel.json");
-        break;
-    default:
-        slog("Failed to match integer to level to load");
-        return;
-    }
+    filename = director_int_to_filename(levelCode);
+    if (!filename)
+        return 0;
+
+    GAME_VARS.currentLevel = level_load(filename);
 
     if (GAME_VARS.currentLevel == NULL) {
         slog("Failed to set level");
+        return 0;
+    }
+
+    if (!director_load_fight_data(levelCode)) {
+        level_free(GAME_VARS.currentLevel);
+        GAME_VARS.currentLevel = oldLevel;
         return 0;
     }
 

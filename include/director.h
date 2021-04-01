@@ -2,9 +2,11 @@
 #define __DIRECTOR_H__
 
 #include "level.h"
+#include "fight.h"
 
 typedef struct {
 	Level* currentLevel;
+	LevelFightData* fightData;
 	int score;
 	int highScore;
 } GameVarsStruct;
