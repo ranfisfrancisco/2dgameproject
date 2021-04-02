@@ -93,34 +93,6 @@ char* director_int_to_filename(int code) {
     }
 }
 
-/*int director_load_fight_data(int levelCode) {
-    LevelFightData* oldData;
-    char* filename;
-
-    oldData = NULL;
-
-    if (GAME_VARS.currentLevel->fightData != NULL) {
-        oldData = GAME_VARS.currentLevel->fightData;
-    }
-
-    filename = director_int_to_filename(levelCode);
-    if (!filename)
-        return 0;
-
-    GAME_VARS.currentLevel->fightData = levelFightData_load(filename);
-    if (GAME_VARS.currentLevel->fightData == NULL) {
-        slog("Failed to load fight data");
-        GAME_VARS.currentLevel->fightData = oldData;
-        return 0;
-    }
-
-    if (oldData) {
-        levelFightData_free(oldData);
-    }
-
-    return 1;
-}*/
-
 int director_set_level(int levelCode) {
     Level* oldLevel;
     char* filename;
@@ -166,6 +138,7 @@ void director_spawn_entity(Vector2D position, enum entity_type type) {
 }
 
 void director_spawn_next_encounter() {
+    SJson* row;
     int encounterCount, spawnCount;
 
     encounterCount = sj_array_get_count(GAME_VARS.currentLevel->fightData->encounterList);
@@ -174,6 +147,30 @@ void director_spawn_next_encounter() {
         GAME_VARS.currentLevel->fightData->rowCounter = -1;
         return;
     }
+
+    row = sj_array_get_nth(GAME_VARS.currentLevel->fightData->encounterList, GAME_VARS.currentLevel->fightData->rowCounter);
+    spawnCount = sj_array_get_count(row);
+
+    printf("SPAWNS %d\n", spawnCount);
+
+    for (int i = 0; i < spawnCount; i++) {
+        SJson* spawnItem;
+        int entityType, xPos, yPos;
+
+        spawnItem = sj_array_get_nth(row, i);
+
+        sj_get_integer_value(sj_object_get_value(spawnItem, "entityType"), &entityType);
+        sj_get_integer_value(sj_object_get_value(spawnItem, "xPos"), &xPos);
+        sj_get_integer_value(sj_object_get_value(spawnItem, "yPos"), &yPos);
+
+        director_spawn_entity(vector2d(xPos, yPos), entityType);
+
+        sj_free(spawnItem);
+    }
+
+    GAME_VARS.currentLevel->fightData->rowCounter++;
+
+    sj_free(row);
 }
 
 void director_init_game() {
@@ -227,6 +224,7 @@ int director_run_game() {
 
     if (GAME_VARS.currentLevel->fightData->rowCounter != -1 && entity_get_enemy_population() == 0) {
         director_spawn_next_encounter();
+        //QUIT_FLAG = 1;
     }
     else if (GAME_VARS.currentLevel->fightData->rowCounter == -1 && entity_get_enemy_population() == 0) {
         director_set_level(GAME_VARS.currentLevelCode + 1);
