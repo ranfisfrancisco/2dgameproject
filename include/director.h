@@ -6,7 +6,7 @@
 
 typedef struct {
 	Level* currentLevel;
-	LevelFightData* fightData;
+	int currentLevelCode;
 	int score;
 	int highScore;
 } GameVarsStruct;

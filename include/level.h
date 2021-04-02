@@ -6,6 +6,8 @@
 
 #include "gf2d_sprite.h"
 
+#include "fight.h"
+
 typedef enum
 {
     TT_Empty,
@@ -27,6 +29,7 @@ typedef struct
     int         tileHeight;  /**<how many pixels tall each tile is*/
     int         tileFPL;
     char fileName[30];
+    LevelFightData* fightData;
 }Level;
 
 

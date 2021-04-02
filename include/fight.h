@@ -20,18 +20,21 @@ typedef struct EncounterData_s {
 /*Structure containing all the encounters to be used in a level*/
 typedef struct LevelFightData_s {
 	SJson* encounterList;
+	int rowCounter;
 } LevelFightData;
 
 /**
- * @brief load combat data from a json file
- * @param filename the file to load
- * @return NULL on error (See the logs) a loaded level otherwise
+ * @brief load combat data from a json
+ * @param json the level json to load
+ * @return NULL on error (See the logs) a loaded levelFightData struct otherwise
  */
-LevelFightData* levelFightData_load(const char* filename);
+LevelFightData* levelFightData_load(SJson* levelJson);
 
 /**
  * @brief Free the given level fight data
  * @param data The data to be freed
  */
 void levelFightData_free(LevelFightData* data);
+
+
 #endif

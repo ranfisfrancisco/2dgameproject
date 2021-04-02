@@ -18,7 +18,7 @@
 
 GameVarsStruct GAME_VARS = { 0 };
 const Uint8* KEYS; 
-int QUIT_FLAG, SPAWN_FLAG;
+int QUIT_FLAG;
 const char* SCORE_FILE_NAME = "data/score.json";
 
 void director_add_score(int amount) {
@@ -84,30 +84,33 @@ char* director_int_to_filename(int code) {
     case 2:
         return "levels/exampleLevel.json";
         break;
+    case 3:
+        return "levels/newLevel.json";
+        break;
     default:
         slog("Failed to match code to level");
         return NULL;
     }
 }
 
-int director_load_fight_data(int levelCode) {
+/*int director_load_fight_data(int levelCode) {
     LevelFightData* oldData;
     char* filename;
 
     oldData = NULL;
 
-    if (GAME_VARS.fightData != NULL) {
-        oldData = GAME_VARS.fightData;
+    if (GAME_VARS.currentLevel->fightData != NULL) {
+        oldData = GAME_VARS.currentLevel->fightData;
     }
 
     filename = director_int_to_filename(levelCode);
     if (!filename)
         return 0;
 
-    GAME_VARS.fightData = levelFightData_load(filename);
-    if (GAME_VARS.fightData == NULL) {
+    GAME_VARS.currentLevel->fightData = levelFightData_load(filename);
+    if (GAME_VARS.currentLevel->fightData == NULL) {
         slog("Failed to load fight data");
-        GAME_VARS.fightData = oldData;
+        GAME_VARS.currentLevel->fightData = oldData;
         return 0;
     }
 
@@ -116,7 +119,7 @@ int director_load_fight_data(int levelCode) {
     }
 
     return 1;
-}
+}*/
 
 int director_set_level(int levelCode) {
     Level* oldLevel;
@@ -136,11 +139,6 @@ int director_set_level(int levelCode) {
 
     if (GAME_VARS.currentLevel == NULL) {
         slog("Failed to set level");
-        return 0;
-    }
-
-    if (!director_load_fight_data(levelCode)) {
-        level_free(GAME_VARS.currentLevel);
         GAME_VARS.currentLevel = oldLevel;
         return 0;
     }
@@ -150,7 +148,7 @@ int director_set_level(int levelCode) {
     }
 
     entity_manager_reset_all();
-    SPAWN_FLAG = 1;
+    GAME_VARS.currentLevelCode = levelCode;
     slog("Loaded Level!");
     return 1;
 }
@@ -167,9 +165,19 @@ void director_spawn_entity(Vector2D position, enum entity_type type) {
     }
 }
 
+void director_spawn_next_encounter() {
+    int encounterCount, spawnCount;
+
+    encounterCount = sj_array_get_count(GAME_VARS.currentLevel->fightData->encounterList);
+
+    if (GAME_VARS.currentLevel->fightData->rowCounter >= encounterCount) {
+        GAME_VARS.currentLevel->fightData->rowCounter = -1;
+        return;
+    }
+}
+
 void director_init_game() {
     QUIT_FLAG = 0;
-    SPAWN_FLAG = 1;
     GAME_VARS.score = 0;
     GAME_VARS.highScore = director_load_score(SCORE_FILE_NAME);
 
@@ -195,7 +203,7 @@ void director_init_game() {
     hud_init();
     SDL_ShowCursor(SDL_DISABLE);
 
-    director_set_level(1);
+    director_set_level(3);
     
     director_spawn_entity(vector2d(100, 360), PLAYER_TYPE);
 
@@ -207,9 +215,27 @@ void director_init_game() {
 }
 
 int director_run_game() {
+    if (GAME_VARS.currentLevel == NULL) {
+        slog("Level not loaded! Aborting.");
+        QUIT_FLAG = 1;
+        return QUIT_FLAG;
+    }
+
     SDL_PumpEvents();   // update SDL's internal event structures
     KEYS = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
     if (KEYS[SDL_SCANCODE_ESCAPE])QUIT_FLAG = 1; // exit condition
+
+    if (GAME_VARS.currentLevel->fightData->rowCounter != -1 && entity_get_enemy_population() == 0) {
+        director_spawn_next_encounter();
+    }
+    else if (GAME_VARS.currentLevel->fightData->rowCounter == -1 && entity_get_enemy_population() == 0) {
+        director_set_level(GAME_VARS.currentLevelCode + 1);
+
+        if (GAME_VARS.currentLevel == NULL) {
+            slog("Couldn't get the next level");
+            QUIT_FLAG = 1;
+        }
+    }
 
     entity_manager_update_entities();
     entity_manager_think_entities();
@@ -229,44 +255,6 @@ int director_run_game() {
 
     if (GAME_VARS.score > GAME_VARS.highScore)
         GAME_VARS.highScore = GAME_VARS.score;
-
-    if (SPAWN_FLAG == 1 && entity_get_enemy_population() == 0) {
-        SPAWN_FLAG++;
-        director_spawn_entity(vector2d(300, 260), PICKUP_TYPE_KNIFE);
-        director_spawn_entity(vector2d(1500, 200), ENEMY_TYPE_1);
-    } else if (SPAWN_FLAG == 2 && entity_get_enemy_population() == 0) {
-        SPAWN_FLAG++;
-
-        director_spawn_entity(vector2d(300, 160), PICKUP_TYPE_FMEDKIT);
-
-        director_spawn_entity(vector2d(600, 200), ENEMY_TYPE_2);
-        director_spawn_entity(vector2d(500, 200), ENEMY_TYPE_3);
-    } else if (SPAWN_FLAG == 3 && entity_get_enemy_population() == 0) {
-        SPAWN_FLAG++;
-
-        director_spawn_entity(vector2d(300, 160), PICKUP_TYPE_CROWBAR);
-        director_spawn_entity(vector2d(600, 160), PICKUP_TYPE_MEDKIT);
-
-        director_spawn_entity(vector2d(600, 200), ENEMY_TYPE_4);
-        director_spawn_entity(vector2d(500, 200), ENEMY_TYPE_5);
-    }
-    else if (SPAWN_FLAG == 4 && entity_get_enemy_population() == 0) {
-        SPAWN_FLAG++;
-
-        director_spawn_entity(vector2d(600, 200), BOSS_TYPE_1);
-    } else if (SPAWN_FLAG == 5 && entity_get_enemy_population() == 0) {
-        SPAWN_FLAG=0;
-
-        director_spawn_entity(vector2d(300, 160), PICKUP_TYPE_POWERUP);
-
-        director_spawn_entity(vector2d(600, 200), BOSS_TYPE_2);
-    }
- 
-
-    /*if (SPAWN_FLAG == 1) {
-        director_set_level(2);
-        SPAWN_FLAG = 0;
-    }*/
     
     return QUIT_FLAG;
 }

@@ -130,6 +130,13 @@ Level* level_load(const char* filename)
     slog("map width: %f, with %i tiles wide, each %i pixels wide", level->levelSize.x, level->levelWidth, level->tileWidth);
     slog("map height: %f, with %i tiles high, each %i pixels tall", level->levelSize.y, level->levelHeight, level->tileHeight);
 
+    level->fightData = levelFightData_load(levelJS);
+    if (!level->fightData) {
+        level_free(level);
+        sj_free(json);
+        return NULL;
+    }
+
     sj_free(json);
     return level;
 }
