@@ -1,10 +1,18 @@
 #ifndef __DIRECTOR_H__
 #define __DIRECTOR_H__
 
+#include <time.h> 
 #include "level.h"
 #include "fight.h"
 
+typedef enum {
+	GAME_STATE_IN_LEVEL, GAME_STATE_LEVEL_TRANSITION
+} GameState;
+
 typedef struct {
+	GameState gameState;
+	clock_t gameStateStartTime;
+	double gameStateTime;
 	Level* currentLevel;
 	int currentLevelCode;
 	int score;

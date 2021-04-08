@@ -23,3 +23,17 @@ void hud_draw() {
 
 	font_render(font, healthText, vector2d(32, 32), gfc_color8(255, 0, 0, 255));
 }
+
+void hud_draw_level_transition() {
+	Font* font;
+	TextLine text;
+
+	font = font_load("fonts/colony_wars.ttf", 16);
+	gfc_line_sprintf(text, "NEXT LEVEL!");
+
+	//draw rectangle
+	SDL_RenderDrawRect(gf2d_graphics_get_renderer(), &rect);
+	SDL_RenderFillRect(gf2d_graphics_get_renderer(), &rect);
+
+	font_render(font, text, vector2d(1200/2, 720/2), gfc_color8(255, 0, 0, 255));
+}

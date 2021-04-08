@@ -23,6 +23,8 @@ const char* SCORE_FILE_NAME = "data/score.json";
 
 void director_add_score(int amount) {
     GAME_VARS.score += amount;
+    if (GAME_VARS.score > GAME_VARS.highScore)
+        GAME_VARS.highScore = GAME_VARS.score;
 }
 
 int director_get_score() {
@@ -31,6 +33,34 @@ int director_get_score() {
 
 int director_get_high_score() {
     return GAME_VARS.highScore;
+}
+
+void director_spawn_entity(Vector2D position, enum entity_type type) {
+    if (entity_is_player(type)) {
+        player_spawn(position);
+    }
+    else if (entity_is_enemy(type)) {
+        enemy_spawn(position, type);
+    }
+    else if (entity_is_object(type)) {
+        object_spawn(position, type);
+    }
+}
+
+void director_change_state(GameState state) {
+    switch (state) {
+    case GAME_STATE_IN_LEVEL:
+        break;
+    case GAME_STATE_LEVEL_TRANSITION:
+     
+        break;
+    default:
+        slog("Attempted transisition to illegal state");
+        break;
+    }
+
+    GAME_VARS.gameState = state;
+    GAME_VARS.gameStateStartTime = clock();
 }
 
 void director_save_score(char* fileName) {
@@ -79,13 +109,13 @@ void director_snap_camera() {
 char* director_int_to_filename(int code) {
     switch (code) {
     case 1:
-        return "levels/demoLevel.json";
+        return "levels/level1.json";
         break;
     case 2:
-        return "levels/exampleLevel.json";
+        return "levels/level2.json";
         break;
     case 3:
-        return "levels/newLevel.json";
+        return "levels/level3.json";
         break;
     default:
         slog("Failed to match code to level");
@@ -120,21 +150,10 @@ int director_set_level(int levelCode) {
     }
 
     entity_manager_reset_all();
+    director_spawn_entity(vector2d(100, 360), PLAYER_TYPE);
     GAME_VARS.currentLevelCode = levelCode;
     slog("Loaded Level!");
     return 1;
-}
-
-void director_spawn_entity(Vector2D position, enum entity_type type) {
-    if (entity_is_player(type)) {
-        player_spawn(position);
-    }
-    else if (entity_is_enemy(type)) {
-        enemy_spawn(position, type);
-    }
-    else if (entity_is_object(type)) {
-        object_spawn(position, type);
-    }
 }
 
 void director_spawn_next_encounter() {
@@ -175,6 +194,7 @@ void director_spawn_next_encounter() {
 
 void director_init_game() {
     QUIT_FLAG = 0;
+    director_change_state(GAME_STATE_IN_LEVEL);
     GAME_VARS.score = 0;
     GAME_VARS.highScore = director_load_score(SCORE_FILE_NAME);
 
@@ -200,9 +220,7 @@ void director_init_game() {
     hud_init();
     SDL_ShowCursor(SDL_DISABLE);
 
-    director_set_level(3);
-    
-    director_spawn_entity(vector2d(100, 360), PLAYER_TYPE);
+    director_set_level(2);
 
     director_spawn_entity(vector2d(300, 30), INTERACTABLE_TRASH_CAN);
     director_spawn_entity(vector2d(400, 160), INTERACTABLE_BOX);
@@ -221,39 +239,57 @@ int director_run_game() {
     SDL_PumpEvents();   // update SDL's internal event structures
     KEYS = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
     if (KEYS[SDL_SCANCODE_ESCAPE])QUIT_FLAG = 1; // exit condition
+    GAME_VARS.gameStateTime = (double)(clock() - GAME_VARS.gameStateStartTime) / CLOCKS_PER_SEC;
 
-    if (GAME_VARS.currentLevel->fightData->rowCounter != -1 && entity_get_enemy_population() == 0) {
-        director_spawn_next_encounter();
-        //QUIT_FLAG = 1;
-    }
-    else if (GAME_VARS.currentLevel->fightData->rowCounter == -1 && entity_get_enemy_population() == 0) {
-        director_set_level(GAME_VARS.currentLevelCode + 1);
-
-        if (GAME_VARS.currentLevel == NULL) {
-            slog("Couldn't get the next level");
-            QUIT_FLAG = 1;
+    switch (GAME_VARS.gameState)
+    {
+    case GAME_STATE_IN_LEVEL:
+        if (GAME_VARS.currentLevel->fightData->rowCounter != -1 && entity_get_enemy_population() == 0) {
+            director_spawn_next_encounter();
         }
+        else if (GAME_VARS.currentLevel->fightData->rowCounter == -1 && entity_get_enemy_population() == 0) {
+            GAME_VARS.currentLevelCode++;
+            director_change_state(GAME_STATE_LEVEL_TRANSITION);
+        }
+
+        entity_manager_update_entities();
+        entity_manager_think_entities();
+        level_update(GAME_VARS.currentLevel);
+
+        gf2d_graphics_clear_screen();
+        level_draw(GAME_VARS.currentLevel);
+        entity_manager_draw_entities();
+        //entity_debug_draw_hurtboxes();
+        hud_draw();
+
+        gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
+        //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
+
+        break;
+
+    case GAME_STATE_LEVEL_TRANSITION:
+        if (GAME_VARS.gameStateTime > 2) {
+            director_set_level(GAME_VARS.currentLevelCode);
+            director_change_state(GAME_STATE_IN_LEVEL);
+
+            if (GAME_VARS.currentLevel == NULL) {
+                slog("Couldn't get the next level");
+                QUIT_FLAG = 1;
+                return QUIT_FLAG;
+            }
+        }
+
+        gf2d_graphics_clear_screen();
+        hud_draw_level_transition();
+        gf2d_grahics_next_frame();
+
+        break;
+
+    default:
+        slog("Unknown Engine State. Aborting");
+        QUIT_FLAG = 1;
+        return QUIT_FLAG;
     }
-
-    entity_manager_update_entities();
-    entity_manager_think_entities();
-    level_update(GAME_VARS.currentLevel);
-
-    gf2d_graphics_clear_screen();// clears drawing buffers
-    // all drawing should happen betweem clear_screen and next_frame
-        //backgrounds drawn first
-    level_draw(GAME_VARS.currentLevel);
-    entity_manager_draw_entities();
-    //entity_debug_draw_hurtboxes();
-    hud_draw();
-
-    gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
-
-//        slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
-
-    if (GAME_VARS.score > GAME_VARS.highScore)
-        GAME_VARS.highScore = GAME_VARS.score;
-    
     return QUIT_FLAG;
 }
 

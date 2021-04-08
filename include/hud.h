@@ -11,4 +11,9 @@ void hud_init();
  */
 void hud_draw();
 
+/**
+ * @brief Draw the Level Transition.
+ */
+void hud_draw_level_transition();
+
 #endif
