@@ -17,6 +17,7 @@ typedef struct {
 	int currentLevelCode;
 	int score;
 	int highScore;
+	Vector2D screenSize;
 } GameVarsStruct;
 
 /**
@@ -35,6 +36,21 @@ int director_get_score();
  * @brief Snaps the camera to the level bounds
  */
 void director_snap_camera();
+
+/**
+ * @brief Returns screen size as Vector2D
+ */
+Vector2D director_get_screen_size_vector();
+
+/**
+ * @brief Returns screen width as int
+ */
+int director_get_screen_width();
+
+/**
+ * @brief Returns screen height as int
+ */
+int director_get_screen_height();
 
 /**
  * @brief Initializes the game

@@ -35,6 +35,18 @@ int director_get_high_score() {
     return GAME_VARS.highScore;
 }
 
+Vector2D director_get_screen_size_vector() {
+    return GAME_VARS.screenSize;
+}
+
+int director_get_screen_width() {
+    return GAME_VARS.screenSize.x;
+}
+
+int director_get_screen_height() {
+    return GAME_VARS.screenSize.y;
+}
+
 void director_spawn_entity(Vector2D position, enum entity_type type) {
     if (entity_is_player(type)) {
         player_spawn(position);
@@ -47,6 +59,10 @@ void director_spawn_entity(Vector2D position, enum entity_type type) {
     }
 }
 
+/**
+ * @brief Change the game state
+ * @param state GameState to change the game to
+ */
 void director_change_state(GameState state) {
     switch (state) {
     case GAME_STATE_IN_LEVEL:
@@ -55,7 +71,7 @@ void director_change_state(GameState state) {
      
         break;
     default:
-        slog("Attempted transisition to illegal state");
+        slog("Attempted transition to illegal state");
         break;
     }
 
@@ -194,7 +210,7 @@ void director_spawn_next_encounter() {
 
 void director_init_game() {
     QUIT_FLAG = 0;
-    director_change_state(GAME_STATE_IN_LEVEL);
+    GAME_VARS.screenSize = vector2d(1200, 720);
     GAME_VARS.score = 0;
     GAME_VARS.highScore = director_load_score(SCORE_FILE_NAME);
 
@@ -204,14 +220,14 @@ void director_init_game() {
     slog("---==== BEGIN ====---");
     gf2d_graphics_initialize(
         "gf2d",
-        1200,
-        720,
-        1200,
-        720,
+        GAME_VARS.screenSize.x,
+        GAME_VARS.screenSize.y,
+        GAME_VARS.screenSize.x,
+        GAME_VARS.screenSize.y,
         vector4d(0, 0, 0, 255),
         0);
     gf2d_graphics_set_frame_delay(16);
-    camera_set_dimensions(vector2d(1200, 720));
+    camera_set_dimensions(GAME_VARS.screenSize);
     camera_set_position(vector2d(0, 0));
     gf2d_sprite_init(1024);
     entity_manager_init(100);
@@ -220,6 +236,7 @@ void director_init_game() {
     hud_init();
     SDL_ShowCursor(SDL_DISABLE);
 
+    director_change_state(GAME_STATE_IN_LEVEL);
     director_set_level(2);
 
     director_spawn_entity(vector2d(300, 30), INTERACTABLE_TRASH_CAN);
