@@ -137,6 +137,13 @@ Level* level_load(const char* filename)
         return NULL;
     }
 
+    level->bgMusic = gfc_sound_load(sj_get_string_value(sj_object_get_value(levelJS, "musicFile")), 1, 0);
+    if (!level->bgMusic) {
+        level_free(level);
+        sj_free(json);
+        return NULL;
+    }
+
     sj_free(json);
     return level;
 }

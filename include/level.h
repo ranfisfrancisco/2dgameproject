@@ -3,6 +3,7 @@
 
 #include "gfc_types.h"
 #include "gfc_text.h"
+#include "gfc_audio.h"
 
 #include "gf2d_sprite.h"
 
@@ -30,6 +31,7 @@ typedef struct
     int         tileFPL;
     char fileName[30];
     LevelFightData* fightData;
+    Sound *bgMusic;
 }Level;
 
 

@@ -60,3 +60,4 @@ gf2d
 *.log
 
 makefile.dep
+sounds/*

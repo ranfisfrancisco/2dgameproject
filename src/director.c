@@ -231,6 +231,7 @@ void director_init_game() {
     camera_set_position(vector2d(0, 0));
     gf2d_sprite_init(1024);
     entity_manager_init(100);
+    gfc_audio_init(30, 1, 1, 1, 1, 0);
     input_buffer_init();
     font_init(10);
     hud_init();
