@@ -4,8 +4,6 @@
 #include "camera.h"
 #include "director.h"
 
-enum player_state {PLAYER_IDLE, PLAYER_HURT, PLAYER_WALK, PLAYER_PUNCH, PLAYER_KICK, PLAYER_QCFP, PLAYER_QCFK, PLAYER_BFP, PLAYER_BFK, PLAYER_PK};
-
 void player_update(Entity* self);
 void player_hurt(Entity* self);
 void player_set_hurtbox(SDL_Rect* hurtbox, Vector2D* drawPosition);
@@ -32,6 +30,7 @@ void player_spawn(Vector2D position) {
 	}
 	memset(data, 0, sizeof(PlayerData));
 	player->data = data;
+	data->attackSound = gfc_sound_load("sounds/punch1.mp3", 1, 0);
 
 	player->sprite = gf2d_sprite_load_all("images/kyo_2.png", 128, 144, 13);
 	vector2d_copy(player->drawPosition, position);
@@ -231,12 +230,19 @@ SDL_Rect player_generic_hitbox() {
 	return hitbox;
 }
 
+int player_is_attack_state(enum player_state state) {
+	return (state >= PLAYER_PUNCH && state <= PLAYER_PK);
+}
+
 void player_change_state(enum player_state state) {
 	player->frame = 0;
 	player->statePos = 0;
 	player->attackHit = 0;
 	player->state = state;
 	player->colorShift = player->defaultColorShift;
+
+	if (player_is_attack_state(state))
+		gfc_sound_play(((PlayerData*)player->data)->attackSound, 0, 1, -1, -1);
 }
 
 void player_attack_check(SDL_Rect hitbox, int attackPower, int weaponDegradation) {

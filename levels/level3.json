@@ -46,6 +46,6 @@
 				[{"entityType":2, "xPos": 500, "yPos": 900}],
 				[{"entityType":2, "xPos": 500, "yPos": 900}]
 			],
-		"musicFile" : "sounds/circuit.mp3"
+		"musicFile" : "music/circuit.mp3"
     }
 }

@@ -168,8 +168,7 @@ int director_set_level(int levelCode) {
     entity_manager_reset_all();
     director_spawn_entity(vector2d(100, 360), PLAYER_TYPE);
     GAME_VARS.currentLevelCode = levelCode;
-    if (GAME_VARS.currentLevel->bgMusic != NULL)
-        gfc_sound_play(GAME_VARS.currentLevel->bgMusic, -1, 1, -1, -1);
+    gfc_sound_play(GAME_VARS.currentLevel->bgMusic, -1, 0.5, -1, -1);
     slog("Loaded Level!");
     return 1;
 }

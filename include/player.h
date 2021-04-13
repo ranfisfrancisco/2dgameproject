@@ -4,10 +4,14 @@
 #include "entity.h"
 #include "gfc_vector.h"
 #include "gfc_types.h"
+#include "gfc_audio.h"
+
+enum player_state { PLAYER_IDLE, PLAYER_HURT, PLAYER_WALK, PLAYER_PUNCH, PLAYER_KICK, PLAYER_QCFP, PLAYER_QCFK, PLAYER_BFP, PLAYER_BFK, PLAYER_PK };
 
 typedef struct {
 	Entity* weapon;
 	int powerUpTime;
+	Sound* attackSound;
 }PlayerData;
 
 /**
