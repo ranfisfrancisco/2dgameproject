@@ -161,9 +161,8 @@ int director_set_level(int levelCode) {
         return 0;
     }
 
-    if (oldLevel) {
+    if (oldLevel)
         level_free(oldLevel);
-    }
 
     entity_manager_reset_all();
     director_spawn_entity(vector2d(100, 360), PLAYER_TYPE);

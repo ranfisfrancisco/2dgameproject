@@ -240,15 +240,13 @@ void player_change_state(enum player_state state) {
 	player->attackHit = 0;
 	player->state = state;
 	player->colorShift = player->defaultColorShift;
-
-	if (player_is_attack_state(state))
-		gfc_sound_play(((PlayerData*)player->data)->attackSound, 0, 1, -1, -1);
 }
 
 void player_attack_check(SDL_Rect hitbox, int attackPower, int weaponDegradation) {
 	if (player->attackHit == 0) {
 		if (entity_manager_player_attack_collison(hitbox, attackPower)) {
 			player->attackHit = 1;
+			gfc_sound_play(((PlayerData*)player->data)->attackSound, 0, 1, 1, -1);
 
 			if (((PlayerData*)player->data)->weapon)
 				((PlayerData*)player->data)->weapon->health -= weaponDegradation;
@@ -271,7 +269,6 @@ void player_input(const Uint8* keys) {
 	left = keys[SDL_SCANCODE_A];
 	punch = keys[SDL_SCANCODE_J];
 	kick = keys[SDL_SCANCODE_K];
-
 
 	//check for inputs
 	if (up + right + down + left > 3) {
@@ -425,7 +422,6 @@ void player_input(const Uint8* keys) {
 
 		if (player->frame < startFrame)
 			player->frame = startFrame;
-
 		else if (player->frame == endFrame) {
 			
 		}
