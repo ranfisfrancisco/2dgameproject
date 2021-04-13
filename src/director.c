@@ -168,6 +168,8 @@ int director_set_level(int levelCode) {
     entity_manager_reset_all();
     director_spawn_entity(vector2d(100, 360), PLAYER_TYPE);
     GAME_VARS.currentLevelCode = levelCode;
+    if (GAME_VARS.currentLevel->bgMusic != NULL)
+        gfc_sound_play(GAME_VARS.currentLevel->bgMusic, -1, 1, -1, -1);
     slog("Loaded Level!");
     return 1;
 }
@@ -240,11 +242,11 @@ void director_init_game() {
     director_change_state(GAME_STATE_IN_LEVEL);
     director_set_level(2);
 
-    director_spawn_entity(vector2d(300, 30), INTERACTABLE_TRASH_CAN);
+    /*director_spawn_entity(vector2d(300, 30), INTERACTABLE_TRASH_CAN);
     director_spawn_entity(vector2d(400, 160), INTERACTABLE_BOX);
     director_spawn_entity(vector2d(700, 80), INTERACTABLE_METAL_BOX);
     director_spawn_entity(vector2d(700, 160), INTERACTABLE_CAR);
-    director_spawn_entity(vector2d(700, 600), INTERACTABLE_EXPLOSIVE);
+    director_spawn_entity(vector2d(700, 600), INTERACTABLE_EXPLOSIVE);*/
 }
 
 int director_run_game() {
