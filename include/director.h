@@ -16,7 +16,6 @@ typedef struct {
 	Level* currentLevel;
 	int currentLevelCode;
 	int score;
-	int highScore;
 	Vector2D screenSize;
 } GameVarsStruct;
 

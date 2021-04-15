@@ -23,16 +23,10 @@ const char* SCORE_FILE_NAME = "data/score.json";
 
 void director_add_score(int amount) {
     GAME_VARS.score += amount;
-    if (GAME_VARS.score > GAME_VARS.highScore)
-        GAME_VARS.highScore = GAME_VARS.score;
 }
 
 int director_get_score() {
     return GAME_VARS.score;
-}
-
-int director_get_high_score() {
-    return GAME_VARS.highScore;
 }
 
 Vector2D director_get_screen_size_vector() {
@@ -79,7 +73,30 @@ void director_change_state(GameState state) {
     GAME_VARS.gameStateStartTime = clock();
 }
 
-void director_save_score(char* fileName) {
+/*int* director_load_score_old(char* fileName) {
+    SJson* json, * scoreJson;
+    int score;
+
+    score = 0;
+    json = sj_load(fileName);
+
+    if (!json)return 0;
+
+    scoreJson = sj_object_get_value(json, "highScore");
+    if (!scoreJson) {
+        sj_object_free(json);
+        return 0;
+    }
+
+    sj_get_integer_value(scoreJson, &score);
+
+    sj_object_free(scoreJson);
+    sj_object_free(json);
+
+    return score;
+}
+
+void director_save_score_old(char* fileName) {
     SJson* root;
     SJson* j_int;
 
@@ -92,29 +109,77 @@ void director_save_score(char* fileName) {
 
     sj_object_free(j_int);
     sj_object_free(root);
-}
+}*/
 
-int director_load_score(char* fileName) {
-    SJson* json, *scoreJson;
-    int score;
+//Return a pointer to an integer list of length 10 with the scores.
+int* director_load_score(char* fileName) {
+    SJson* json, * scoreJson;
+    int* scoreList, count;
 
-    score = 0;
+    scoreList = gfc_allocate_array(sizeof(int), 10);
     json = sj_load(fileName);
 
-    if (!json)return 0;
+    if (!json)return scoreList;
 
-    scoreJson = sj_object_get_value(json, "highScore");
-    if (!scoreJson) { 
+    scoreJson = sj_object_get_value(json, "scores");
+    if (!scoreJson) {
         sj_object_free(json);
-        return 0;
+        return scoreList;
     }
 
-    sj_get_integer_value(scoreJson, &score);
+    count = sj_array_get_count(scoreJson);
+    for (int i = 0; i < 10 && i < count; i++) {
+        SJson* intJson = sj_array_get_nth(scoreJson, i);
+        sj_get_integer_value(intJson, &scoreList[i]);
+        sj_free(intJson);
+    }
 
     sj_object_free(scoreJson);
     sj_object_free(json);
 
-    return score;
+    return scoreList;
+}
+
+//determine if a high score was reached, and save into list
+void director_save_score(char* fileName) {
+    int* scoreList; 
+    int newPlacement = false;
+
+    scoreList = director_load_score(fileName);
+
+    for (int i = 0; i < 10; i++) {
+        if (GAME_VARS.score >= scoreList[i]) {
+            newPlacement = true;
+            for (int j = 9; j > i; j--) {
+                scoreList[j] = scoreList[j - 1];
+            }
+            scoreList[i] = GAME_VARS.score;
+            break;
+        }
+    }
+
+    if (!newPlacement) {
+        free(scoreList);
+        return;
+    }
+
+    SJson* root;
+    SJson* j_list;
+
+    root = sj_object_new();
+    j_list = sj_array_new();
+
+    for (int i = 0; i < 10; i++) {
+        sj_array_append(j_list, sj_new_int(scoreList[i]));
+    }
+
+    sj_object_insert(root, "scores", j_list);
+
+    sj_save(root, fileName);
+
+    sj_object_free(j_list);
+    sj_object_free(root);
+    free(scoreList);
 }
 
 void director_snap_camera() {
@@ -212,9 +277,6 @@ void director_init_game() {
     QUIT_FLAG = 0;
     GAME_VARS.screenSize = vector2d(1200, 720);
     GAME_VARS.score = 0;
-    GAME_VARS.highScore = director_load_score(SCORE_FILE_NAME);
-
-    slog("Loaded High Score: %d", GAME_VARS.highScore);
 
     init_logger("gf2d.log");
     slog("---==== BEGIN ====---");
