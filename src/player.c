@@ -599,5 +599,5 @@ void player_update() {
 void player_hurt(Entity* self, int damage) {
 	player_change_state(PLAYER_HURT);
 	player->health -= damage;
-	gfc_sound_play(((PlayerData*)player->data)->hurtSound, 0, 1, 1, 0);
+	gfc_sound_play(((PlayerData*)player->data)->hurtSound, 0, 1, -1, -1);
 }

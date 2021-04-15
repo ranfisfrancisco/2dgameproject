@@ -15,6 +15,7 @@ void enemy_update(Entity* self);
 
 Entity* enemy_spawn(Vector2D position, enum entity_type type) {
 	Entity* ent;
+	EnemyData* data;
 
 	if (!entity_is_enemy(type)) {
 		slog("Attempted to spawn enemy as non-enemy type");
@@ -26,6 +27,17 @@ Entity* enemy_spawn(Vector2D position, enum entity_type type) {
 		slog("failed to create entity for player");
 		return NULL;
 	}
+
+	data = malloc(sizeof(EnemyData));
+	if (!data) {
+		slog("failed to create data for Enemy");
+		entity_free(ent);
+		return NULL;
+	}
+	memset(data, 0, sizeof(EnemyData));
+	ent->data = data;
+	data->attackSound = gfc_sound_load("sounds/punch1.mp3", -1, -1);
+	data->hurtSound = gfc_sound_load("sounds/mc_hurt.mp3", -1, -1);
 
 	if (type == BOSS_TYPE_1 || type == BOSS_TYPE_2) {
 		ent->sprite = gf2d_sprite_load_image("images/dog.PNG");
@@ -199,6 +211,7 @@ void cat_enemy_think(Entity* self) {
 			if (player_collison_check(hitbox)) {
 				self->attackHit = 1;
 				player_hurt(NULL, 2);
+				gfc_sound_play(((EnemyData*)self->data)->attackSound, 0, 1, 1, 0);
 			}
 		}
 
@@ -373,7 +386,8 @@ void cat_enemy_hurt(Entity* self, int damage) {
 		enemy_change_state(self, ENEMY_HURT);
 		self->health -= damage;
 	}
-	
+
+	gfc_sound_play(((EnemyData*)self->data)->hurtSound, 0, 1, 1, 0);
 }
 
 void dog_enemy_1_hurt(Entity* self, int damage) {
@@ -381,9 +395,13 @@ void dog_enemy_1_hurt(Entity* self, int damage) {
 		return;
 	enemy_change_state(self, ENEMY_HURT);
 	self->health -= damage;
+
+	gfc_sound_play(((EnemyData*)self->data)->hurtSound, 0, 1, 1, 0);
 }
 
 void dog_enemy_2_hurt(Entity* self, int damage) {
 	enemy_change_state(self, ENEMY_HURT);
 	self->health -= damage;
+
+	gfc_sound_play(((EnemyData*)self->data)->hurtSound, 0, 1, 1, 0);
 }

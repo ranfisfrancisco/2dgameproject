@@ -7,6 +7,11 @@
 
 enum enemy_state { ENEMY_IDLE, ENEMY_HURT, ENEMY_WALK, ENEMY_ATTACK };
 
+typedef struct {
+	Sound* attackSound;
+	Sound* hurtSound;
+}EnemyData;
+
 /**
  * @brief Spawns an entity of a given type
  * @return Pointer to new entity construct if it was made, NULL otherwise
