@@ -189,7 +189,7 @@ void cat_enemy_think(Entity* self) {
 
 		self->statePos += 1;
 
-		gfc_rect_set(hitbox, self->drawPosition.x, self->drawPosition.y, self->sprite->frame_w * 1.2, self->sprite->frame_h);
+		gfc_rect_set(hitbox, self->hurtbox.x, self->hurtbox.y, self->hurtbox.w, self->hurtbox.y);
 
 		if (!self->attackHit) {
 			if (self->side == FACE_LEFT) {

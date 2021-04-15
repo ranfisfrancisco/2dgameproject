@@ -12,6 +12,7 @@ typedef struct {
 	Entity* weapon;
 	int powerUpTime;
 	Sound* attackSound;
+	Sound* hurtSound;
 }PlayerData;
 
 /**
@@ -72,5 +73,7 @@ int player_collison_check(SDL_Rect rect);
  * @param amount The amount to change by. Negative integers deecrease health
  */
 void player_change_health(int amount);
+
+void player_hurt(Entity* self, int damage);
 
 #endif

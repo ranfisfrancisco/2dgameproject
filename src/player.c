@@ -31,6 +31,7 @@ void player_spawn(Vector2D position) {
 	memset(data, 0, sizeof(PlayerData));
 	player->data = data;
 	data->attackSound = gfc_sound_load("sounds/punch1.mp3", 1, 0);
+	data->attackSound = gfc_sound_load("sounds/mc_hurt.mp3", 1, 0);
 
 	player->sprite = gf2d_sprite_load_all("images/kyo_2.png", 128, 144, 13);
 	vector2d_copy(player->drawPosition, position);
@@ -598,5 +599,6 @@ void player_update() {
 void player_hurt(Entity* self, int damage) {
 	player_change_state(PLAYER_HURT);
 	player->health -= damage;
+	gfc_sound_play(((PlayerData*)player->data)->hurtSound, 0, 1, 1, -1);
 }
 

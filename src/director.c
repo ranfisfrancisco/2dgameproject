@@ -277,7 +277,7 @@ int director_run_game() {
         gf2d_graphics_clear_screen();
         level_draw(GAME_VARS.currentLevel);
         entity_manager_draw_entities();
-        //entity_debug_draw_hurtboxes();
+        entity_debug_draw_hurtboxes();
         hud_draw();
 
         gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
