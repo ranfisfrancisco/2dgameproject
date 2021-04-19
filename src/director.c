@@ -233,6 +233,7 @@ int director_set_level(int levelCode) {
     director_spawn_entity(vector2d(100, 360), PLAYER_TYPE);
     GAME_VARS.currentLevelCode = levelCode;
     gfc_sound_play(GAME_VARS.currentLevel->bgMusic, -1, 0.5, -1, -1);
+    director_change_state(GAME_STATE_IN_LEVEL);
     slog("Loaded Level!");
     return 1;
 }
@@ -299,8 +300,8 @@ void director_init_game() {
     hud_init();
     SDL_ShowCursor(SDL_DISABLE);
 
-    director_change_state(GAME_STATE_IN_LEVEL);
-    director_set_level(2);
+    director_change_state(GAME_STATE_LEVEL_TRANSITION);
+    GAME_VARS.currentLevelCode = 2;
 
     /*director_spawn_entity(vector2d(300, 30), INTERACTABLE_TRASH_CAN);
     director_spawn_entity(vector2d(400, 160), INTERACTABLE_BOX);
@@ -310,7 +311,7 @@ void director_init_game() {
 }
 
 int director_run_game() {
-    if (GAME_VARS.currentLevel == NULL) {
+    if (GAME_VARS.gameState == GAME_STATE_IN_LEVEL && GAME_VARS.currentLevel == NULL) {
         slog("Level not loaded! Aborting.");
         QUIT_FLAG = 1;
         return QUIT_FLAG;
