@@ -62,13 +62,15 @@ void director_change_state(GameState state) {
     case GAME_STATE_IN_LEVEL:
         break;
     case GAME_STATE_LEVEL_TRANSITION:
-     
+        break;
+    case GAME_STATE_MENU:
         break;
     default:
         slog("Attempted transition to illegal state");
         break;
     }
 
+    GAME_VARS.gameStateBuffer = GAME_VARS.gameState;
     GAME_VARS.gameState = state;
     GAME_VARS.gameStateStartTime = clock();
 }
@@ -317,13 +319,23 @@ int director_run_game() {
         return QUIT_FLAG;
     }
 
+    GAME_VARS.gameStateTime = (double)(clock() - GAME_VARS.gameStateStartTime) / CLOCKS_PER_SEC;
     SDL_PumpEvents();   // update SDL's internal event structures
     KEYS = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
     if (KEYS[SDL_SCANCODE_ESCAPE])QUIT_FLAG = 1; // exit condition
-    GAME_VARS.gameStateTime = (double)(clock() - GAME_VARS.gameStateStartTime) / CLOCKS_PER_SEC;
-
+    if (KEYS[SDL_SCANCODE_M] && GAME_VARS.gameStateTime > 0.2) {
+        if (GAME_VARS.gameState != GAME_STATE_MENU)
+            director_change_state(GAME_STATE_MENU);
+        else
+            director_change_state(GAME_VARS.gameStateBuffer);
+    }
+    
     switch (GAME_VARS.gameState)
     {
+    case GAME_STATE_MENU:
+
+        break;
+
     case GAME_STATE_IN_LEVEL:
         if (GAME_VARS.currentLevel->fightData->rowCounter != -1 && entity_get_enemy_population() == 0) {
             director_spawn_next_encounter();

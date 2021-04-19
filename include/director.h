@@ -6,11 +6,12 @@
 #include "fight.h"
 
 typedef enum {
-	GAME_STATE_IN_LEVEL, GAME_STATE_LEVEL_TRANSITION
+	GAME_STATE_ERROR, GAME_STATE_MENU, GAME_STATE_IN_LEVEL, GAME_STATE_LEVEL_TRANSITION
 } GameState;
 
 typedef struct {
 	GameState gameState;
+	GameState gameStateBuffer;
 	clock_t gameStateStartTime;
 	double gameStateTime;
 	Level* currentLevel;
