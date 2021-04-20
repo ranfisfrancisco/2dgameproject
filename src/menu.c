@@ -21,8 +21,7 @@ int menu_update() {
 }
 
 void menu_draw() {
-	return;
-	char main_menu_texts[] = { "wow" };
+	//char** main_menu_texts = { "wow",};
 	int main_menu_len = 1;
 
 	int screenWidth, screenHeight;
@@ -35,13 +34,13 @@ void menu_draw() {
 	screenHeight = director_get_screen_height();
 	menuRect = gfc_sdl_rect(screenWidth / 2 - screenWidth / 6, screenHeight / (main_menu_len + 1), screenWidth / 3, screenHeight / 7);
 
-	texts = main_menu_texts;
+	//texts = main_menu_texts;
 	textLen = main_menu_len;
 
 	for (int i = 0; i < textLen; i++) {
-		gfc_line_sprintf(text, texts[i]);
+		//gfc_line_sprintf(text, texts[i]);
 		SDL_RenderDrawRect(gf2d_graphics_get_renderer(), &menuRect);
 		SDL_RenderFillRect(gf2d_graphics_get_renderer(), &menuRect);
-		font_render(MENU_FONT, text, vector2d(screenWidth / 2 - 200, screenHeight / 2), gfc_color8(255, 0, 0, 255));
+		//font_render(MENU_FONT, text, vector2d(screenWidth / 2 - 200, screenHeight / 2), gfc_color8(255, 0, 0, 255));
 	}
 }

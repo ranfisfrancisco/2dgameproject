@@ -307,7 +307,6 @@ void director_init_game() {
     GAME_VARS.gameStateBuffer = GAME_STATE_MENU;
 
     director_change_state(GAME_STATE_LEVEL_TRANSITION);
-    director_set_level(GAME_VARS.currentLevelCode);
 }
 
 int director_run_game() {
