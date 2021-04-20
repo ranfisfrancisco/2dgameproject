@@ -21,26 +21,33 @@ int menu_update() {
 }
 
 void menu_draw() {
-	//char** main_menu_texts = { "wow",};
-	int main_menu_len = 1;
+	char** main_menu_texts[2];
+	main_menu_texts[0] = "one";
+	main_menu_texts[1] = "two";
+	int main_menu_len = 2;
 
 	int screenWidth, screenHeight;
-	char* texts;
+	char** texts;
 	int textLen;
 	TextLine text;
 	SDL_Rect menuRect;
 
 	screenWidth = director_get_screen_width();
 	screenHeight = director_get_screen_height();
-	menuRect = gfc_sdl_rect(screenWidth / 2 - screenWidth / 6, screenHeight / (main_menu_len + 1), screenWidth / 3, screenHeight / 7);
 
-	//texts = main_menu_texts;
+	texts = main_menu_texts;
 	textLen = main_menu_len;
 
 	for (int i = 0; i < textLen; i++) {
-		//gfc_line_sprintf(text, texts[i]);
+		int x, y;
+		x = screenWidth / 2 - screenWidth / 6;
+		y = 100 + 150 * i;
+
+		menuRect = gfc_sdl_rect(x,  y, screenWidth / 3, screenHeight / 7);
+		gfc_line_sprintf(text, texts[i]);
+
 		SDL_RenderDrawRect(gf2d_graphics_get_renderer(), &menuRect);
 		SDL_RenderFillRect(gf2d_graphics_get_renderer(), &menuRect);
-		//font_render(MENU_FONT, text, vector2d(screenWidth / 2 - 200, screenHeight / 2), gfc_color8(255, 0, 0, 255));
+		font_render(MENU_FONT, text, vector2d(x + screenWidth / 6 - 60, y + screenHeight/18), gfc_color8(255, 0, 0, 255));
 	}
 }

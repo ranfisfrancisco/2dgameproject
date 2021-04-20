@@ -6,6 +6,7 @@
 #include "gf2d_draw.h"
 
 #include "director.h"
+#include "font.h"
 #include "hud.h"
 #include "menu.h"
 #include "player.h"
@@ -361,7 +362,7 @@ int director_run_game() {
         break;
 
     case GAME_STATE_LEVEL_TRANSITION:
-        if (GAME_VARS.gameStateTime > 2) {
+        if (GAME_VARS.gameStateTime > 1) {
             director_set_level(GAME_VARS.currentLevelCode);
             director_change_state(GAME_STATE_IN_LEVEL);
 
