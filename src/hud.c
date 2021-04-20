@@ -5,11 +5,13 @@
 #include "player.h"
 
 SDL_Rect rect;
-Font* font;
+Font* hud_font;
+Font* level_transition_font;
 
 void hud_init() {
-	rect = gfc_sdl_rect(0, 0, 920, 80);
-	font = font_load("fonts/colony_wars.ttf", 16);
+	rect = gfc_sdl_rect(0, 0, 1270, 80);
+	hud_font = font_load("fonts/GameRobot.ttf", 48);
+	level_transition_font = font_load("fonts/colony_wars.ttf", 20);
 }
 
 void hud_draw() {
@@ -20,7 +22,7 @@ void hud_draw() {
 	SDL_RenderDrawRect(gf2d_graphics_get_renderer(), &rect);
 	SDL_RenderFillRect(gf2d_graphics_get_renderer(), &rect);
 
-	font_render(font, healthText, vector2d(32, 32), gfc_color8(255, 0, 0, 255));
+	font_render(hud_font, healthText, vector2d(32, 32), gfc_color8(255, 0, 0, 255));
 }
 
 void hud_draw_level_transition() {
@@ -31,5 +33,5 @@ void hud_draw_level_transition() {
 	SDL_RenderDrawRect(gf2d_graphics_get_renderer(), &rect);
 	SDL_RenderFillRect(gf2d_graphics_get_renderer(), &rect);
 
-	font_render(font, text, vector2d(1200/2, 720/2), gfc_color8(255, 0, 0, 255));
+	font_render(level_transition_font, text, vector2d(1200/2 - 200, 720/2), gfc_color8(255, 0, 0, 255));
 }
