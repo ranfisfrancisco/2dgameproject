@@ -5,16 +5,15 @@
 #include "player.h"
 
 SDL_Rect rect;
+Font* font;
 
 void hud_init() {
 	rect = gfc_sdl_rect(0, 0, 920, 80);
+	font = font_load("fonts/colony_wars.ttf", 16);
 }
 
 void hud_draw() {
-	Font* font;
 	TextLine healthText;
-
-	font = font_load("fonts/colony_wars.ttf", 16);
 	gfc_line_sprintf(healthText, "HEALTH: %d/%d ENEMY #: %d SCORE: %d", player_get_health(), player_get_max_health(), entity_get_enemy_population(), director_get_score());
 
 	//draw rectangle
@@ -25,10 +24,7 @@ void hud_draw() {
 }
 
 void hud_draw_level_transition() {
-	Font* font;
 	TextLine text;
-
-	font = font_load("fonts/colony_wars.ttf", 16);
 	gfc_line_sprintf(text, "NEXT LEVEL!");
 
 	//draw rectangle

@@ -7,6 +7,7 @@
 
 #include "director.h"
 #include "hud.h"
+#include "menu.h"
 #include "player.h"
 #include "enemy.h"
 #include "object.h"
@@ -300,16 +301,12 @@ void director_init_game() {
     input_buffer_init();
     font_init(10);
     hud_init();
+    menu_init();
     SDL_ShowCursor(SDL_DISABLE);
 
     director_change_state(GAME_STATE_LEVEL_TRANSITION);
+    GAME_VARS.gameStateBuffer = GAME_STATE_MENU;
     GAME_VARS.currentLevelCode = 2;
-
-    /*director_spawn_entity(vector2d(300, 30), INTERACTABLE_TRASH_CAN);
-    director_spawn_entity(vector2d(400, 160), INTERACTABLE_BOX);
-    director_spawn_entity(vector2d(700, 80), INTERACTABLE_METAL_BOX);
-    director_spawn_entity(vector2d(700, 160), INTERACTABLE_CAR);
-    director_spawn_entity(vector2d(700, 600), INTERACTABLE_EXPLOSIVE);*/
 }
 
 int director_run_game() {
@@ -321,6 +318,7 @@ int director_run_game() {
 
     GAME_VARS.gameStateTime = (double)(clock() - GAME_VARS.gameStateStartTime) / CLOCKS_PER_SEC;
     SDL_PumpEvents();   // update SDL's internal event structures
+
     KEYS = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
     if (KEYS[SDL_SCANCODE_ESCAPE])QUIT_FLAG = 1; // exit condition
     if (KEYS[SDL_SCANCODE_M] && GAME_VARS.gameStateTime > 0.2) {
@@ -333,7 +331,9 @@ int director_run_game() {
     switch (GAME_VARS.gameState)
     {
     case GAME_STATE_MENU:
-
+        menu_update();
+        menu_draw();
+        gf2d_grahics_next_frame();
         break;
 
     case GAME_STATE_IN_LEVEL:
@@ -377,6 +377,10 @@ int director_run_game() {
         gf2d_grahics_next_frame();
 
         break;
+
+    case GAME_STATE_EXITING:
+        QUIT_FLAG = 1;
+        return QUIT_FLAG;
 
     default:
         slog("Unknown Engine State. Aborting");
