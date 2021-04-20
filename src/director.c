@@ -182,6 +182,7 @@ void director_save_score(char* fileName) {
 
     sj_object_free(j_list);
     sj_object_free(root);
+
     free(scoreList);
 }
 
@@ -255,8 +256,6 @@ void director_spawn_next_encounter() {
     row = sj_array_get_nth(GAME_VARS.currentLevel->fightData->encounterList, GAME_VARS.currentLevel->fightData->rowCounter);
     spawnCount = sj_array_get_count(row);
 
-    printf("SPAWNS %d\n", spawnCount);
-
     for (int i = 0; i < spawnCount; i++) {
         SJson* spawnItem;
         int entityType, xPos, yPos;
@@ -269,12 +268,12 @@ void director_spawn_next_encounter() {
 
         director_spawn_entity(vector2d(xPos, yPos), entityType);
 
-        sj_free(spawnItem);
+        sj_object_free(spawnItem);
     }
 
     GAME_VARS.currentLevel->fightData->rowCounter++;
 
-    sj_free(row);
+    sj_object_free(row);
 }
 
 void director_init_game() {
@@ -304,9 +303,11 @@ void director_init_game() {
     menu_init();
     SDL_ShowCursor(SDL_DISABLE);
 
-    director_change_state(GAME_STATE_LEVEL_TRANSITION);
-    GAME_VARS.gameStateBuffer = GAME_STATE_MENU;
     GAME_VARS.currentLevelCode = 2;
+    GAME_VARS.gameStateBuffer = GAME_STATE_MENU;
+
+    director_change_state(GAME_STATE_LEVEL_TRANSITION);
+    director_set_level(GAME_VARS.currentLevelCode);
 }
 
 int director_run_game() {

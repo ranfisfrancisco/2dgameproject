@@ -1,6 +1,10 @@
 #ifndef __MENU_H__
 #define __MENU_H_
 
+typedef enum {
+	MENU_STATE_MAIN, MENU_STATE_EXIT
+} MenuState;
+
 /**
  * @brief Initialize the Menu. Must be run before using any other Menu elements
  */
