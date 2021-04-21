@@ -66,6 +66,7 @@ void director_change_state(GameState state) {
     case GAME_STATE_LEVEL_TRANSITION:
         break;
     case GAME_STATE_MENU:
+        menu_open();
         break;
     default:
         slog("Attempted transition to illegal state");
@@ -135,7 +136,7 @@ int* director_load_score(char* fileName) {
     for (int i = 0; i < 10 && i < count; i++) {
         SJson* intJson = sj_array_get_nth(scoreJson, i);
         sj_get_integer_value(intJson, &scoreList[i]);
-        sj_free(intJson);
+        sj_object_free(intJson);
     }
 
     sj_object_free(scoreJson);
