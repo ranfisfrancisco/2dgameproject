@@ -1,18 +1,19 @@
 #ifndef __FONT_H__
-#define __FONT_H_
+#define __FONT_H__
 
 #include <SDL_ttf.h>
 
 #include "gfc_vector.h"
 #include "gfc_text.h"
 #include "gfc_color.h"
+
 typedef struct
 {
 	Uint32 _refCount;
 	TTF_Font* font;
 	TextLine filename;
 	int ptsize;
-}Font;
+} Font;
 
 /**
  * @brief intialize font resource manager

@@ -1,6 +1,8 @@
 #ifndef __MENU_H__
 #define __MENU_H_
 
+#include "font.h"
+
 //typedef enum {
 //	MENU_STATE_MAIN, MENU_STATE_EXIT
 //} MenuState;
@@ -9,6 +11,7 @@ typedef struct {
 	char** texts;
 	int numOfOptions;
 	int highlightIndex;
+	Font* font;
 } Menu;
 
 /**
@@ -16,6 +19,9 @@ typedef struct {
  */
 void menu_init();
 
+/**
+ * @brief resets menu variables for when the menu is opened
+ */
 void menu_open();
 
 /**

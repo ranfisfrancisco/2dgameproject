@@ -1,15 +1,13 @@
 #include "simple_logger.h" 
 #include "menu.h"
-#include "font.h"
 #include "director.h"
 
-Font* MENU_FONT;
 Menu* CURRENT_MENU;
 Menu MENU_MAIN;
 
 void menu_init() {
 	CURRENT_MENU = &MENU_MAIN;
-	MENU_FONT = font_load("fonts/DroidSans.ttf", 32);
+	MENU_MAIN.font = font_load("fonts/DroidSans.ttf", 32);
 
 	MENU_MAIN.numOfOptions = 2;
 	MENU_MAIN.texts = malloc(sizeof(char*) * MENU_MAIN.numOfOptions);
@@ -57,14 +55,14 @@ void menu_draw() {
 		x = screenWidth / 2 - screenWidth / 6;
 		y = 100 + 150 * i;
 
-		menuRect = gfc_sdl_rect(x,  y, screenWidth / 3, screenHeight / 7);
+		menuRect = gfc_sdl_rect(x, y, screenWidth / 3, screenHeight / 7);
 		gfc_line_sprintf(text, CURRENT_MENU->texts[i]);
 
 		SDL_RenderDrawRect(gf2d_graphics_get_renderer(), &menuRect);
 		SDL_RenderFillRect(gf2d_graphics_get_renderer(), &menuRect);
 		if (i == CURRENT_MENU->highlightIndex)
-			font_render(MENU_FONT, text, vector2d(x + screenWidth / 6 - 60, y + screenHeight/18), gfc_color8(255, 255, 255, 255));
+			font_render(CURRENT_MENU->font, text, vector2d(x + screenWidth / 6 - 60, y + screenHeight/18), gfc_color8(255, 255, 255, 255));
 		else
-			font_render(MENU_FONT, text, vector2d(x + screenWidth / 6 - 60, y + screenHeight / 18), gfc_color8(255, 0, 0, 255));
+			font_render(CURRENT_MENU->font, text, vector2d(x + screenWidth / 6 - 60, y + screenHeight / 18), gfc_color8(255, 0, 0, 255));
 	}
 }
