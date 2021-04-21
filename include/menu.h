@@ -3,12 +3,8 @@
 
 #include "font.h"
 
-//typedef enum {
-//	MENU_STATE_MAIN, MENU_STATE_EXIT
-//} MenuState;
-
 typedef enum {
-	MENU_ACTION_CONTINUE, MENU_ACTION_CLOSE
+	MENU_ACTION_CONTINUE, MENU_ACTION_CLOSE, MENU_ACTION_QUIT
 } Menu_Action;
 
 typedef struct Menu_s{

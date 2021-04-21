@@ -1,10 +1,16 @@
+#include <time.h> 
 #include "simple_logger.h" 
 #include "menu.h"
 #include "director.h"
 
+
 Menu* CURRENT_MENU;
 Menu MENU_MAIN;
 Menu MENU_EXIT;
+clock_t MENU_CLOCK_START;
+double MENU_TIME;
+
+void menu_switch(Menu* menu);
 
 void menu_init() {
 	MENU_MAIN.font = font_load("fonts/DroidSans.ttf", 32);
@@ -23,7 +29,7 @@ void menu_init() {
 	MENU_EXIT.highlightIndex = 0;
 	MENU_EXIT.backMenu = NULL;
 
-	CURRENT_MENU = &MENU_MAIN;
+	menu_switch(&MENU_MAIN);
 
 	slog("Initialized Menus");
 }
@@ -33,8 +39,15 @@ void menu_open() {
 	CURRENT_MENU = &MENU_MAIN;
 }
 
+void menu_switch(Menu* menu) {
+	CURRENT_MENU = menu;
+	MENU_CLOCK_START = clock();
+	MENU_TIME = 0;
+}
+
 int menu_update() {
 	const Uint8* keys;
+	MENU_TIME = (double)(clock() - MENU_CLOCK_START) / CLOCKS_PER_SEC;
 
 	keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
 
@@ -42,15 +55,21 @@ int menu_update() {
 		CURRENT_MENU->highlightIndex--;
 	else if (keys[SDL_SCANCODE_S])
 		CURRENT_MENU->highlightIndex++;
-	else if (keys[SDL_SCANCODE_E]) {
+	else if (keys[SDL_SCANCODE_E] && MENU_TIME > 0.2) {
 		if (CURRENT_MENU == &MENU_MAIN) {
-			if (CURRENT_MENU->highlightIndex == 1) {
-				CURRENT_MENU = &MENU_EXIT;
+			if (CURRENT_MENU->highlightIndex == 0) {
+				return MENU_ACTION_CLOSE;
+			}
+			else if (CURRENT_MENU->highlightIndex == 1) {
+				menu_switch(&MENU_EXIT);
 			}
 		}
 		else if (CURRENT_MENU == &MENU_EXIT) {
-			if (CURRENT_MENU->highlightIndex == 1) {
-				return MENU_ACTION_CLOSE;
+			if (CURRENT_MENU->highlightIndex == 0) {
+				menu_switch(&MENU_MAIN);
+			}
+			else if (CURRENT_MENU->highlightIndex == 1) {
+				return MENU_ACTION_QUIT;
 			}
 		}
 	}

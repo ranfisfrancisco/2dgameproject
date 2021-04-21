@@ -339,8 +339,11 @@ int director_run_game() {
         menu_draw();
         gf2d_grahics_next_frame();
 
-        if (menu_result == MENU_ACTION_CLOSE) {
+        if (menu_result == MENU_ACTION_QUIT) {
             director_change_state(GAME_STATE_EXITING);
+        }
+        else if (menu_result == MENU_ACTION_CLOSE) {
+            director_change_state(GAME_VARS.gameStateBuffer);
         }
         break;
 
