@@ -5,10 +5,8 @@
 //	MENU_STATE_MAIN, MENU_STATE_EXIT
 //} MenuState;
 
-#define MENU_MAX_ITEMS 5
-
 typedef struct {
-	char** texts[MENU_MAX_ITEMS];
+	char** texts;
 	int numOfOptions;
 	int highlightIndex;
 } Menu;

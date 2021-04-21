@@ -12,6 +12,7 @@ void menu_init() {
 	MENU_FONT = font_load("fonts/DroidSans.ttf", 32);
 
 	MENU_MAIN.numOfOptions = 2;
+	MENU_MAIN.texts = malloc(sizeof(char*) * MENU_MAIN.numOfOptions);
 	MENU_MAIN.texts[0] = "Continue";
 	MENU_MAIN.texts[1] = "Quit";
 	MENU_MAIN.highlightIndex = 0;
