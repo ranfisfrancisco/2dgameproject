@@ -312,6 +312,8 @@ void director_init_game() {
 }
 
 int director_run_game() {
+    Menu_Action menu_result;
+
     if (GAME_VARS.gameState == GAME_STATE_IN_LEVEL && GAME_VARS.currentLevel == NULL) {
         slog("Level not loaded! Aborting.");
         QUIT_FLAG = 1;
@@ -333,9 +335,13 @@ int director_run_game() {
     switch (GAME_VARS.gameState)
     {
     case GAME_STATE_MENU:
-        menu_update();
+        menu_result = menu_update();
         menu_draw();
         gf2d_grahics_next_frame();
+
+        if (menu_result == MENU_ACTION_CLOSE) {
+            director_change_state(GAME_STATE_EXITING);
+        }
         break;
 
     case GAME_STATE_IN_LEVEL:

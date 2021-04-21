@@ -7,11 +7,16 @@
 //	MENU_STATE_MAIN, MENU_STATE_EXIT
 //} MenuState;
 
-typedef struct {
+typedef enum {
+	MENU_ACTION_CONTINUE, MENU_ACTION_CLOSE
+} Menu_Action;
+
+typedef struct Menu_s{
 	char** texts;
 	int numOfOptions;
 	int highlightIndex;
 	Font* font;
+	struct Menu_s* backMenu;
 } Menu;
 
 /**

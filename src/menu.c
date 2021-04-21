@@ -4,16 +4,26 @@
 
 Menu* CURRENT_MENU;
 Menu MENU_MAIN;
+Menu MENU_EXIT;
 
 void menu_init() {
-	CURRENT_MENU = &MENU_MAIN;
 	MENU_MAIN.font = font_load("fonts/DroidSans.ttf", 32);
-
 	MENU_MAIN.numOfOptions = 2;
 	MENU_MAIN.texts = malloc(sizeof(char*) * MENU_MAIN.numOfOptions);
 	MENU_MAIN.texts[0] = "Continue";
 	MENU_MAIN.texts[1] = "Quit";
 	MENU_MAIN.highlightIndex = 0;
+	MENU_MAIN.backMenu = NULL;
+
+	MENU_EXIT.font = font_load("fonts/DroidSans.ttf", 32);
+	MENU_EXIT.numOfOptions = 2;
+	MENU_EXIT.texts = malloc(sizeof(char*) * MENU_EXIT.numOfOptions);
+	MENU_EXIT.texts[0] = "Return";
+	MENU_EXIT.texts[1] = "Really Quit";
+	MENU_EXIT.highlightIndex = 0;
+	MENU_EXIT.backMenu = NULL;
+
+	CURRENT_MENU = &MENU_MAIN;
 
 	slog("Initialized Menus");
 }
@@ -32,6 +42,18 @@ int menu_update() {
 		CURRENT_MENU->highlightIndex--;
 	else if (keys[SDL_SCANCODE_S])
 		CURRENT_MENU->highlightIndex++;
+	else if (keys[SDL_SCANCODE_E]) {
+		if (CURRENT_MENU == &MENU_MAIN) {
+			if (CURRENT_MENU->highlightIndex == 1) {
+				CURRENT_MENU = &MENU_EXIT;
+			}
+		}
+		else if (CURRENT_MENU == &MENU_EXIT) {
+			if (CURRENT_MENU->highlightIndex == 1) {
+				return MENU_ACTION_CLOSE;
+			}
+		}
+	}
 
 	if (CURRENT_MENU->highlightIndex < 0)
 		CURRENT_MENU->highlightIndex = 0;
@@ -39,7 +61,7 @@ int menu_update() {
 		CURRENT_MENU->highlightIndex = CURRENT_MENU->numOfOptions - 1;
 	}
 
-	return -1;
+	return MENU_ACTION_CONTINUE;
 }
 
 void menu_draw() {
