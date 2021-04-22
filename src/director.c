@@ -66,11 +66,11 @@ void director_change_state(GameState state) {
     switch (state) {
     case GAME_STATE_IN_LEVEL:
         break;
-    case GAME_STATE_LEVEL_TRANSITION:
+    case GAME_STATE_LEVEL_LOAD:
         break;
     case GAME_STATE_EDITOR:
         break; 
-    case GAME_STATE_EDITOR_TRANSITION:
+    case GAME_STATE_EDITOR_LOAD:
         break;
     case GAME_STATE_MENU:
         menu_open();
@@ -317,9 +317,7 @@ void director_init_game() {
     SDL_ShowCursor(SDL_DISABLE);
 
     GAME_VARS.currentLevelCode = 2;
-    GAME_VARS.gameStateBuffer = GAME_STATE_MENU;
-
-    director_change_state(GAME_STATE_EDITOR_TRANSITION);
+    director_change_state(GAME_STATE_EDITOR_LOAD);
     GAME_VARS.gameStateBuffer = GAME_STATE_MENU;
 }
 
@@ -366,7 +364,7 @@ int director_run_game() {
         }
         else if (GAME_VARS.currentLevel->fightData->rowCounter == -1 && entity_get_enemy_population() == 0) {
             GAME_VARS.currentLevelCode++;
-            director_change_state(GAME_STATE_LEVEL_TRANSITION);
+            director_change_state(GAME_STATE_LEVEL_LOAD);
         }
 
         entity_manager_update_entities();
@@ -384,7 +382,7 @@ int director_run_game() {
 
         break;
 
-    case GAME_STATE_LEVEL_TRANSITION:
+    case GAME_STATE_LEVEL_LOAD:
         if (GAME_VARS.gameStateTime > 1) {
             director_set_level(GAME_VARS.currentLevelCode);
             director_change_state(GAME_STATE_IN_LEVEL);
@@ -402,7 +400,7 @@ int director_run_game() {
 
         break;
 
-    case GAME_STATE_EDITOR_TRANSITION:
+    case GAME_STATE_EDITOR_LOAD:
         director_load_level_from_file(GAME_VARS.currentLevelCode);
         director_change_state(GAME_STATE_EDITOR);
         editor_init();
