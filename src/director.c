@@ -314,7 +314,8 @@ void director_init_game() {
     GAME_VARS.currentLevelCode = 2;
     GAME_VARS.gameStateBuffer = GAME_STATE_MENU;
 
-    director_change_state(GAME_STATE_LEVEL_TRANSITION);
+    director_change_state(GAME_STATE_MENU);
+    GAME_VARS.gameStateBuffer = GAME_STATE_MENU;
 }
 
 int director_run_game() {
@@ -349,7 +350,8 @@ int director_run_game() {
             director_change_state(GAME_STATE_EXITING);
         }
         else if (menu_result == MENU_ACTION_CLOSE) {
-            director_change_state(GAME_VARS.gameStateBuffer);
+            //director_change_state(GAME_VARS.gameStateBuffer);
+            
         }
         break;
 
