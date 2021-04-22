@@ -6,6 +6,7 @@
 #include "gf2d_draw.h"
 
 #include "director.h"
+#include "editor.h"
 #include "font.h"
 #include "hud.h"
 #include "menu.h"
@@ -18,10 +19,10 @@
 #include "fight.h"
 #include "simple_json.h"
 
-GameVarsStruct GAME_VARS = { 0 };
-const Uint8* KEYS; 
-int QUIT_FLAG;
-const char* SCORE_FILE_NAME = "data/score.json";
+static GameVarsStruct GAME_VARS = { 0 };
+static const Uint8* KEYS; 
+static int QUIT_FLAG;
+static const char* SCORE_FILE_NAME = "data/score.json";
 
 void director_add_score(int amount) {
     GAME_VARS.score += amount;
@@ -60,6 +61,8 @@ void director_spawn_entity(Vector2D position, enum entity_type type) {
  * @param state GameState to change the game to
  */
 void director_change_state(GameState state) {
+    char buff[40];
+
     switch (state) {
     case GAME_STATE_IN_LEVEL:
         break;
@@ -73,10 +76,12 @@ void director_change_state(GameState state) {
         menu_open();
         break;
     default:
-        slog("Attempted transition to illegal state");
+        sprintf(buff, "Attempted transition to illegal state %d", state);
+        slog(buff);
         break;
     }
 
+    
     GAME_VARS.gameStateBuffer = GAME_VARS.gameState;
     GAME_VARS.gameState = state;
     GAME_VARS.gameStateStartTime = clock();
@@ -314,7 +319,7 @@ void director_init_game() {
     GAME_VARS.currentLevelCode = 2;
     GAME_VARS.gameStateBuffer = GAME_STATE_MENU;
 
-    director_change_state(GAME_STATE_MENU);
+    director_change_state(GAME_STATE_EDITOR_TRANSITION);
     GAME_VARS.gameStateBuffer = GAME_STATE_MENU;
 }
 
@@ -400,6 +405,7 @@ int director_run_game() {
     case GAME_STATE_EDITOR_TRANSITION:
         director_load_level_from_file(GAME_VARS.currentLevelCode);
         director_change_state(GAME_STATE_EDITOR);
+        editor_init();
 
         if (GAME_VARS.currentLevel == NULL) {
             slog("Couldn't get the level");
@@ -411,6 +417,7 @@ int director_run_game() {
     
     case GAME_STATE_EDITOR:
         entity_manager_update_entities();
+        editor_update();
         level_update(GAME_VARS.currentLevel);
 
         gf2d_graphics_clear_screen();

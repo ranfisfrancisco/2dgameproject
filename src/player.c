@@ -63,11 +63,15 @@ Vector2D player_get_position() {
 }
 
 int player_get_health() {
-	return player->health;
+	if (player)
+		return player->health;
+	return 0;
 }
 
 int player_get_max_health() {
-	return player->maxHealth;
+	if (player)
+		return player->maxHealth;
+	return 0;
 }
 
 void player_attach_weapon(Entity* ent) {

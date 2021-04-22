@@ -4,9 +4,9 @@
 #include "font.h"
 #include "player.h"
 
-SDL_Rect HUD_RECT;
-Font* HUD_FONT;
-Font* LEVEL_TRANSITION_FONT;
+static SDL_Rect HUD_RECT;
+static Font* HUD_FONT;
+static Font* LEVEL_TRANSITION_FONT;
 
 void hud_init() {
 	HUD_RECT = gfc_sdl_rect(0, 0, 1270, 80);

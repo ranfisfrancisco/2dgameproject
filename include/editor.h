@@ -3,6 +3,6 @@
 
 void editor_init();
 
-void editior_update();
+void editor_update();
 
 #endif
