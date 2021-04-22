@@ -393,7 +393,7 @@ int director_run_game() {
         break;
 
     case GAME_STATE_EDITOR_TRANSITION:
-        director_set_level(2);
+        director_set_level(GAME_VARS.currentLevelCode);
         director_change_state(GAME_STATE_EDITOR);
 
         if (GAME_VARS.currentLevel == NULL) {
@@ -404,7 +404,6 @@ int director_run_game() {
         
         break;
     
-
     case GAME_STATE_EDITOR:
         entity_manager_update_entities();
         level_update(GAME_VARS.currentLevel);
