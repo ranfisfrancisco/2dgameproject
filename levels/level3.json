@@ -42,6 +42,7 @@
         ],
 		"fightData" : 
 			[
+				[{"entityType":1, "xPos": 300, "yPos": 360}],
 				[{"entityType":2, "xPos": 500, "yPos": 900}],
 				[{"entityType":2, "xPos": 500, "yPos": 900}],
 				[{"entityType":2, "xPos": 500, "yPos": 900}]

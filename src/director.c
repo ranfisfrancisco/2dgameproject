@@ -233,7 +233,7 @@ void director_load_level_from_file(int levelCode) {
 
 void director_init_level_elements() {
     entity_manager_reset_all();
-    director_spawn_entity(vector2d(100, 360), PLAYER_TYPE);
+    //director_spawn_entity(vector2d(100, 360), PLAYER_TYPE);
     gfc_sound_play(GAME_VARS.currentLevel->bgMusic, -1, 0.5, -1, -1);
     slog("Loaded Level!");
 }
@@ -396,7 +396,7 @@ int director_run_game() {
         break;
 
     case GAME_STATE_EDITOR_TRANSITION:
-        director_set_level(GAME_VARS.currentLevelCode);
+        director_load_level_from_file(GAME_VARS.currentLevelCode);
         director_change_state(GAME_STATE_EDITOR);
 
         if (GAME_VARS.currentLevel == NULL) {
