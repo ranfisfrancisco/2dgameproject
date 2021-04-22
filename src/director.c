@@ -65,6 +65,10 @@ void director_change_state(GameState state) {
         break;
     case GAME_STATE_LEVEL_TRANSITION:
         break;
+    case GAME_STATE_EDITOR:
+        break; 
+    case GAME_STATE_EDITOR_TRANSITION:
+        break;
     case GAME_STATE_MENU:
         menu_open();
         break;
@@ -239,7 +243,6 @@ int director_set_level(int levelCode) {
     director_spawn_entity(vector2d(100, 360), PLAYER_TYPE);
     GAME_VARS.currentLevelCode = levelCode;
     gfc_sound_play(GAME_VARS.currentLevel->bgMusic, -1, 0.5, -1, -1);
-    director_change_state(GAME_STATE_IN_LEVEL);
     slog("Loaded Level!");
     return 1;
 }
@@ -308,7 +311,7 @@ void director_init_game() {
     GAME_VARS.currentLevelCode = 2;
     GAME_VARS.gameStateBuffer = GAME_STATE_MENU;
 
-    director_change_state(GAME_STATE_LEVEL_TRANSITION);
+    director_change_state(GAME_STATE_EDITOR_TRANSITION);
 }
 
 int director_run_game() {
@@ -389,6 +392,32 @@ int director_run_game() {
 
         break;
 
+    case GAME_STATE_EDITOR_TRANSITION:
+        director_set_level(2);
+        director_change_state(GAME_STATE_EDITOR);
+
+        if (GAME_VARS.currentLevel == NULL) {
+            slog("Couldn't get the level");
+            QUIT_FLAG = 1;
+            return QUIT_FLAG;
+        }
+        
+        break;
+    
+
+    case GAME_STATE_EDITOR:
+        entity_manager_update_entities();
+        level_update(GAME_VARS.currentLevel);
+
+        gf2d_graphics_clear_screen();
+        level_draw(GAME_VARS.currentLevel);
+        entity_manager_draw_entities();
+        hud_draw();
+
+        gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
+        //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
+        break;
+
     case GAME_STATE_EXITING:
         QUIT_FLAG = 1;
         return QUIT_FLAG;
@@ -398,6 +427,7 @@ int director_run_game() {
         QUIT_FLAG = 1;
         return QUIT_FLAG;
     }
+
     return QUIT_FLAG;
 }
 
