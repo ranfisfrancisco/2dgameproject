@@ -214,36 +214,39 @@ char* director_int_to_filename(int code) {
     }
 }
 
-int director_set_level(int levelCode) {
-    Level* oldLevel;
+void director_load_level_from_file(int levelCode) {
     char* filename;
-
-    oldLevel = NULL;
-
-    if (GAME_VARS.currentLevel != NULL) {
-        oldLevel = GAME_VARS.currentLevel;
-    }
+    Level* level;
 
     filename = director_int_to_filename(levelCode);
     if (!filename)
-        return 0;
+        return;
 
-    GAME_VARS.currentLevel = level_load(filename);
+    level = level_load(filename);
+    if (level == NULL)
+        return;
+
+    GAME_VARS.currentLevel = level;
+    GAME_VARS.currentLevelCode = levelCode;
+    return;
+}
+
+void director_init_level_elements() {
+    entity_manager_reset_all();
+    director_spawn_entity(vector2d(100, 360), PLAYER_TYPE);
+    gfc_sound_play(GAME_VARS.currentLevel->bgMusic, -1, 0.5, -1, -1);
+    slog("Loaded Level!");
+}
+
+int director_set_level(int levelCode) {
+    director_load_level_from_file(levelCode);
 
     if (GAME_VARS.currentLevel == NULL) {
         slog("Failed to set level");
-        GAME_VARS.currentLevel = oldLevel;
         return 0;
     }
 
-    if (oldLevel)
-        level_free(oldLevel);
-
-    entity_manager_reset_all();
-    director_spawn_entity(vector2d(100, 360), PLAYER_TYPE);
-    GAME_VARS.currentLevelCode = levelCode;
-    gfc_sound_play(GAME_VARS.currentLevel->bgMusic, -1, 0.5, -1, -1);
-    slog("Loaded Level!");
+    director_init_level_elements();
     return 1;
 }
 
@@ -311,7 +314,7 @@ void director_init_game() {
     GAME_VARS.currentLevelCode = 2;
     GAME_VARS.gameStateBuffer = GAME_STATE_MENU;
 
-    director_change_state(GAME_STATE_EDITOR_TRANSITION);
+    director_change_state(GAME_STATE_LEVEL_TRANSITION);
 }
 
 int director_run_game() {
