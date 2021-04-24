@@ -47,6 +47,7 @@ void editor_set_shadow(enum entity_type type) {
 }
 
 void editor_init() {
+	editor.fightData = levelFightData_new();
 	editor_set_shadow(PLAYER_TYPE);
 	editor.clock_start = clock();
 }
