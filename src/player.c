@@ -12,10 +12,14 @@ SDL_Rect player_generic_hitbox();
 static Entity* player = { 0 };
 
 Entity* player_allocate_entity(Vector2D position);
+void player_die(Entity* self);
 
 void player_spawn(Vector2D position) {
-	if (player != NULL)
+	if (player != NULL) {
+		((PlayerData*)player->data)->attackSound;
+		((PlayerData*)player->data)->hurtSound;
 		entity_free(player);
+	}
 
 	player = player_allocate_entity(position);
 }
@@ -50,6 +54,7 @@ Entity* player_allocate_entity(Vector2D position) {
 	ent->colorShift = ent->defaultColorShift;
 	ent->update = player_update;
 	ent->hurt = player_hurt;
+	ent->die = player_die;
 	ent->baseDamage = 10;
 	ent->defaultSpeed = 4;
 	ent->speed = ent->defaultSpeed;
@@ -58,6 +63,15 @@ Entity* player_allocate_entity(Vector2D position) {
 	ent->attackHit = 0;
 
 	return ent;
+}
+
+void player_die(Entity* self) {
+	if (!self)
+		return;
+
+	gfc_sound_free(((PlayerData*)player->data)->attackSound);
+	gfc_sound_free(((PlayerData*)player->data)->hurtSound);
+	entity_free(player);
 }
 
 Vector2D player_get_position() {

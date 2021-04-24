@@ -414,7 +414,7 @@ int director_run_game() {
         break;
     
     case GAME_STATE_EDITOR:
-        entity_manager_update_entities();
+        //entity_manager_update_entities();
         editor_update();
         level_update(GAME_VARS.currentLevel);
 

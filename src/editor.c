@@ -11,6 +11,22 @@ static Editor editor = { 0 };
 
 void editor_update_movement(const Uint8* keys);
 void editor_set_shadow(enum entity_type type);
+void editor_place_entity();
+Entity* editor_spawn_entity(Vector2D position, enum entity_type type);
+
+Entity* editor_spawn_entity(Vector2D position, enum entity_type type) {
+	if (entity_is_player(type)) {
+		return player_allocate_entity(position);
+	}
+	else if (entity_is_enemy(type)) {
+		return enemy_spawn(position, type);
+	}
+	else if (entity_is_object(type)) {
+		return object_spawn(position, type);
+	}
+	return NULL;
+}
+
 
 void editor_set_shadow(enum entity_type type) {
 	if (type >= NUM_OF_ENTITY_TYPES || type < 1)
@@ -27,15 +43,7 @@ void editor_set_shadow(enum entity_type type) {
 		}
 	}
 
-	if (entity_is_player(type)) {
-		editor.shadow = player_allocate_entity(editor.position);
-	}
-	else if (entity_is_enemy(type)) {
-		editor.shadow =  enemy_spawn(editor.position, type);
-	}
-	else if (entity_is_object(type)) {
-		editor.shadow = object_spawn(editor.position, type);
-	}
+	editor.shadow = editor_spawn_entity(editor.position, type);
 }
 
 void editor_init() {
@@ -51,13 +59,17 @@ void editor_update() {
 	keys = SDL_GetKeyboardState(NULL);
 	editor_update_movement(keys);
 
-	if (editor.time_elapsed > 0.1) {
+	if (editor.time_elapsed > 0.2) {
 		if (keys[SDL_SCANCODE_UP]) {
 			editor_set_shadow(editor.currentType + 1);
 			editor.clock_start = clock();
 		}
 		else if (keys[SDL_SCANCODE_DOWN]) {
 			editor_set_shadow(editor.currentType - 1);
+			editor.clock_start = clock();
+		}
+		else if (keys[SDL_SCANCODE_E]) {
+			editor_place_entity();
 			editor.clock_start = clock();
 		}
 	}
@@ -101,4 +113,9 @@ void editor_update_movement(const Uint8* keys) {
 	cameraNewPosition.y = editor.position.y - 720 / 2;
 	camera_set_position(cameraNewPosition);
 	director_snap_camera();
+}
+
+
+void editor_place_entity() {
+	editor_spawn_entity(editor.position, editor.currentType);
 }
