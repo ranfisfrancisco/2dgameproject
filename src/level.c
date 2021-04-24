@@ -148,7 +148,6 @@ Level* level_load(const char* filename)
     return level;
 }
 
-
 void level_update(Level* level)
 {
     SDL_Rect camera;

@@ -6,6 +6,7 @@
 #include "player.h"
 #include "enemy.h"
 #include "object.h"
+#include "level.h"
 
 static Editor editor = { 0 };
 
@@ -136,5 +137,13 @@ void editor_end_encounter() {
 }
 
 void editor_save() {
-	sj_save(editor.fightData->encounterList, "levels/editor.json");
+	SJson* fileJson, *levelJS;
+
+	fileJson = sj_load("levels/editorSkeleton.json");
+
+	levelJS = sj_object_get_value(fileJson, "level");
+	sj_object_insert(levelJS, "fightData", editor.fightData->encounterList);
+
+	sj_save(fileJson, "levels/editor.json");
+	sj_free(fileJson); // causes crash on next editor save because encounterList is destroyed as well!
 }
