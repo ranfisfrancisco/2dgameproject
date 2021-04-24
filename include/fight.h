@@ -44,8 +44,6 @@ LevelFightData* levelFightData_new();
 */
 void levelFightData_addSpawn(LevelFightData* data, int xpos, int ypos, EntityType type);
 
-void levelFightData_endEncounter(LevelFightData* data);
-
 /**
  * @brief Free the given level fight data
  * @param data The data to be freed

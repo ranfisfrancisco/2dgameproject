@@ -40,7 +40,13 @@ LevelFightData* levelFightData_new() {
 }
 
 void levelFightData_addSpawn(LevelFightData* data, int xpos, int ypos, EntityType type) {
-	SJson* spawnItem, *xJson, *yJson, *typeJson;
+	SJson* list, *spawnItem, *xJson, *yJson, *typeJson;
+
+	list = sj_array_get_nth(data->encounterList, data->rowCounter);
+	if (list == NULL) {
+		list = sj_array_new();
+		sj_array_append(data->encounterList, list);
+	}
 
 	spawnItem = sj_object_new();
 
@@ -52,7 +58,7 @@ void levelFightData_addSpawn(LevelFightData* data, int xpos, int ypos, EntityTyp
 	sj_object_insert(spawnItem, "yPos", yJson);
 	sj_object_insert(spawnItem, "entityType", typeJson);
 
-	sj_array_append(data->encounterList, spawnItem);
+	sj_array_append(list, spawnItem);
 }
 
 void levelFightData_free(LevelFightData* data) {

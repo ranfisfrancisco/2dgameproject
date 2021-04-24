@@ -12,6 +12,8 @@ static Editor editor = { 0 };
 void editor_update_movement(const Uint8* keys);
 void editor_set_shadow(enum entity_type type);
 void editor_place_entity();
+void editor_end_encounter();
+void editor_save();
 Entity* editor_spawn_entity(Vector2D position, enum entity_type type);
 
 Entity* editor_spawn_entity(Vector2D position, enum entity_type type) {
@@ -26,7 +28,6 @@ Entity* editor_spawn_entity(Vector2D position, enum entity_type type) {
 	}
 	return NULL;
 }
-
 
 void editor_set_shadow(enum entity_type type) {
 	if (type >= NUM_OF_ENTITY_TYPES || type < 1)
@@ -71,6 +72,14 @@ void editor_update() {
 		}
 		else if (keys[SDL_SCANCODE_E]) {
 			editor_place_entity();
+			editor.clock_start = clock();
+		}
+		else if (keys[SDL_SCANCODE_T]) {
+			editor_end_encounter();
+			editor.clock_start = clock();
+		}
+		else if (keys[SDL_SCANCODE_U]) {
+			editor_save();
 			editor.clock_start = clock();
 		}
 	}
@@ -119,4 +128,13 @@ void editor_update_movement(const Uint8* keys) {
 
 void editor_place_entity() {
 	editor_spawn_entity(editor.position, editor.currentType);
+	levelFightData_addSpawn(editor.fightData, editor.position.x, editor.position.y, editor.currentType);
+}
+
+void editor_end_encounter() {
+	editor.fightData->rowCounter++;
+}
+
+void editor_save() {
+	sj_save(editor.fightData->encounterList, "levels/editor.json");
 }

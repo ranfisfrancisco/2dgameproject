@@ -69,9 +69,9 @@ void player_die(Entity* self) {
 	if (!self)
 		return;
 
-	gfc_sound_free(((PlayerData*)player->data)->attackSound);
-	gfc_sound_free(((PlayerData*)player->data)->hurtSound);
-	entity_free(player);
+	gfc_sound_free(((PlayerData*)self->data)->attackSound);
+	gfc_sound_free(((PlayerData*)self->data)->hurtSound);
+	entity_free(self);
 }
 
 Vector2D player_get_position() {
