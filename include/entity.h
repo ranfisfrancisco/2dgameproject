@@ -33,6 +33,7 @@ typedef struct Entity_s{
 	void (*draw)(struct Entity_s* self);
 	void (*free)(struct Entity_s* self);
 	void (*hurt)(struct Entity_s* self, int damage);
+	void (*die)(struct Entity_s* self);
 	void* data;
 	enum entity_type type;
 	int side;

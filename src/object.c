@@ -84,6 +84,7 @@ Entity* object_spawn(Vector2D position, enum entity_type type) {
 	ent->health = ent->maxHealth;
 	vector2d_copy(ent->drawPosition, position);
 	ent->update = pickup_update;
+	ent->die = pickup_die;
 
 	if (type == INTERACTABLE_BOX) {
 		ent->hurt = container_hurt;

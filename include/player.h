@@ -22,6 +22,12 @@ typedef struct {
 void player_spawn(Vector2D position);
 
 /**
+ * @brief Returns an entity with player properties
+ * @param position The position the entity will spawn at.
+ */
+Entity* player_allocate_entity(Vector2D position);
+
+/**
  * @brief Return the position of the player
  * @return  Vector2D with the position of the player
  */

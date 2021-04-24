@@ -12,6 +12,7 @@ void cat_enemy_hurt(Entity* self, int damage);
 void dog_enemy_1_hurt(Entity* self, int damage);
 void dog_enemy_2_hurt(Entity* self, int damage);
 void enemy_update(Entity* self);
+void enemy_die(Entity* self);
 
 Entity* enemy_spawn(Vector2D position, enum entity_type type) {
 	Entity* ent;
@@ -60,6 +61,7 @@ Entity* enemy_spawn(Vector2D position, enum entity_type type) {
 	ent->rotation = vector3d(0, 0, 0);
 	ent->defaultColorShift = vector4d(255, 255, 255, 255);
 	ent->update = enemy_update;	
+	ent->die = enemy_die;
 
 	switch (type) {
 	case ENEMY_TYPE_1:
@@ -339,6 +341,8 @@ void dog_enemy_2_think(Entity* self) {
 
 void enemy_die(Entity* self) {
 	director_add_score(self->deathScore);
+	gfc_sound_free(((EnemyData*)self->data)->attackSound);
+	gfc_sound_free(((EnemyData*)self->data)->hurtSound);
 	entity_free(self);
 	return;
 }

@@ -11,44 +11,53 @@ SDL_Rect player_generic_hitbox();
 
 static Entity* player = { 0 };
 
-void player_spawn(Vector2D position) {
-	PlayerData* data;
+Entity* player_allocate_entity(Vector2D position);
 
+void player_spawn(Vector2D position) {
 	if (player != NULL)
 		entity_free(player);
 
-	player = entity_new(PLAYER_TYPE);
-	if (!player) {
+	player = player_allocate_entity(position);
+}
+
+Entity* player_allocate_entity(Vector2D position) {
+	Entity* ent;
+	PlayerData* data;
+
+	ent = entity_new(PLAYER_TYPE);
+	if (!ent) {
 		slog("failed to create entity for player");
-		return;
+		return NULL;
 	}
 
 	data = malloc(sizeof(PlayerData));
 	if (!data) {
 		slog("failed to create data for player");
-		return;
+		return NULL;
 	}
 	memset(data, 0, sizeof(PlayerData));
-	player->data = data;
+	ent->data = data;
 	data->attackSound = gfc_sound_load("sounds/punch1.mp3", -1, -1);
 	data->hurtSound = gfc_sound_load("sounds/mc_hurt.mp3", -1, -1);
 
-	player->sprite = gf2d_sprite_load_all("images/kyo_2.png", 128, 144, 13);
-	vector2d_copy(player->drawPosition, position);
-	player_set_hurtbox(&player->hurtbox, &player->drawPosition);
-	player->maxHealth = 100;
-	player->health = player->maxHealth;
-	player->rotation = vector3d(0,0,0);
-	player->defaultColorShift = vector4d(255, 255, 255, 255);
-	player->colorShift = player->defaultColorShift;
-	player->update = player_update;
-	player->hurt = player_hurt;
-	player->baseDamage = 10;
-	player->defaultSpeed = 4;
-	player->speed = player->defaultSpeed;
-	player->flip = vector2d(FACE_RIGHT, 0);
-	player->scale = vector2d(2, 2);
-	player->attackHit = 0;
+	ent->sprite = gf2d_sprite_load_all("images/kyo_2.png", 128, 144, 13);
+	vector2d_copy(ent->drawPosition, position);
+	player_set_hurtbox(&ent->hurtbox, &ent->drawPosition);
+	ent->maxHealth = 100;
+	ent->health = ent->maxHealth;
+	ent->rotation = vector3d(0,0,0);
+	ent->defaultColorShift = vector4d(255, 255, 255, 255);
+	ent->colorShift = ent->defaultColorShift;
+	ent->update = player_update;
+	ent->hurt = player_hurt;
+	ent->baseDamage = 10;
+	ent->defaultSpeed = 4;
+	ent->speed = ent->defaultSpeed;
+	ent->flip = vector2d(FACE_RIGHT, 0);
+	ent->scale = vector2d(2, 2);
+	ent->attackHit = 0;
+
+	return ent;
 }
 
 Vector2D player_get_position() {
@@ -116,6 +125,8 @@ Vector2D player_get_weapon_position() {
 }
 
 int player_collison_check(SDL_Rect rect) {
+	if (!player) return 0;
+
 	if (SDL_HasIntersection(&rect, &player->hurtbox))
 		return 1;
 	return 0;
@@ -211,6 +222,9 @@ void player_update_side(const Uint8* keys) {
 }
 
 void player_set_hurtbox(SDL_Rect* hurtbox, Vector2D* drawPosition) {
+	if (!player)
+		return;
+
 	Vector2D cameraOffset;
 
 	cameraOffset = camera_get_offset();
@@ -577,6 +591,9 @@ void player_input(const Uint8* keys) {
 }
 
 void player_update() {
+	if (player == NULL)
+		return;
+
 	const Uint8* keys;
 
 	if (((PlayerData *)player->data)->powerUpTime > 0) {

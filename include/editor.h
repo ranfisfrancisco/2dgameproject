@@ -7,7 +7,9 @@
 typedef struct {
 	Vector2D position;
 	Entity* shadow;
-	EntityType current_type;
+	EntityType currentType;
+	clock_t clock_start;
+	double time_elapsed;
 } Editor;
 
 void editor_init();
