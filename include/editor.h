@@ -14,8 +14,14 @@ typedef struct {
 	double time_elapsed;
 } Editor;
 
+/**
+* @brief Initializes editor
+*/
 void editor_init();
 
+/**
+* @brief Update editor
+*/
 void editor_update();
 
 #endif

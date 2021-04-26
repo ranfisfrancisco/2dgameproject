@@ -34,7 +34,10 @@ void entity_manager_reset_all() {
 		return;
 	}
 
-	memset(entity_manager.entity_list, 0, sizeof(Entity) * entity_manager.max_entities);
+	for (int i = 0; i < entity_manager.max_entities; i++) {
+		if (entity_manager.entity_list[i]._inuse)
+			entity_free(&entity_manager.entity_list[i]);
+	}
 }
 
 void entity_manager_free(){

@@ -238,6 +238,7 @@ void director_load_level_from_file(int levelCode) {
 
 void director_init_level_elements() {
     entity_manager_reset_all();
+    printf("----------------------%d\n", entity_get_enemy_population());
     //director_spawn_entity(vector2d(100, 360), PLAYER_TYPE);
     gfc_sound_play(GAME_VARS.currentLevel->bgMusic, -1, 0.5, -1, -1);
     slog("Loaded Level!");
