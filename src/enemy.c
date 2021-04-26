@@ -3,6 +3,7 @@
 #include "enemy.h"
 #include "player.h"
 #include "camera.h"
+#include "random.h"
 #include <stdlib.h>
 
 void cat_enemy_think(Entity* self);
@@ -168,11 +169,15 @@ void cat_enemy_think(Entity* self) {
 	Vector2D distToPlayer;
 
 	switch (self->state) {
-	case ENEMY_IDLE:
+	case ENEMY_SEEK:
+		if (((EnemyData*)self->data)->waitTime > 0) {
+			((EnemyData*)self->data)->waitTime--;
+			break;
+		}
 		self->attackHit = 0;
 		distToPlayer = enemy_move_to_player(self);
 
-		if (distToPlayer.x < 10 && distToPlayer.y < 3)
+		if (distToPlayer.x < 10 && distToPlayer.y < 3 && rand_int(0, 100) > 10)
 			enemy_change_state(self, ENEMY_ATTACK);
 
 		break;
@@ -193,7 +198,7 @@ void cat_enemy_think(Entity* self) {
 		}
 
 		if (self->statePos > 30) {
-			enemy_change_state(self, ENEMY_IDLE);
+			enemy_change_state(self, ENEMY_SEEK);
 		}
 		break;
 			
@@ -214,6 +219,8 @@ void cat_enemy_think(Entity* self) {
 				self->attackHit = 1;
 				player_hurt(NULL, 2);
 				gfc_sound_play(((EnemyData*)self->data)->attackSound, 0, 1, 1, 0);
+				enemy_change_state(self, ENEMY_SEEK);
+				((EnemyData*)self->data)->waitTime = rand_int(30, 60);
 			}
 		}
 
@@ -226,9 +233,10 @@ void cat_enemy_think(Entity* self) {
 			self->frame++;
 		}
 
-		if (self->statePos > 15) {
-			enemy_change_state(self, ENEMY_IDLE);
-		}
+		/*if (self->statePos > 15) {
+			enemy_change_state(self, ENEMY_SEEK);
+			((EnemyData*)self->data)->waitTime = rand_int(0, 10);
+		}*/
 		break;
 
 	default:
@@ -242,7 +250,11 @@ void dog_enemy_1_think(Entity* self) {
 	Vector2D distToPlayer;
 
 	switch (self->state) {
-	case ENEMY_IDLE:
+	case ENEMY_SEEK:
+		if (((EnemyData*)self->data)->waitTime > 0) {
+			((EnemyData*)self->data)->waitTime--;
+			break;
+		}
 		self->attackHit = 0;
 		distToPlayer = enemy_move_to_player(self);
 
@@ -256,7 +268,7 @@ void dog_enemy_1_think(Entity* self) {
 		self->colorShift = vector4d(255, 0, 0, 255);
 
 		if (self->statePos > 30) {
-			enemy_change_state(self, ENEMY_IDLE);
+			enemy_change_state(self, ENEMY_SEEK);
 		}
 		break;
 
@@ -274,11 +286,14 @@ void dog_enemy_1_think(Entity* self) {
 			if (player_collison_check(hitbox)) {
 				self->attackHit = 1;
 				player_hurt(NULL, 2);
+				gfc_sound_play(((EnemyData*)self->data)->attackSound, 0, 1, 1, 0);
+				enemy_change_state(self, ENEMY_SEEK);
+				((EnemyData*)self->data)->waitTime = rand_int(30, 60);
 			}
 		}
 
 		if (self->statePos > 40) {
-			enemy_change_state(self, ENEMY_IDLE);
+			enemy_change_state(self, ENEMY_SEEK);
 		}
 		break;
 
@@ -293,7 +308,11 @@ void dog_enemy_2_think(Entity* self) {
 	Vector2D distToPlayer;
 
 	switch (self->state) {
-	case ENEMY_IDLE:
+	case ENEMY_SEEK:
+		if (((EnemyData*)self->data)->waitTime > 0) {
+			((EnemyData*)self->data)->waitTime--;
+			break;
+		}
 		self->attackHit = 0;
 		distToPlayer = enemy_move_to_player(self);
 
@@ -307,7 +326,7 @@ void dog_enemy_2_think(Entity* self) {
 		self->colorShift = vector4d(255, 0, 0, 255);
 
 		if (self->statePos > 30) {
-			enemy_change_state(self, ENEMY_IDLE);
+			enemy_change_state(self, ENEMY_SEEK);
 		}
 		break;
 
@@ -325,11 +344,14 @@ void dog_enemy_2_think(Entity* self) {
 			if (player_collison_check(hitbox)) {
 				self->attackHit = 1;
 				player_hurt(NULL, 2);
+				gfc_sound_play(((EnemyData*)self->data)->attackSound, 0, 1, 1, 0);
+				enemy_change_state(self, ENEMY_SEEK);
+				((EnemyData*)self->data)->waitTime = rand_int(30, 60);
 			}
 		}
 
 		if (self->statePos > 40) {
-			enemy_change_state(self, ENEMY_IDLE);
+			enemy_change_state(self, ENEMY_SEEK);
 		}
 		break;
 

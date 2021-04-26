@@ -1,11 +1,22 @@
 #include "random.h"
 #include <time.h>
+#include <stdio.h>
 
-static int rand_int(int low, int high) {
+int RAND_INIT;
+
+void rand_init() {
 	time_t t;
-
-	/* Intializes random number generator */
 	srand((unsigned)time(&t));
 
-	return rand() % (high-low) + low;
+	RAND_INIT = 1;
+}
+
+int rand_int(int low, int high) {
+	int i;
+
+	if (!RAND_INIT)
+		rand_init();
+
+	i = rand() % (high - low) + low;
+	return i;
 }

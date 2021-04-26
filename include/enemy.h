@@ -5,11 +5,12 @@
 #include "gfc_vector.h"
 #include "gfc_types.h"
 
-enum enemy_state { ENEMY_IDLE, ENEMY_HURT, ENEMY_WALK, ENEMY_ATTACK };
+enum enemy_state { ENEMY_SEEK, ENEMY_HURT, ENEMY_ATTACK };
 
 typedef struct {
 	Sound* attackSound;
 	Sound* hurtSound;
+	int waitTime;
 }EnemyData;
 
 /**
