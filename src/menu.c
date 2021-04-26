@@ -55,7 +55,7 @@ int menu_update() {
 		CURRENT_MENU->highlightIndex--;
 	else if (keys[SDL_SCANCODE_S])
 		CURRENT_MENU->highlightIndex++;
-	else if (keys[SDL_SCANCODE_E] && MENU_TIME > 0.2) {
+	else if (keys[SDL_SCANCODE_RETURN] && MENU_TIME > 0.2) {
 		if (CURRENT_MENU == &MENU_MAIN) {
 			if (CURRENT_MENU->highlightIndex == 0) {
 				return MENU_ACTION_CLOSE;

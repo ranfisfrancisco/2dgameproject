@@ -145,5 +145,8 @@ void editor_save() {
 	sj_object_insert(levelJS, "fightData", editor.fightData->encounterList);
 
 	sj_save(fileJson, "levels/editor.json");
+	editor.fightData->encounterList = sj_copy(editor.fightData->encounterList);
 	sj_free(fileJson); // causes crash on next editor save because encounterList is destroyed as well!
+	//levelFightData_free(editor.fightData);
+
 }

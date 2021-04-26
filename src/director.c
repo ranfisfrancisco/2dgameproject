@@ -318,7 +318,7 @@ void director_init_game() {
 
     GAME_VARS.currentLevelCode = 2;
     director_change_state(GAME_STATE_EDITOR_LOAD);
-    GAME_VARS.gameStateBuffer = GAME_STATE_MENU;
+    GAME_VARS.gameStateBuffer = GAME_STATE_EDITOR;
 }
 
 int director_run_game() {
@@ -336,8 +336,9 @@ int director_run_game() {
     KEYS = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
     if (KEYS[SDL_SCANCODE_ESCAPE])QUIT_FLAG = 1; // exit condition
     if (KEYS[SDL_SCANCODE_M] && GAME_VARS.gameStateTime > 0.2) {
-        if (GAME_VARS.gameState != GAME_STATE_MENU)
+        if (GAME_VARS.gameState != GAME_STATE_MENU) {
             director_change_state(GAME_STATE_MENU);
+        }
         else
             director_change_state(GAME_VARS.gameStateBuffer);
     }
@@ -353,8 +354,7 @@ int director_run_game() {
             director_change_state(GAME_STATE_EXITING);
         }
         else if (menu_result == MENU_ACTION_CLOSE) {
-            //director_change_state(GAME_VARS.gameStateBuffer);
-            
+            director_change_state(GAME_VARS.gameStateBuffer);
         }
         break;
 
