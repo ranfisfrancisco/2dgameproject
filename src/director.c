@@ -317,8 +317,8 @@ void director_init_game() {
     SDL_ShowCursor(SDL_DISABLE);
 
     GAME_VARS.currentLevelCode = 2;
-    director_change_state(GAME_STATE_EDITOR_LOAD);
-    GAME_VARS.gameStateBuffer = GAME_STATE_EDITOR;
+    director_change_state(GAME_STATE_LEVEL_LOAD);
+    GAME_VARS.gameStateBuffer = GAME_STATE_ERROR;
 }
 
 int director_run_game() {
@@ -355,6 +355,18 @@ int director_run_game() {
         }
         else if (menu_result == MENU_ACTION_CLOSE) {
             director_change_state(GAME_VARS.gameStateBuffer);
+        }
+        else if (menu_result == MENU_ACTION_GOTO_EDITOR) {
+            if (GAME_VARS.gameStateBuffer == GAME_STATE_EDITOR)
+                director_change_state(GAME_STATE_EDITOR);
+            else 
+                director_change_state(GAME_STATE_EDITOR_LOAD);
+        }
+        else if (menu_result == MENU_ACTION_GOTO_GAME) {
+            if (GAME_VARS.gameStateBuffer == GAME_STATE_IN_LEVEL)
+                director_change_state(GAME_STATE_IN_LEVEL);
+            else
+                director_change_state(GAME_STATE_LEVEL_LOAD);
         }
         break;
 
@@ -401,7 +413,7 @@ int director_run_game() {
         break;
 
     case GAME_STATE_EDITOR_LOAD:
-        director_load_level_from_file(GAME_VARS.currentLevelCode);
+        director_set_level(GAME_VARS.currentLevelCode);
         director_change_state(GAME_STATE_EDITOR);
         editor_init();
 
