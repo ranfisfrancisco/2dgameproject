@@ -174,6 +174,11 @@ void cat_enemy_think(Entity* self) {
 			((EnemyData*)self->data)->waitTime--;
 			break;
 		}
+
+		if (rand_int(0, 1000) < 20) {
+			((EnemyData*)self->data)->waitTime = rand_int(10, 30);
+		}
+
 		self->attackHit = 0;
 		distToPlayer = enemy_move_to_player(self);
 
@@ -255,6 +260,11 @@ void dog_enemy_1_think(Entity* self) {
 			((EnemyData*)self->data)->waitTime--;
 			break;
 		}
+
+		if (rand_int(0, 1000) < 20) {
+			((EnemyData*)self->data)->waitTime = rand_int(10, 30);
+		}
+
 		self->attackHit = 0;
 		distToPlayer = enemy_move_to_player(self);
 
@@ -313,6 +323,11 @@ void dog_enemy_2_think(Entity* self) {
 			((EnemyData*)self->data)->waitTime--;
 			break;
 		}
+
+		if (rand_int(0, 1000) < 20) {
+			((EnemyData*)self->data)->waitTime = rand_int(10, 30);
+		}
+
 		self->attackHit = 0;
 		distToPlayer = enemy_move_to_player(self);
 

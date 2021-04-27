@@ -287,6 +287,30 @@ void player_attack_check(SDL_Rect hitbox, int attackPower, int weaponDegradation
 	}
 }
 
+int player_special_move_check(enum player_move move, const Uint8* keys) {
+	int punch = keys[SDL_SCANCODE_J];
+	int kick = keys[SDL_SCANCODE_K];
+
+	if (move == QC_MOVE && punch) {
+		player_change_state(PLAYER_QCFP);
+		return 1;
+	}
+	else if (move == QC_MOVE && kick) {
+		player_change_state(PLAYER_QCFK);
+		return 1;
+	}
+	else if (move == BACK_FORWARD_MOVE && punch) {
+		player_change_state(PLAYER_BFP);
+		return 1;
+	}
+	else if (move == BACK_FORWARD_MOVE && kick) {
+		player_change_state(PLAYER_BFK);
+		return 1;
+	}
+
+	return 0;
+}
+
 void player_input(const Uint8* keys) {
 	enum player_directional_input raw_input = NO_INPUT;
 	enum player_move move = 0;
@@ -344,11 +368,8 @@ void player_input(const Uint8* keys) {
 		if (player->frame > endFrame || player->frame < startFrame)
 			player->frame = startFrame;
 
-		if (move == QC_MOVE && punch) {
-			player_change_state(PLAYER_QCFP);
-		}
-		else if (punch && kick) {
-			player_change_state(PLAYER_PK);
+		if (player_special_move_check(move, keys)) {
+
 		}
 		else if (punch) {
 			player_change_state(PLAYER_PUNCH);
@@ -377,17 +398,8 @@ void player_input(const Uint8* keys) {
 		player_movement(keys);
 		player_update_side(keys);
 
-		if (move == QC_MOVE && punch) {
-			player_change_state(PLAYER_QCFP);
-		} 
-		else if (move == QC_MOVE && kick) {
-			player_change_state(PLAYER_QCFK);
-		} 
-		else if (move == BACK_FORWARD_MOVE && punch) {
-			player_change_state(PLAYER_BFP);
-		}
-		else if (move == BACK_FORWARD_MOVE && kick) {
-			player_change_state(PLAYER_BFK);
+		if (player_special_move_check(move, keys)) {
+
 		}
 		else if (punch) {
 			player_change_state(PLAYER_PUNCH);
@@ -423,6 +435,9 @@ void player_input(const Uint8* keys) {
 
 		hitbox = player_generic_hitbox();
 
+		if (player->frame < startFrame)
+			player->frame = startFrame;
+
 		if (player->side == FACE_LEFT) {
 			hitbox.x -= 2 * player->sprite->frame_w;
 		}
@@ -430,14 +445,22 @@ void player_input(const Uint8* keys) {
 		if (((PlayerData*)player->data)->weapon)
 			attackPower += 10;
 
-		player_attack_check(hitbox, attackPower, 20);
+		if (player->statePos > 3)
+			player_attack_check(hitbox, attackPower, 20);
 
-		if (player->frame < startFrame)
-			player->frame = startFrame;
 
-		if (player->statePos > 12)
+		if (player->attackHit) {
+			if (player_special_move_check(move, keys)) {
+
+			}
+			else if (kick && !punch) {
+				player_change_state(PLAYER_KICK);
+			}
+		}
+
+		if (player->statePos > 20)
 			player_change_state(PLAYER_IDLE);
-		else if (player->statePos < 8 && kick) {
+		else if (player->statePos < 4 && kick && !left && !right) {
 			player_change_state(PLAYER_PK);
 		}
 
@@ -451,7 +474,18 @@ void player_input(const Uint8* keys) {
 
 		hitbox = player_generic_hitbox();
 
-		player_attack_check(hitbox, attackPower, 0);
+		if (player->statePos > 14)
+			player_attack_check(hitbox, attackPower, 0);
+
+		if (player->attackHit) {
+			if (player_special_move_check(move, keys)) {
+
+			}
+			else if (kick) {
+				player_change_state(PLAYER_BFK);
+				director_add_score(100);
+			}
+		}
 
 		if (player->frame < startFrame)
 			player->frame = startFrame;
@@ -462,9 +496,9 @@ void player_input(const Uint8* keys) {
 			player->frame++;
 		}
 
-		if (player->statePos > 15)
+		if (player->statePos > 30)
 			player_change_state(PLAYER_IDLE);
-		else if (player->statePos < 8 && punch) {
+		else if (player->statePos < 4 && punch && !left && !right) {
 			player_change_state(PLAYER_PK);
 		}
 
