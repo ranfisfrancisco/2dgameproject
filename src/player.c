@@ -481,8 +481,8 @@ void player_input(const Uint8* keys) {
 			if (player_special_move_check(move, keys)) {
 
 			}
-			else if (kick) {
-				player_change_state(PLAYER_BFK);
+			else if (punch) {
+				player_change_state(PLAYER_QCFP);
 				director_add_score(100);
 			}
 		}
@@ -579,6 +579,13 @@ void player_input(const Uint8* keys) {
 			player->frame+= 0.5;
 		}
 
+		if (player->attackHit) {
+			if (move == BACK_FORWARD_MOVE && kick) {
+				player_change_state(PLAYER_BFK);
+				director_add_score(150);
+			}
+		}
+
 		if (player->statePos > 45)
 			player_change_state(PLAYER_IDLE);
 
@@ -629,7 +636,7 @@ void player_input(const Uint8* keys) {
 			player->frame += 0.25;
 		}
 
-		if (player->statePos > 60)
+		if (player->statePos > 80)
 			player_change_state(PLAYER_IDLE);
 		break;
 
