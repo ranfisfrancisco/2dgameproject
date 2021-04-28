@@ -68,6 +68,8 @@ void director_change_state(GameState state) {
         break;
     case GAME_STATE_LEVEL_LOAD:
         break;
+    case GAME_STATE_BEAT_GAME:
+        break;
     case GAME_STATE_EDITOR:
         break; 
     case GAME_STATE_EDITOR_LOAD:
@@ -317,7 +319,8 @@ void director_init_game() {
     menu_init();
     SDL_ShowCursor(SDL_DISABLE);
 
-    GAME_VARS.currentLevelCode = 2;
+    GAME_VARS.currentLevelCode = 1;
+    GAME_VARS.endGameCode = 4;
     director_change_state(GAME_STATE_LEVEL_LOAD);
     GAME_VARS.gameStateBuffer = GAME_STATE_ERROR;
 }
@@ -366,8 +369,11 @@ int director_run_game() {
         else if (menu_result == MENU_ACTION_GOTO_GAME) {
             if (GAME_VARS.gameStateBuffer == GAME_STATE_IN_LEVEL)
                 director_change_state(GAME_STATE_IN_LEVEL);
-            else
+            else {
+                GAME_VARS.currentLevelCode = 1;
+                GAME_VARS.score = 0;
                 director_change_state(GAME_STATE_LEVEL_LOAD);
+            }
         }
         break;
 
@@ -377,7 +383,12 @@ int director_run_game() {
         }
         else if (GAME_VARS.currentLevel->fightData->rowCounter == -1 && entity_get_enemy_population() == 0) {
             GAME_VARS.currentLevelCode++;
-            director_change_state(GAME_STATE_LEVEL_LOAD);
+            if (GAME_VARS.currentLevelCode == GAME_VARS.endGameCode) {
+                director_change_state(GAME_STATE_BEAT_GAME);
+            }
+            else {
+                director_change_state(GAME_STATE_LEVEL_LOAD);
+            }
         }
 
         entity_manager_update_entities();
@@ -393,6 +404,9 @@ int director_run_game() {
         gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
 
+        break;
+
+    case GAME_STATE_BEAT_GAME:
         break;
 
     case GAME_STATE_LEVEL_LOAD:

@@ -121,9 +121,9 @@ Level* level_load(const char* filename)
         {
             sj_get_integer_value(sj_array_get_nth(row, i), &tempInt);
             level->tileMap[tileindex] = tempInt;
-            printf("%i,", level->tileMap[tileindex++]);
+            //printf("%i,", level->tileMap[tileindex++]);
         }
-        printf("\n");
+        //printf("\n");
     }
     level->levelSize.x = level->levelWidth * level->tileWidth;
     level->levelSize.y = level->levelHeight * level->tileHeight;
