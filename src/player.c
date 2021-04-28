@@ -484,6 +484,7 @@ void player_input(const Uint8* keys) {
 			else if (punch) {
 				player_change_state(PLAYER_QCFP);
 				director_add_score(100);
+				break;
 			}
 		}
 
@@ -636,7 +637,7 @@ void player_input(const Uint8* keys) {
 			player->frame += 0.25;
 		}
 
-		if (player->statePos > 80)
+		if (player->statePos > 60)
 			player_change_state(PLAYER_IDLE);
 		break;
 
