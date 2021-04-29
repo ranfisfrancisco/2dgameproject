@@ -16,4 +16,9 @@ void hud_draw();
  */
 void hud_draw_level_transition();
 
+/**
+ * @brief Draw the beat game screen.
+ */
+void hud_draw_beat_game();
+
 #endif

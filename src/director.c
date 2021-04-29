@@ -406,9 +406,6 @@ int director_run_game() {
 
         break;
 
-    case GAME_STATE_BEAT_GAME:
-        break;
-
     case GAME_STATE_LEVEL_LOAD:
         if (GAME_VARS.gameStateTime > 1) {
             director_set_level(GAME_VARS.currentLevelCode);
@@ -425,6 +422,12 @@ int director_run_game() {
         hud_draw_level_transition();
         gf2d_grahics_next_frame();
 
+        break;
+
+    case GAME_STATE_BEAT_GAME:
+        gf2d_graphics_clear_screen();
+        hud_draw_beat_game();
+        gf2d_grahics_next_frame();
         break;
 
     case GAME_STATE_EDITOR_LOAD:
