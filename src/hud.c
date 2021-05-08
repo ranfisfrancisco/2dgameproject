@@ -38,7 +38,7 @@ void hud_draw_level_transition() {
 
 void hud_draw_beat_game() {
 	TextLine text;
-	gfc_line_sprintf(text, "CONGRATULATIONS!\n YOU BEAT THE GAME");
+	gfc_line_sprintf(text, "NICE! YOU BEAT THE GAME");
 
 	//draw rectangle
 	SDL_RenderDrawRect(gf2d_graphics_get_renderer(), &HUD_RECT);

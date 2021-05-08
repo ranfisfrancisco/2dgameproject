@@ -133,7 +133,11 @@ void editor_place_entity() {
 }
 
 void editor_end_encounter() {
+	char msg[60];
 	editor.fightData->rowCounter++;
+
+	sprintf(msg, "Row Counter: %d\n", editor.fightData->rowCounter);
+	slog(msg);
 }
 
 void editor_save() {

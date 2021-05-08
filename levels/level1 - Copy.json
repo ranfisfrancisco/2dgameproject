@@ -1,7 +1,7 @@
 {
     "level":
     {
-        "bgImage" : ["images/backgrounds/layers0.png","images/backgrounds/layers1.png"],
+        "bgImage" : ["images/backgrounds/street.png"],
         "tileSet" : "images/basetileset.png",
         "tileWidth":32,
         "tileHeight":32,
@@ -40,78 +40,11 @@
             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
         ],
-		"fightData":[
-         [
-            {
-               "xPos":"72",
-               "yPos":"88",
-               "entityType":"1"
-            }
-         ],
-         [
-            {
-               "xPos":"60",
-               "yPos":"440",
-               "entityType":"17"
-            },
-            {
-               "xPos":"368",
-               "yPos":"516",
-               "entityType":"18"
-            },
-            {
-               "xPos":"508",
-               "yPos":"696",
-               "entityType":"14"
-            },
-            {
-               "xPos":"124",
-               "yPos":"696",
-               "entityType":"14"
-            },
-            {
-               "xPos":"788",
-               "yPos":"240",
-               "entityType":"16"
-            },
-            {
-               "xPos":"860",
-               "yPos":"636",
-               "entityType":"11"
-            }
-         ],
-         [
-            {
-               "xPos":"592",
-               "yPos":"344",
-               "entityType":"3"
-            }
-         ],
-         [
-            {
-               "xPos":"668",
-               "yPos":"88",
-               "entityType":"4"
-            },
-            {
-               "xPos":"668",
-               "yPos":"312",
-               "entityType":"4"
-            },
-            {
-               "xPos":"668",
-               "yPos":"200",
-               "entityType":"4"
-            }
-         ],
-         [
-            {
-               "xPos":"1484",
-               "yPos":"576",
-               "entityType":"6"
-            }
-         ]
-      ],
+		"fightData" : 
+			[
+				[{"entityType":1, "xPos": 300, "yPos": 360}], 
+				[{"entityType":2, "xPos": 500, "yPos": 900}]
+			],
 		"musicFile" : "music/circuit.mp3"
     }
 }
