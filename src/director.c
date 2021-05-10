@@ -32,6 +32,11 @@ int director_get_score() {
     return GAME_VARS.score;
 }
 
+void director_add_combo_for_hit(int hits) {
+    GAME_VARS.combo += hits;
+    GAME_VARS.comboLastHitStartTime = clock();
+}
+
 Vector2D director_get_screen_size_vector() {
     return GAME_VARS.screenSize;
 }
@@ -334,12 +339,12 @@ int director_run_game() {
         return QUIT_FLAG;
     }
 
-    GAME_VARS.gameStateTime = (double)(clock() - GAME_VARS.gameStateStartTime) / CLOCKS_PER_SEC;
+    GAME_VARS.gameStateElapsedTime = (double)(clock() - GAME_VARS.gameStateStartTime) / CLOCKS_PER_SEC;
     SDL_PumpEvents();   // update SDL's internal event structures
 
     KEYS = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
     if (KEYS[SDL_SCANCODE_ESCAPE])QUIT_FLAG = 1; // exit condition
-    if (KEYS[SDL_SCANCODE_M] && GAME_VARS.gameStateTime > 0.2) {
+    if (KEYS[SDL_SCANCODE_M] && GAME_VARS.gameStateElapsedTime > 0.2) {
         if (GAME_VARS.gameState != GAME_STATE_MENU) {
             director_change_state(GAME_STATE_MENU);
         }
@@ -394,6 +399,12 @@ int director_run_game() {
             }
         }
 
+        GAME_VARS.comboLastHitElapsedTime = (double)(clock() - GAME_VARS.comboLastHitStartTime) / CLOCKS_PER_SEC;
+        if (GAME_VARS.comboLastHitElapsedTime > 3) {
+            GAME_VARS.combo = 0;
+        }
+
+
         entity_manager_update_entities();
         entity_manager_think_entities();
         level_update(GAME_VARS.currentLevel);
@@ -410,7 +421,7 @@ int director_run_game() {
         break;
 
     case GAME_STATE_LEVEL_LOAD:
-        if (GAME_VARS.gameStateTime > 1) {
+        if (GAME_VARS.gameStateElapsedTime > 1) {
             director_set_level(GAME_VARS.currentLevelCode);
             director_change_state(GAME_STATE_IN_LEVEL);
 

@@ -13,11 +13,14 @@ typedef struct {
 	GameState gameState;
 	GameState gameStateBuffer;
 	clock_t gameStateStartTime;
-	double gameStateTime;
+	double gameStateElapsedTime;
 	Level* currentLevel;
 	int currentLevelCode;
 	int endGameCode;
 	int score;
+	int combo;
+	clock_t comboLastHitStartTime;
+	double comboLastHitElapsedTime;
 	Vector2D screenSize;
 } GameVarsStruct;
 
@@ -32,6 +35,12 @@ void director_add_score(int amount);
  * @return The score
  */
 int director_get_score();
+
+/**
+ * @brief Gets the global game score
+ * @param amount to increase combo counter by
+ */
+void director_add_combo_for_hit(int hits);
 
 /**
  * @brief Snaps the camera to the level bounds

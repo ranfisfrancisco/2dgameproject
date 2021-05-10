@@ -12,6 +12,7 @@ void hud_init() {
 	HUD_RECT = gfc_sdl_rect(0, 0, 1270, 80);
 	HUD_FONT = font_load("fonts/GameRobot.ttf", 48);
 	LEVEL_TRANSITION_FONT = font_load("fonts/colony_wars.ttf", 20);
+	COMBO = 0;
 }
 
 void hud_draw() {
