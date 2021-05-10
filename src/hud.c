@@ -6,11 +6,13 @@
 
 static SDL_Rect HUD_RECT;
 static Font* HUD_FONT;
+static Font* COMBO_FONT;
 static Font* LEVEL_TRANSITION_FONT;
 
 void hud_init() {
 	HUD_RECT = gfc_sdl_rect(0, 0, 1270, 80);
 	HUD_FONT = font_load("fonts/GameRobot.ttf", 48);
+	COMBO_FONT = font_load("fonts/GameRobot.ttf", 64);
 	LEVEL_TRANSITION_FONT = font_load("fonts/colony_wars.ttf", 20);
 }
 
@@ -26,9 +28,13 @@ void hud_draw(int* comboCounter) {
 
 	if (comboCounter) {
 		int combo = *comboCounter;
+		TextLine comboText;
 		if (combo < 1) {
-			return;
+			//return;
 		}
+
+		gfc_line_sprintf(comboText, "COMBO %d", combo);
+		font_render(COMBO_FONT, comboText, vector2d(director_get_screen_width() - 400, 80), gfc_color8(15, 26, 219, 255));
 	}
 }
 
