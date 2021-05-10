@@ -12,10 +12,9 @@ void hud_init() {
 	HUD_RECT = gfc_sdl_rect(0, 0, 1270, 80);
 	HUD_FONT = font_load("fonts/GameRobot.ttf", 48);
 	LEVEL_TRANSITION_FONT = font_load("fonts/colony_wars.ttf", 20);
-	COMBO = 0;
 }
 
-void hud_draw() {
+void hud_draw(int* comboCounter) {
 	TextLine healthText;
 	gfc_line_sprintf(healthText, "HEALTH: %d/%d ENEMY #: %d SCORE: %d", player_get_health(), player_get_max_health(), entity_get_enemy_population(), director_get_score());
 
@@ -24,6 +23,13 @@ void hud_draw() {
 	SDL_RenderFillRect(gf2d_graphics_get_renderer(), &HUD_RECT);
 
 	font_render(HUD_FONT, healthText, vector2d(32, 32), gfc_color8(255, 0, 0, 255));
+
+	if (comboCounter) {
+		int combo = *comboCounter;
+		if (combo < 1) {
+			return;
+		}
+	}
 }
 
 void hud_draw_level_transition() {
@@ -39,7 +45,7 @@ void hud_draw_level_transition() {
 
 void hud_draw_beat_game() {
 	TextLine text;
-	gfc_line_sprintf(text, "NICE! YOU BEAT THE GAME");
+	gfc_line_sprintf(text, "NICE! YOU BEAT THE GAME!");
 
 	//draw rectangle
 	SDL_RenderDrawRect(gf2d_graphics_get_renderer(), &HUD_RECT);

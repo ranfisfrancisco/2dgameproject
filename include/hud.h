@@ -8,8 +8,9 @@ void hud_init();
 
 /**
  * @brief Draw the HUD.
+ * @param comboCounter NULL if not applicable, otherwise a pointer to an integer for the combo counter
  */
-void hud_draw();
+void hud_draw(int* comboCounter);
 
 /**
  * @brief Draw the Level Transition.

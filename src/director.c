@@ -413,7 +413,7 @@ int director_run_game() {
         level_draw(GAME_VARS.currentLevel);
         entity_manager_draw_entities();
         //entity_debug_draw_hurtboxes();
-        hud_draw();
+        hud_draw(&GAME_VARS.combo);
 
         gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
@@ -465,7 +465,7 @@ int director_run_game() {
         gf2d_graphics_clear_screen();
         level_draw(GAME_VARS.currentLevel);
         entity_manager_draw_entities();
-        hud_draw();
+        hud_draw(NULL);
 
         gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
