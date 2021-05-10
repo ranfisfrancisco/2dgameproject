@@ -136,6 +136,7 @@ void editor_end_encounter() {
 	char msg[60];
 	editor.fightData->rowCounter++;
 
+	director_add_score(1);
 	sprintf(msg, "Row Counter: %d\n", editor.fightData->rowCounter);
 	slog(msg);
 }
