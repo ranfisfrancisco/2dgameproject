@@ -30,7 +30,7 @@ void hud_draw(int* comboCounter) {
 		int combo = *comboCounter;
 		TextLine comboText;
 		if (combo < 1) {
-			//return;
+			return;
 		}
 
 		gfc_line_sprintf(comboText, "COMBO %d", combo);

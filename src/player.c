@@ -277,7 +277,9 @@ void player_change_state(enum player_state state) {
 
 void player_attack_check(SDL_Rect hitbox, int attackPower, int weaponDegradation) {
 	if (player->attackHit == 0) {
-		if (entity_manager_player_attack_collison(hitbox, attackPower)) {
+		int hitEnemies = entity_manager_player_attack_collison(hitbox, attackPower);
+		if (hitEnemies) {
+			director_add_combo_for_hit(hitEnemies);
 			player->attackHit = 1;
 			gfc_sound_play(((PlayerData*)player->data)->attackSound, 0, 1, -1, -1);
 
