@@ -37,10 +37,17 @@ void director_add_score(int amount);
 int director_get_score();
 
 /**
- * @brief Gets the global game score
+ * @brief Increases combo counter due to landed hit
+ * @param amount to increase combo counter by
+ * @param hitstreak amount of hits landed without getting hit
+ */
+void director_add_combo_for_hit(int hits, int hitstreak);
+
+/**
+ * @brief Increases combo counter due to chain being performed
  * @param amount to increase combo counter by
  */
-void director_add_combo_for_hit(int hits);
+void director_add_combo_for_chain(int amount);
 
 /**
  * @brief Snaps the camera to the level bounds

@@ -279,8 +279,9 @@ void player_attack_check(SDL_Rect hitbox, int attackPower, int weaponDegradation
 	if (player->attackHit == 0) {
 		int hitEnemies = entity_manager_player_attack_collison(hitbox, attackPower);
 		if (hitEnemies) {
-			director_add_combo_for_hit(hitEnemies);
+			director_add_combo_for_hit(hitEnemies, ((PlayerData*)player->data)->hitStreak);
 			player->attackHit = 1;
+			((PlayerData*)player->data)->hitStreak++;
 			gfc_sound_play(((PlayerData*)player->data)->attackSound, 0, 1, -1, -1);
 
 			if (((PlayerData*)player->data)->weapon)
@@ -503,6 +504,7 @@ void player_input(const Uint8* keys) {
 			player_change_state(PLAYER_IDLE);
 		else if (player->statePos < 4 && punch && !left && !right) {
 			player_change_state(PLAYER_PK);
+			director_add_combo_for_chain(6);
 		}
 
 		break;
@@ -586,6 +588,7 @@ void player_input(const Uint8* keys) {
 			if (move == BACK_FORWARD_MOVE && kick) {
 				player_change_state(PLAYER_BFK);
 				director_add_score(150);
+				director_add_combo_for_chain(9);
 			}
 		}
 
@@ -678,5 +681,6 @@ void player_update() {
 void player_hurt(Entity* self, int damage) {
 	player_change_state(PLAYER_HURT);
 	player->health -= damage;
+	((PlayerData*)player->data)->hitStreak = 0;
 	gfc_sound_play(((PlayerData*)player->data)->hurtSound, 0, 1, -1, -1);
 }

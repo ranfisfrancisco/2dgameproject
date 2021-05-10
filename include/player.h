@@ -13,6 +13,7 @@ typedef struct {
 	int powerUpTime;
 	Sound* attackSound;
 	Sound* hurtSound;
+	int hitStreak;
 }PlayerData;
 
 /**

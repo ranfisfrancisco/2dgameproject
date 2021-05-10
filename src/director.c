@@ -25,6 +25,8 @@ static int QUIT_FLAG;
 static const char* SCORE_FILE_NAME = "data/score.json";
 
 void director_add_score(int amount) {
+    if (GAME_VARS.combo > 0)
+        amount *= GAME_VARS.combo / 4;
     GAME_VARS.score += amount;
 }
 
@@ -32,9 +34,13 @@ int director_get_score() {
     return GAME_VARS.score;
 }
 
-void director_add_combo_for_hit(int hits) {
-    GAME_VARS.combo += hits;
+void director_add_combo_for_hit(int hits, int hitstreak){
+    GAME_VARS.combo += hits + hitstreak;
     GAME_VARS.comboLastHitStartTime = clock();
+}
+
+void director_add_combo_for_chain(int amount) {
+    GAME_VARS.combo += amount;
 }
 
 Vector2D director_get_screen_size_vector() {
