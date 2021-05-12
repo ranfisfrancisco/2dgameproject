@@ -90,7 +90,6 @@ void editor_update() {
 void editor_update_movement(const Uint8* keys) {
 	int up, down, left, right;
 	Vector2D cameraNewPosition, newPosition;
-	SDL_Rect testHurtbox;
 
 	newPosition = editor.position;
 	

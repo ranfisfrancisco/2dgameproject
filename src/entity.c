@@ -176,7 +176,7 @@ void entity_manager_update_entities() {
 
 	if (entity_manager.entity_list == NULL) {
 		slog("entity system does not exist");
-		return NULL;
+		return;
 	}
 
 	for (i = 0; i < entity_manager.max_entities; i++) {
@@ -192,7 +192,7 @@ void entity_manager_think_entities() {
 
 	if (entity_manager.entity_list == NULL) {
 		slog("entity system does not exist");
-		return NULL;
+		return;
 	}
 
 	for (i = 0; i < entity_manager.max_entities; i++) {
@@ -208,7 +208,7 @@ void entity_manager_draw_entities() {
 
 	if (entity_manager.entity_list == NULL) {
 		slog("entity system does not exist");
-		return NULL;
+		return;
 	}
 
 	for (i = 0; i < entity_manager.max_entities; i++) {
@@ -224,7 +224,7 @@ int entity_manager_player_attack_collison(SDL_Rect playerHitbox, int damage) {
 
 	if (entity_manager.entity_list == NULL) {
 		slog("entity system does not exist");
-		return NULL;
+		return 0;
 	}
 
 	for (int i = 0; i < entity_manager.max_entities; i++) {
@@ -246,7 +246,7 @@ int entity_manager_player_attack_collison(SDL_Rect playerHitbox, int damage) {
 int entity_manager_player_interactable_collision(SDL_Rect hurtbox) {
 	if (entity_manager.entity_list == NULL) {
 		slog("entity system does not exist");
-		return NULL;
+		return false;
 	}
 
 	for (int i = 0; i < entity_manager.max_entities; i++) {
