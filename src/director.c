@@ -168,7 +168,7 @@ int* director_load_score(char* fileName) {
 }
 
 //determine if a high score was reached, and save into list
-void director_save_score(char* fileName) {
+void director_save_score(const char* fileName) {
     int* scoreList; 
     int newPlacement = false;
 
@@ -331,12 +331,14 @@ void director_init_game() {
 
     GAME_VARS.currentLevelCode = 1;
     GAME_VARS.endGameCode = 4;
-    director_change_state(GAME_STATE_LEVEL_LOAD);
-    GAME_VARS.gameStateBuffer = GAME_STATE_ERROR;
+    director_change_state(GAME_STATE_MENU);
+    GAME_VARS.gameStateBuffer = GAME_STATE_LEVEL_LOAD;
 }
 
 int director_run_game() {
     Menu_Action menu_result;
+
+    slog("Rendering at %f FPS", gf2d_graphics_get_frames_per_second());
 
     if (GAME_VARS.gameState == GAME_STATE_IN_LEVEL && GAME_VARS.currentLevel == NULL) {
         slog("Level not loaded! Aborting.");
@@ -421,7 +423,6 @@ int director_run_game() {
         hud_draw(&GAME_VARS.combo);
 
         gf2d_grahics_next_frame();// render current draw frame and skip to the next frame
-        //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
 
         break;
 

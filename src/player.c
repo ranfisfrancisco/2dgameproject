@@ -4,8 +4,8 @@
 #include "camera.h"
 #include "director.h"
 
-void player_update(Entity* self);
-void player_hurt(Entity* self);
+void player_update();
+void player_hurt(Entity* self, int damage);
 void player_set_hurtbox(SDL_Rect* hurtbox, Vector2D* drawPosition);
 SDL_Rect player_generic_hitbox();
 

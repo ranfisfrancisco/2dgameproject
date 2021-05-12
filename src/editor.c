@@ -7,6 +7,7 @@
 #include "enemy.h"
 #include "object.h"
 #include "level.h"
+#include "director.h"
 
 static Editor editor = { 0 };
 

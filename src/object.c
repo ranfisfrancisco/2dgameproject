@@ -2,6 +2,7 @@
 #include "object.h"
 #include "player.h"
 #include "camera.h"
+#include "director.h"
 
 void pickup_update(Entity* self);
 void container_hurt(Entity* self, int damage);

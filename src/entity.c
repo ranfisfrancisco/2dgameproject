@@ -1,5 +1,6 @@
 #include "simple_logger.h"
 #include "entity.h"
+#include "gf2d_graphics.h"
 #include "camera.h"
 
 typedef struct{

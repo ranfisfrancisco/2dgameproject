@@ -7,7 +7,7 @@ LevelFightData* levelFightData_load(SJson* levelJson){
 
 	if (!levelJson)return NULL;
 
-	fightData = (Entity*)gfc_allocate_array(sizeof(LevelFightData), 1);
+	fightData = gfc_allocate_array(sizeof(LevelFightData), 1);
 	if (fightData == NULL) {
 		slog("Failed to allocate fight data");
 		return NULL;

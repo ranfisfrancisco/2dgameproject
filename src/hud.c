@@ -1,5 +1,6 @@
 #include "simple_logger.h" 
 #include "hud.h"
+#include "gf2d_graphics.h"
 #include "director.h"
 #include "font.h"
 #include "player.h"

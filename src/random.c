@@ -1,6 +1,6 @@
 #include "random.h"
 #include <time.h>
-#include <stdio.h>
+#include <stdlib.h>
 
 int RAND_INIT;
 

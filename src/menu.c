@@ -1,5 +1,6 @@
 #include <time.h> 
 #include "simple_logger.h" 
+#include "gf2d_graphics.h"
 #include "menu.h"
 #include "director.h"
 
